@@ -16,6 +16,10 @@ export prod_db=/cvmfs/dune.opensciencegrid.org/products/dune
 test -d "$prod_db" || { echo "prod_db path not found: $prod_db"; exit 2; }
 
 source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
+echo "After setup_dune.sh: PRODUCTS=${PRODUCTS:-unset}"
+which ups || true
+ups list -a dune* | head || true
+
 setup justin
 
 # If needed (first time on a node), do:
