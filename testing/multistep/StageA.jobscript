@@ -4,8 +4,12 @@ set -e
 echo "Stage A: generating data"
 echo "Job index: $JUSTIN_JOB_INDEX"
 
+source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
+setup dunesw v10_16_00d00
+
 # Simulate file generation
-echo "data from job $JUSTIN_JOB_INDEX" > gen_${JUSTIN_JOB_INDEX}.txt
+echo "data from job $JUSTIN_JOB_INDEX"     #> gen_${JUSTIN_JOB_INDEX}.txt
+lar -c prod_mumins_0.1-5.0GeV_isotropic_dune10kt_1x2x6.fcl -n 20
 
 # Register output
-justin-output gen_file gen_${JUSTIN_JOB_INDEX}.txt
+justin-output gen_file gen_${JUSTIN_JOB_INDEX}.root

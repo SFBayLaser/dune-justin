@@ -2,7 +2,7 @@ stages:
 
   - name: generate
     jobscript:
-      git: your-org/your-repo/gen.jobscript
+      git: SFBayLaser/dune-justin/testing/multistep/StageA.jobscript
       ref: main
     monte_carlo: 20
     outputs:
@@ -10,7 +10,7 @@ stages:
 
   - name: process
     jobscript:
-      git: your-org/your-repo/process.jobscript
+      git: SFBayLaser/dune-justin/testing/multistep/StageB.jobscript
       ref: main
     input:
       stage: generate
@@ -20,7 +20,7 @@ stages:
 
   - name: merge
     jobscript:
-      git: your-org/your-repo/merge.jobscript
+      git: SFBayLaser/dune-justin/testing/multistep/StageC.jobscript
       ref: main
     input:
       stage: process

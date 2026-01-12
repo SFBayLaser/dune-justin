@@ -7,6 +7,11 @@ echo "Stage B: processing input"
 INPUT_FILE="$JUSTIN_INPUT_FILE"
 
 echo "Processing $INPUT_FILE"
-cat "$INPUT_FILE" > processed.txt
 
-justin-output processed_file processed.txt
+source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
+setup dunesw v10_16_00d00
+
+# Simulate file generation
+lar -c standard_g4_dune10kt_1x2x6.fcl -s $INPUT_FILE -n -1
+
+justin-output g4_file g4_${JUSTIN_JOB_INDEX}.root
