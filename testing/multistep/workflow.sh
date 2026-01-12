@@ -5,8 +5,10 @@ set -euo pipefail
 source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
 setup justin
 
-# 1) Create a draft workflow (example: 20 MC jobs in stage 1)
-WFID=$(justin create-workflow --description "toy 3-stage workflow" --monte-carlo 20 \
+echo "Setting up the draft workflow"
+
+# 1) Create a draft workflow (example: 5 MC jobs in stage 1)
+WFID=$(justin create-workflow --description "toy 3-stage workflow" --monte-carlo 5 \
   | awk '/Workflow ID/ {print $NF}')
 
 echo "Created workflow WFID=${WFID}"
