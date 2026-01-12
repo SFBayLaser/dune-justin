@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "=== GEN job starting ==="
+echo "Host: $(hostname)"
+echo "PWD:  $(pwd)"
+echo "JUSTIN_JOB_INDEX=${JUSTIN_JOB_INDEX:-unset}"
+
+# ----------------------------------------------------------------------
+# Environment setup
+# ----------------------------------------------------------------------
+source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
+
+# Adjust dunesw version if needed
+setup dunesw v10_16_00d00 -q e20:prof
+
+# Optional: diagnostics
+ups active
+lar --version
+
+# ----------------------------------------------------------------------
+# Run GEN
+# ----------------------------------------------------------------------
+FCL=prod_mumins_0.1-5.0GeV_isotropic_dune10kt_1x2x6.fcl
+NEVENTS=20
+
+# Ensure unique output filename per job
+OUTFILE=gen_${JUSTIN_JOB_INDEX}.root
+
+echo "Running lar GEN:"
+echo "  FCL: ${FCL}"
+echo "  Events: ${NEVENTS}"
+echo "  Output: ${OUTFILE}"
+
+lar \
+  -c "${FCL}" \
+  -n "${NEVENTS}" \
+  -o "${OUTFILE}"
+
+# ----------------------------------------------------------------------
+# Sanity checks
+# ----------------------------------------------------------------------
+if [[ ! -f "${OUTFILE}" ]]; then
+  echo "ERROR: Output file ${OUTFILE} not produced!"
+  exit 1
+fi
+
+ls -lh "${OUTFILE}"
+
+# ----------------------------------------------------------------------
+# Register output for next stage
+# ----------------------------------------------------------------------
+# This MUST match --output-pattern-next-stage in create-stage
+justin-output "${OUTFILE}"
+
+echo "=== GEN job completed successfully ==="

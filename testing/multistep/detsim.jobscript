@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "=== DETSIM job starting ==="
+echo "Host: $(hostname)"
+echo "PWD:  $(pwd)"
+
+# ----------------------------------------------------------------------
+# Sanity: justIN-provided input
+# ----------------------------------------------------------------------
+if [[ -z "${JUSTIN_INPUT_FILE:-}" ]]; then
+  echo "ERROR: JUSTIN_INPUT_FILE is not set"
+  exit 1
+fi
+
+INPUT_G4="${JUSTIN_INPUT_FILE}"
+echo "G4 input file: ${INPUT_G4}"
+
+# ----------------------------------------------------------------------
+# Environment setup
+# ----------------------------------------------------------------------
+source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
+setup dunesw v10_16_00d00 -q e20:prof
+
+ups active
+lar --version
+
+# ----------------------------------------------------------------------
+# Run DETSIM
+# ----------------------------------------------------------------------
+FCL=standard_detsim_dune10kt_1x2x6.fcl
+
+# Output filename derived from input
+BASE=$(basename "${INPUT_G4}" .root)
+OUTFILE="detsim_${BASE}.root"
+
+echo "Running lar DETSIM:"
+echo "  FCL:     ${FCL}"
+echo "  Input:   ${INPUT_G4}"
+echo "  Output:  ${OUTFILE}"
+
+lar \
+  -c "${FCL}" \
+  -s "${INPUT_G4}" \
+  -o "${OUTFILE}"
+
+# ----------------------------------------------------------------------
+# Sanity checks
+# ----------------------------------------------------------------------
+if [[ ! -f "${OUTFILE}" ]]; then
+  echo "ERROR: Output file ${OUTFILE} not produced!"
+  exit 1
+fi
+
+ls -lh "${OUTFILE}"
+
+# ----------------------------------------------------------------------
+# Register final output
+# ----------------------------------------------------------------------
+# Must match --output-pattern in stage-3 creation
+justin-output "${OUTFILE}"
+
+echo "=== DETSIM job completed successfully ==="

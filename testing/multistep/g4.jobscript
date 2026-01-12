@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "=== G4 job starting ==="
+echo "Host: $(hostname)"
+echo "PWD:  $(pwd)"
+
+# ----------------------------------------------------------------------
+# Sanity: justIN-provided input
+# ----------------------------------------------------------------------
+if [[ -z "${JUSTIN_INPUT_FILE:-}" ]]; then
+  echo "ERROR: JUSTIN_INPUT_FILE is not set"
+  exit 1
+fi
+
+INPUT_GEN="${JUSTIN_INPUT_FILE}"
+echo "GEN input file: ${INPUT_GEN}"
+
+# ----------------------------------------------------------------------
+# Environment setup
+# ----------------------------------------------------------------------
+source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
+
+setup dunesw v10_16_00d00 -q e20:prof
+
+ups active
+lar --version
+
+# ----------------------------------------------------------------------
+# Run G4
+# ----------------------------------------------------------------------
+FCL=standard_g4_dune10kt_1x2x6.fcl
+
+# Output filename derived from input (important!)
+BASE=$(basename "${INPUT_GEN}" .root)
+OUTFILE="g4_${BASE}.root"
+
+echo "Running lar G4:"
+echo "  FCL:     ${FCL}"
+echo "  Input:   ${INPUT_GEN}"
+echo "  Output:  ${OUTFILE}"
+
+lar \
+  -c "${FCL}" \
+  -s "${INPUT_GEN}" \
+  -o "${OUTFILE}"
+
+# ----------------------------------------------------------------------
+# Sanity checks
+# ----------------------------------------------------------------------
+if [[ ! -f "${OUTFILE}" ]]; then
+  echo "ERROR: Output file ${OUTFILE} not produced!"
+  exit 1
+fi
+
+ls -lh "${OUTFILE}"
+
+# ----------------------------------------------------------------------
+# Register output for next stage (DETSIM)
+# ----------------------------------------------------------------------
+# Must match --output-pattern-next-stage in workflow creation
+justin-output "${OUTFILE}"
+
+echo "=== G4 job completed successfully ==="
