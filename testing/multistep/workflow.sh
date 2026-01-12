@@ -1,39 +1,53 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# 0) Environment (run on dunegpvm typically)
+# ---- user knobs ----
+NGEN=5
+JOBSCRIPT_REF=main
+REPO="SFBayLaser/dune-justin"   # repo that holds your jobscripts
+
+# Output filename patterns produced by each stage
+GEN_OUT="gen_*.root"
+G4_OUT="g4_*.root"
+DETSIM_OUT="detsim_*.root"
+
+# ---- environment ----
 source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
 setup justin
 
-echo "Setting up the draft workflow"
+# If needed (first time on a node), do:
+#   justin time
+#   justin get-token
 
-# 1) Create a draft workflow (example: 5 MC jobs in stage 1)
-WFID=$(justin create-workflow --description "toy 3-stage workflow" --monte-carlo 5 \
-  | awk '/Workflow ID/ {print $NF}')
+# ---- create workflow (draft) ----
+WFID=$(
+  justin create-workflow --description "gen->g4->detsim test" --monte-carlo "${NGEN}" \
+  | awk '/Workflow ID/ {print $NF}'
+)
+echo "WFID=${WFID}"
 
-echo "Created workflow WFID=${WFID}"
-
-# 2) Stage 1
-justin create-stage --workflow-id "$WFID" --stage-id 1 \
-  --jobscript-git SFBayLaser/dune-justin/testing/multistep/StageA.jobscript:main \
-  --wall-seconds 7200 --rss-mib 2000 \
-  --output-pattern-next-stage "gen_*.root"
-
-# 3) Stage 2 (consumes stage 1 outputs automatically)
-justin create-stage --workflow-id "$WFID" --stage-id 2 \
-  --jobscript-git SFBayLaser/dune-justin/testing/multistep/StageB.jobscript:main \
+# ---- stage 1: GEN ----
+justin create-stage --workflow-id "${WFID}" --stage-id 1 \
+  --jobscript-git "${REPO}/testing/multistep/gen.jobscript:${JOBSCRIPT_REF}" \
   --wall-seconds 14400 --rss-mib 4000 \
-  --output-pattern-next-stage "g4_*.root"
+  --output-pattern-next-stage "${GEN_OUT}"
 
-# 4) Stage 3 (final stage outputs)
-justin create-stage --workflow-id "$WFID" --stage-id 3 \
-  --jobscript-git SFBayLaser/dune-justin/testing/multistep/StageC.jobscript:main \
-  --wall-seconds 7200 --rss-mib 4000 \
-  --output-pattern "detsim_*.root"
+# ---- stage 2: G4 (consumes stage-1 outputs automatically) ----
+justin create-stage --workflow-id "${WFID}" --stage-id 2 \
+  --jobscript-git "${REPO}/testing/multistep/g4.jobscript:${JOBSCRIPT_REF}" \
+  --wall-seconds 28800 --rss-mib 8000 \
+  --output-pattern-next-stage "${G4_OUT}"
 
-# 5) Submit the workflow
-justin submit-workflow --workflow-id "$WFID"
-echo "Submitted workflow WFID=${WFID}"
+# ---- stage 3: DETSIM (final outputs) ----
+justin create-stage --workflow-id "${WFID}" --stage-id 3 \
+  --jobscript-git "${REPO}/testing/multistep/detsim.jobscript:${JOBSCRIPT_REF}" \
+  --wall-seconds 28800 --rss-mib 8000 \
+  --output-pattern "${DETSIM_OUT}"
 
-# 6) Optional: show summary
-justin show-stages --workflow-id "$WFID"
+# ---- submit ----
+justin submit-workflow --workflow-id "${WFID}"
+echo "Submitted WFID=${WFID}"
+
+# ---- monitor helpers ----
+justin show-stages --workflow-id "${WFID}"
+# justin show-jobs --workflow-id "${WFID}"
