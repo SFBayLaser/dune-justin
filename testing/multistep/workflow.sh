@@ -12,6 +12,9 @@ G4_OUT="g4_*.root"
 DETSIM_OUT="detsim_*.root"
 
 # ---- environment ----
+export prod_db=/cvmfs/dune.opensciencegrid.org/products/dune
+test -d "$prod_db" || { echo "prod_db path not found: $prod_db"; exit 2; }
+
 source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
 setup justin
 
