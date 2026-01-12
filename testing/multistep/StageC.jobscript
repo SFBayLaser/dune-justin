@@ -1,0 +1,8 @@
+#!/bin/bash
+set -e
+
+echo "Stage C: merging files"
+
+cat $JUSTIN_INPUT_FILES > merged.txt
+
+justin-output merged_file merged.txt

@@ -1,0 +1,11 @@
+#!/bin/bash
+set -e
+
+echo "Stage A: generating data"
+echo "Job index: $JUSTIN_JOB_INDEX"
+
+# Simulate file generation
+echo "data from job $JUSTIN_JOB_INDEX" > gen_${JUSTIN_JOB_INDEX}.txt
+
+# Register output
+justin-output gen_file gen_${JUSTIN_JOB_INDEX}.txt

@@ -1,0 +1,28 @@
+stages:
+
+  - name: generate
+    jobscript:
+      git: your-org/your-repo/gen.jobscript
+      ref: main
+    monte_carlo: 20
+    outputs:
+      - gen_file
+
+  - name: process
+    jobscript:
+      git: your-org/your-repo/process.jobscript
+      ref: main
+    input:
+      stage: generate
+      output: gen_file
+    outputs:
+      - processed_file
+
+  - name: merge
+    jobscript:
+      git: your-org/your-repo/merge.jobscript
+      ref: main
+    input:
+      stage: process
+      output: processed_file
+    files_per_job: 5

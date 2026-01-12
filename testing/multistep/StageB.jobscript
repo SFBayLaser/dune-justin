@@ -1,0 +1,12 @@
+#!/bin/bash
+set -e
+
+echo "Stage B: processing input"
+
+# justIN provides input file paths automatically
+INPUT_FILE="$JUSTIN_INPUT_FILE"
+
+echo "Processing $INPUT_FILE"
+cat "$INPUT_FILE" > processed.txt
+
+justin-output processed_file processed.txt
