@@ -37,6 +37,17 @@ fi
 echo "GEN input file: ${INPUT_GEN}"
 
 # ----------------------------------------------------------------------
+# Use this to set any environment variables we want
+# ----------------------------------------------------------------------
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+source "${SCRIPT_DIR}/params/g4.env"
+
+if [[ -z "${JOB_FHICL_FILE:-}" ]]; then
+  echo "ERROR: JOB_FHICL_FILE is not set (job not running under justIN wrapper?)"
+  exit 2
+fi
+
+# ----------------------------------------------------------------------
 # Environment setup
 # ----------------------------------------------------------------------
 echo "Sourcing DUNE setup..."
@@ -48,6 +59,12 @@ setup dunesw v10_16_00d00 -q e26:prof
 
 ups active
 lar --version
+
+# ----------------------------------------------------------------------
+# Point fhicl to our local files
+# ----------------------------------------------------------------------
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+export FHICL_FILE_PATH="${SCRIPT_DIR}/fhicl:${FHICL_FILE_PATH:-.}"
 
 # ----------------------------------------------------------------------
 # Run G4
