@@ -34,7 +34,6 @@ if [[ -z "${INPUT_G4}" ]]; then
 fi
 
 echo "G4 input file: ${INPUT_G4}"
-ls -lh "${INPUT_G4}" || { echo "ERROR: input not readable: ${INPUT_G4}"; exit 4; }
 
 # ----------------------------------------------------------------------
 # Environment setup

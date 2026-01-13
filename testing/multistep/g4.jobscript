@@ -35,7 +35,6 @@ if [[ -z "${INPUT_GEN}" ]]; then
 fi
 
 echo "GEN input file: ${INPUT_GEN}"
-ls -lh "${INPUT_GEN}" || { echo "ERROR: input not readable: ${INPUT_GEN}"; exit 4; }
 
 # ----------------------------------------------------------------------
 # Environment setup
