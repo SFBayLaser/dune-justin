@@ -1,5 +1,5 @@
 #!/bin/bash
-#set -euo pipefail
+set -euo pipefail
 
 echo "=== GEN job starting ==="
 echo "Host: $(hostname)"
@@ -7,13 +7,20 @@ echo "PWD(cmd): $(/bin/pwd -P || pwd || true)"
 echo "PWD(var): ${PWD:-unset}"
 echo "JUSTIN_JOB_INDEX=${JUSTIN_JOB_INDEX:-unset}"
 
-# Make test mode work even if JUSTIN_JOB_INDEX isn't set
 JOB_INDEX="${JUSTIN_JOB_INDEX:-0}"
 
 # ----------------------------------------------------------------------
 # Environment setup
 # ----------------------------------------------------------------------
+echo "Sourcing DUNE setup..."
+set +e
 source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
+rc=$?
+set -e
+if [[ $rc -ne 0 ]]; then
+  echo "WARNING: setup_dune.sh returned rc=$rc (continuing)"
+fi
+
 setup dunesw v10_16_00d00 -q e26:prof
 
 ups active
@@ -34,16 +41,11 @@ echo "  Output: ${OUTFILE}"
 lar -c "${FCL}" -n "${NEVENTS}" -o "${OUTFILE}"
 
 # ----------------------------------------------------------------------
-# Sanity checks
+# Sanity checks + register output
 # ----------------------------------------------------------------------
-if [[ ! -f "${OUTFILE}" ]]; then
-  echo "ERROR: Output file ${OUTFILE} not produced!"
-  exit 1
-fi
-
+test -f "${OUTFILE}" || { echo "ERROR: ${OUTFILE} not produced"; exit 1; }
 ls -lh "${OUTFILE}"
 
-# Register output for next stage
 justin-output "${OUTFILE}"
 
 echo "=== GEN job completed successfully ==="
