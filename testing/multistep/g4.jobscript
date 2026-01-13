@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euo pipefail
+#set -euo pipefail
 
 echo "=== G4 job starting ==="
 echo "Host: $(hostname)"
