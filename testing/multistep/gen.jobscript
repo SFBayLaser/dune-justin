@@ -12,6 +12,8 @@ echo "JUSTIN_JOB_INDEX=${JUSTIN_JOB_INDEX:-unset}"
 # ----------------------------------------------------------------------
 source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
 
+echo "environment set up done, now setting up dunesw"
+
 # Adjust dunesw version if needed
 setup dunesw v10_16_00d00 -q e20:prof
 
