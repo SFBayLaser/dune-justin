@@ -14,7 +14,13 @@ if [[ -z "${JUSTIN_INPUT_FILE:-}" ]]; then
 fi
 
 INPUT_GEN="${JUSTIN_INPUT_FILE}"
-echo "GEN input file: ${INPUT_GEN}"
+
+if [[ "${INPUT_GEN}" = /* ]]; then
+  echo "Input is absolute path; copying into workdir for test robustness"
+  cp -v "${INPUT_GEN}" ./input.root
+  INPUT_GEN="./input.root"
+
+fiecho "GEN input file: ${INPUT_GEN}"
 
 # ----------------------------------------------------------------------
 # Environment setup
