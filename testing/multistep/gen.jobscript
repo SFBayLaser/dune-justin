@@ -13,10 +13,10 @@ JOB_INDEX="${JUSTIN_JOB_INDEX:-0}"
 # Environment setup
 # ----------------------------------------------------------------------
 echo "Sourcing DUNE setup..."
-set +e
+set +u
 source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
 rc=$?
-set -e
+set -u
 if [[ $rc -ne 0 ]]; then
   echo "WARNING: setup_dune.sh returned rc=$rc (continuing)"
 fi
