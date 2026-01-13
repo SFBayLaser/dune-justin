@@ -3,28 +3,47 @@
 
 echo "=== DETSIM job starting ==="
 echo "Host: $(hostname)"
-echo "PWD:  $(pwd)"
+echo "PWD(cmd): $(/bin/pwd -P || pwd || true)"
+echo "PWD(var): ${PWD:-unset}"
+echo "JUSTIN_PATH=${JUSTIN_PATH:-unset}"
+echo "JUSTIN_INPUT_FILE=${JUSTIN_INPUT_FILE:-unset}"
 
 # ----------------------------------------------------------------------
-# Sanity: justIN-provided input
+# Allocate the input file via justIN (robust)
 # ----------------------------------------------------------------------
-if [[ -z "${JUSTIN_INPUT_FILE:-}" ]]; then
-  echo "ERROR: JUSTIN_INPUT_FILE is not set"
-  exit 1
+if [[ -z "${JUSTIN_PATH:-}" ]]; then
+  echo "ERROR: JUSTIN_PATH is not set (not running under justIN wrapper?)"
+  exit 2
 fi
 
-INPUT_G4="${JUSTIN_INPUT_FILE}"
-if [[ "${INPUT_G4}" = /* ]]; then
-  echo "Input is absolute path; copying into workdir for test robustness"
-  cp -v "${INPUT_G4}" ./input.root
-  INPUT_G4="./input.root"
+alloc="$("$JUSTIN_PATH/justin-get-file")"
+if [[ -z "$alloc" ]]; then
+  echo "No more inputs allocated for this stage; exiting cleanly."
+  exit 0
 fi
+
+did="$(echo "$alloc" | awk '{print $1}')"
+pfn="$(echo "$alloc" | awk '{print $2}')"
+rse="$(echo "$alloc" | awk '{print $3}')"
+echo "Allocated input: did=$did pfn=$pfn rse=$rse"
+
+INPUT_G4="${pfn:-}"
+if [[ -z "${INPUT_G4}" ]]; then
+  echo "ERROR: allocator returned empty PFN"
+  exit 3
+fi
+
 echo "G4 input file: ${INPUT_G4}"
+ls -lh "${INPUT_G4}" || { echo "ERROR: input not readable: ${INPUT_G4}"; exit 4; }
 
 # ----------------------------------------------------------------------
 # Environment setup
 # ----------------------------------------------------------------------
+echo "Sourcing DUNE setup..."
+#set +u
 source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
+#set -u
+
 setup dunesw v10_16_00d00 -q e26:prof
 
 ups active
@@ -33,30 +52,29 @@ lar --version
 # ----------------------------------------------------------------------
 # Run DETSIM
 # ----------------------------------------------------------------------
-FCL=standard_detsim_dune10kt_1x2x6.fcl
+FCL="standard_detsim_dune10kt_1x2x6.fcl"
 
-# Output filename derived from input
-BASE=$(basename "${INPUT_G4}" .root)
-OUTFILE="detsim_${BASE}.root"
+# Output filename derived from input (your preferred convention)
+INBASE="$(basename "${INPUT_G4}" .root)"
+OUTFILE="${INBASE}_detsim.root"
 
 echo "Running lar DETSIM:"
 echo "  FCL:     ${FCL}"
 echo "  Input:   ${INPUT_G4}"
 echo "  Output:  ${OUTFILE}"
 
-lar \
-  -c "${FCL}" \
-  -s "${INPUT_G4}" \
-  -o "${OUTFILE}"
+lar -c "${FCL}" -s "${INPUT_G4}" -o "${OUTFILE}"
 
 # ----------------------------------------------------------------------
 # Sanity checks
 # ----------------------------------------------------------------------
-if [[ ! -f "${OUTFILE}" ]]; then
-  echo "ERROR: Output file ${OUTFILE} not produced!"
-  exit 1
-fi
-
+test -f "${OUTFILE}" || { echo "ERROR: Output file ${OUTFILE} not produced!"; exit 1; }
 ls -lh "${OUTFILE}"
+
+# ----------------------------------------------------------------------
+# Tell justIN we successfully processed the allocated input
+# ----------------------------------------------------------------------
+echo "$did" >> justin-processed-dids.txt
+echo "Wrote processed DID: $did"
 
 echo "=== DETSIM job completed successfully ==="

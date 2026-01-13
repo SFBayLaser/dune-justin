@@ -8,8 +8,8 @@ REPO="SFBayLaser/dune-justin"   # repo that holds your jobscripts
 
 # Output filename patterns produced by each stage
 GEN_OUT="muminus_*_gen.root"
-G4_OUT="g4_*.root"
-DETSIM_OUT="detsim_*.root"
+G4_OUT="*_g4.root"
+DETSIM_OUT="*_detsim.root"
 
 # ---- environment ----
 #export prod_db=/cvmfs/dune.opensciencegrid.org/products/dune

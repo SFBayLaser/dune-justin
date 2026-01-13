@@ -3,24 +3,47 @@
 
 echo "=== G4 job starting ==="
 echo "Host: $(hostname)"
-echo "PWD:  $(pwd)"
+echo "PWD(cmd): $(/bin/pwd -P || pwd || true)"
+echo "PWD(var): ${PWD:-unset}"
+echo "JUSTIN_PATH=${JUSTIN_PATH:-unset}"
+echo "JUSTIN_INPUT_FILE=${JUSTIN_INPUT_FILE:-unset}"
 
 # ----------------------------------------------------------------------
-# Sanity: justIN-provided input
+# Allocate the input file via justIN (preferred, robust)
 # ----------------------------------------------------------------------
-if [[ -z "${JUSTIN_INPUT_FILE:-}" ]]; then
-  echo "ERROR: JUSTIN_INPUT_FILE is not set"
-  exit 1
+if [[ -z "${JUSTIN_PATH:-}" ]]; then
+  echo "ERROR: JUSTIN_PATH is not set (not running under justIN wrapper?)"
+  exit 2
 fi
 
-INPUT_GEN="${JUSTIN_INPUT_FILE}"
+alloc="$("$JUSTIN_PATH/justin-get-file")"
+if [[ -z "$alloc" ]]; then
+  echo "No more inputs allocated for this stage; exiting cleanly."
+  exit 0
+fi
+
+did="$(echo "$alloc" | awk '{print $1}')"
+pfn="$(echo "$alloc" | awk '{print $2}')"
+rse="$(echo "$alloc" | awk '{print $3}')"
+echo "Allocated input: did=$did pfn=$pfn rse=$rse"
+
+# Prefer the PFN from allocation; fall back to JUSTIN_INPUT_FILE if needed
+INPUT_GEN="${pfn:-${JUSTIN_INPUT_FILE:-}}"
+if [[ -z "${INPUT_GEN}" ]]; then
+  echo "ERROR: no input file path available (pfn empty and JUSTIN_INPUT_FILE unset)"
+  exit 3
+fi
 
 echo "GEN input file: ${INPUT_GEN}"
+ls -lh "${INPUT_GEN}" || { echo "ERROR: input not readable: ${INPUT_GEN}"; exit 4; }
 
 # ----------------------------------------------------------------------
 # Environment setup
 # ----------------------------------------------------------------------
+echo "Sourcing DUNE setup..."
+#set +u
 source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
+#set -u
 
 setup dunesw v10_16_00d00 -q e26:prof
 
@@ -30,30 +53,29 @@ lar --version
 # ----------------------------------------------------------------------
 # Run G4
 # ----------------------------------------------------------------------
-FCL=standard_g4_dune10kt_1x2x6.fcl
+FCL="standard_g4_dune10kt_1x2x6.fcl"
 
-# Output filename derived from input (important!)
+# Output filename derived from input
 BASE=$(basename "${INPUT_GEN}" .root)
-OUTFILE="g4_${BASE}.root"
+OUTFILE="${BASE}_g4.root"
 
 echo "Running lar G4:"
 echo "  FCL:     ${FCL}"
 echo "  Input:   ${INPUT_GEN}"
 echo "  Output:  ${OUTFILE}"
 
-lar \
-  -c "${FCL}" \
-  -s "${INPUT_GEN}" \
-  -o "${OUTFILE}"
+lar -c "${FCL}" -s "${INPUT_GEN}" -o "${OUTFILE}"
 
 # ----------------------------------------------------------------------
 # Sanity checks
 # ----------------------------------------------------------------------
-if [[ ! -f "${OUTFILE}" ]]; then
-  echo "ERROR: Output file ${OUTFILE} not produced!"
-  exit 1
-fi
-
+test -f "${OUTFILE}" || { echo "ERROR: Output file ${OUTFILE} not produced!"; exit 1; }
 ls -lh "${OUTFILE}"
+
+# ----------------------------------------------------------------------
+# Tell justIN we successfully processed the allocated input
+# ----------------------------------------------------------------------
+echo "$did" >> justin-processed-dids.txt
+echo "Wrote processed DID: $did"
 
 echo "=== G4 job completed successfully ==="
