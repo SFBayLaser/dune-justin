@@ -48,7 +48,7 @@ lar --version
 # ----------------------------------------------------------------------
 FCL="prod_muminus_0.1-5.0GeV_isotropic_dune10kt_1x2x6.fcl"
 NEVENTS=20
-OUTFILE="gen_${JOB_INDEX}.root"
+OUTFILE="muminus_${did}_gen.root"
 
 echo "Running lar GEN:"
 echo "  FCL: ${FCL}"
