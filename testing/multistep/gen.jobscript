@@ -14,7 +14,7 @@ JOB_INDEX="${JUSTIN_JOB_INDEX:-0}"
 # Environment setup
 # ----------------------------------------------------------------------
 source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
-setup dunesw v10_16_00d00 -q e20:prof
+setup dunesw v10_16_00d00 -q e26:prof
 
 ups active
 lar --version
