@@ -34,12 +34,9 @@ JOB_INDEX="${JUSTIN_JOB_INDEX:-0}"
 # Use this to set any environment variables we want
 # ----------------------------------------------------------------------
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
-source "${SCRIPT_DIR}/params/gen.env"
-
-if [[ -z "${JOB_FHICL_FILE:-}" ]]; then
-  echo "ERROR: JOB_FHICL_FILE is not set (job not running under justIN wrapper?)"
-  exit 2
-fi
+ENV_FILE="${SCRIPT_DIR}/params/gen.env"
+test -f "$ENV_FILE" || { echo "ERROR: missing $ENV_FILE"; exit 10; }
+source "$ENV_FILE"
 
 # ----------------------------------------------------------------------
 # Environment setup
@@ -57,14 +54,12 @@ lar --version
 # ----------------------------------------------------------------------
 # Point fhicl to our local files
 # ----------------------------------------------------------------------
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 export FHICL_FILE_PATH="${SCRIPT_DIR}/fhicl:${FHICL_FILE_PATH:-.}"
 
 # ----------------------------------------------------------------------
 # Run GEN
 # ----------------------------------------------------------------------
 FCL=${JOB_FHICL_FILE} 
-NEVENTS=20
 OUTFILE="muminus_${did}_gen.root"
 
 echo "Running lar GEN:"
