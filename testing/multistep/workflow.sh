@@ -35,19 +35,22 @@ echo "WFID=${WFID}"
 justin create-stage --workflow-id "${WFID}" --stage-id 1 \
   --jobscript-git "${REPO}/testing/multistep/gen.jobscript:${JOBSCRIPT_REF}" \
   --wall-seconds 14400 --rss-mib 4000 \
-  --output-pattern-next-stage "${GEN_OUT}"
+  --output-pattern-next-stage "${GEN_OUT}" \
+  --lifetime-days 1
 
 # ---- stage 2: G4 (consumes stage-1 outputs automatically) ----
 justin create-stage --workflow-id "${WFID}" --stage-id 2 \
   --jobscript-git "${REPO}/testing/multistep/g4.jobscript:${JOBSCRIPT_REF}" \
   --wall-seconds 28800 --rss-mib 8000 \
-  --output-pattern-next-stage "${G4_OUT}"
+  --output-pattern-next-stage "${G4_OUT}" \
+  --lifetime-days 1
 
 # ---- stage 3: DETSIM (final outputs) ----
 justin create-stage --workflow-id "${WFID}" --stage-id 3 \
   --jobscript-git "${REPO}/testing/multistep/detsim.jobscript:${JOBSCRIPT_REF}" \
   --wall-seconds 28800 --rss-mib 8000 \
-  --output-pattern "${DETSIM_OUT}"
+  --output-pattern "${DETSIM_OUT}" \
+  --lifetime-days 1
 
 # ---- submit ----
 justin submit-workflow --workflow-id "${WFID}"
