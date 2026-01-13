@@ -24,8 +24,6 @@ source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
 
 setup dunesw v10_16_00d00 -q e26:prof
 
-setup justin
-
 ups active
 lar --version
 
@@ -57,11 +55,5 @@ if [[ ! -f "${OUTFILE}" ]]; then
 fi
 
 ls -lh "${OUTFILE}"
-
-# ----------------------------------------------------------------------
-# Register output for next stage (DETSIM)
-# ----------------------------------------------------------------------
-# Must match --output-pattern-next-stage in workflow creation
-justin-output "${OUTFILE}"
 
 echo "=== G4 job completed successfully ==="

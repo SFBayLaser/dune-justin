@@ -27,8 +27,6 @@ echo "G4 input file: ${INPUT_G4}"
 source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
 setup dunesw v10_16_00d00 -q e26:prof
 
-setup justin
-
 ups active
 lar --version
 
@@ -60,11 +58,5 @@ if [[ ! -f "${OUTFILE}" ]]; then
 fi
 
 ls -lh "${OUTFILE}"
-
-# ----------------------------------------------------------------------
-# Register final output
-# ----------------------------------------------------------------------
-# Must match --output-pattern in stage-3 creation
-justin-output "${OUTFILE}"
 
 echo "=== DETSIM job completed successfully ==="
