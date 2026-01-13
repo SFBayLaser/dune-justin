@@ -35,6 +35,7 @@ echo "WFID=${WFID}"
 justin create-stage --workflow-id "${WFID}" --stage-id 1 \
   --jobscript-git "${REPO}/testing/multistep/gen.jobscript:${JOBSCRIPT_REF}" \
   --wall-seconds 14400 --rss-mib 4000 \
+  --env NEVENTS=20 \
   --output-pattern-next-stage "${GEN_OUT}" \
   --lifetime-days 1
 
