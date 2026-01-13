@@ -35,18 +35,15 @@ fi
 
 echo "G4 input file: ${INPUT_G4}"
 
-# ----------------------------------------------------------------------
-# Use this to set any environment variables we want
-# ----------------------------------------------------------------------
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
-ENV_FILE="${SCRIPT_DIR}/params/detsim.env"
-test -f "$ENV_FILE" || { echo "ERROR: missing $ENV_FILE"; exit 10; }
-source "$ENV_FILE"
+# Work in the sandbox
+cd $PWD
 
-if [[ -z "${JOB_FHICL_FILE:-}" ]]; then
-  echo "ERROR: JOB_FHICL_FILE is not set (job not running under justIN wrapper?)"
-  exit 2
-fi
+# ----------------------------------------------------------------------
+# Grab the tarball that has our fhicl files we'll need
+# ----------------------------------------------------------------------
+FCL_TGZ_URL="https://raw.githubusercontent.com/SFBayLaser/dune-justin/main/bundles/fhicl_bundle.tgz"
+curl -L -o fhicl_bundle.tgz "$FCL_TGZ_URL"
+tar xzf fhicl_bundle.tgz
 
 # ----------------------------------------------------------------------
 # Environment setup
@@ -64,7 +61,7 @@ lar --version
 # ----------------------------------------------------------------------
 # Point fhicl to our local files
 # ----------------------------------------------------------------------
-export FHICL_FILE_PATH="${SCRIPT_DIR}/fhicl:${FHICL_FILE_PATH:-.}"
+export FHICL_FILE_PATH="$PWD/fhicl:${FHICL_FILE_PATH:-.}"
 
 # ----------------------------------------------------------------------
 # Run DETSIM
