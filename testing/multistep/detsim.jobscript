@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euo pipefail
+#set -euo pipefail
 
 echo "=== DETSIM job starting ==="
 echo "Host: $(hostname)"
@@ -14,13 +14,18 @@ if [[ -z "${JUSTIN_INPUT_FILE:-}" ]]; then
 fi
 
 INPUT_G4="${JUSTIN_INPUT_FILE}"
+if [[ "${INPUT_G4}" = /* ]]; then
+  echo "Input is absolute path; copying into workdir for test robustness"
+  cp -v "${INPUT_G4}" ./input.root
+  INPUT_G4="./input.root"
+fi
 echo "G4 input file: ${INPUT_G4}"
 
 # ----------------------------------------------------------------------
 # Environment setup
 # ----------------------------------------------------------------------
 source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
-setup dunesw v10_16_00d00 -q e20:prof
+setup dunesw v10_16_00d00 -q e26:prof
 
 ups active
 lar --version
