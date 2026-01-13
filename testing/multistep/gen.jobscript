@@ -1,6 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
+cd /exp/dune/app/users/usher/dune-justin/testing/multistep
 echo "=== GEN job starting ==="
 echo "Host: $(hostname)"
 echo "PWD:  $(pwd)"
@@ -14,6 +15,8 @@ source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
 # Adjust dunesw version if needed
 setup dunesw v10_16_00d00 -q e20:prof
 
+echo "dunesw has been set up"
+
 # Optional: diagnostics
 ups active
 lar --version
@@ -21,7 +24,7 @@ lar --version
 # ----------------------------------------------------------------------
 # Run GEN
 # ----------------------------------------------------------------------
-FCL=prod_mumins_0.1-5.0GeV_isotropic_dune10kt_1x2x6.fcl
+FCL="prod_mumins_0.1-5.0GeV_isotropic_dune10kt_1x2x6.fcl"
 NEVENTS=20
 
 # Ensure unique output filename per job
