@@ -22,7 +22,7 @@ lar --version
 # ----------------------------------------------------------------------
 # Run GEN
 # ----------------------------------------------------------------------
-FCL="prod_mumins_0.1-5.0GeV_isotropic_dune10kt_1x2x6.fcl"
+FCL="prod_muminus_0.1-5.0GeV_isotropic_dune10kt_1x2x6.fcl"
 NEVENTS=20
 OUTFILE="gen_${JOB_INDEX}.root"
 
