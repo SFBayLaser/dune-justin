@@ -34,6 +34,10 @@ JOB_INDEX="${JUSTIN_JOB_INDEX:-0}"
 # Use this to set any environment variables we want
 # ----------------------------------------------------------------------
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+
+ls -lh ${JUSTIN_PATH}
+ls -lh ${SCRIPT_DIR}
+
 ENV_FILE="${SCRIPT_DIR}/params/gen.env"
 test -f "$ENV_FILE" || { echo "ERROR: missing $ENV_FILE"; exit 10; }
 source "$ENV_FILE"
