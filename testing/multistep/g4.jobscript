@@ -20,7 +20,9 @@ if [[ "${INPUT_GEN}" = /* ]]; then
   cp -v "${INPUT_GEN}" ./input.root
   INPUT_GEN="./input.root"
 
-fiecho "GEN input file: ${INPUT_GEN}"
+fi
+
+echo "GEN input file: ${INPUT_GEN}"
 
 # ----------------------------------------------------------------------
 # Environment setup
