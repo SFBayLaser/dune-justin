@@ -1,5 +1,5 @@
-#!/usr/bin/env bash
-set -euo pipefail
+#!/bin/bash
+#set -euo pipefail
 
 # ---- user knobs ----
 NGEN=5
@@ -15,12 +15,9 @@ DETSIM_OUT="detsim_*.root"
 #export prod_db=/cvmfs/dune.opensciencegrid.org/products/dune
 #test -d "$prod_db" || { echo "prod_db path not found: $prod_db"; exit 2; }
 
-set +u
+echo "Attempting to set up the dune environment"
 source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
-set -u
-echo "After setup_dune.sh: PRODUCTS=${PRODUCTS:-unset}"
-which ups || true
-ups list -a dune* | head || true
+echo "Returned from setup"
 
 setup justin
 
@@ -30,8 +27,7 @@ setup justin
 
 # ---- create workflow (draft) ----
 WFID=$(
-  justin create-workflow --description "gen->g4->detsim test" --monte-carlo "${NGEN}" \
-  | awk '/Workflow ID/ {print $NF}'
+  justin create-workflow --description "gen->g4->detsim test" --monte-carlo "${NGEN}" 
 )
 echo "WFID=${WFID}"
 
