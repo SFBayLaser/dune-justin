@@ -1,5 +1,5 @@
 #!/bin/bash
-set -euo pipefail
+#set -euo pipefail
 
 echo "=== GEN job starting ==="
 echo "Host: $(hostname)"
@@ -13,13 +13,7 @@ JOB_INDEX="${JUSTIN_JOB_INDEX:-0}"
 # Environment setup
 # ----------------------------------------------------------------------
 echo "Sourcing DUNE setup..."
-set +eu
 source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
-rc=$?
-set -eu
-if [[ $rc -ne 0 ]]; then
-  echo "WARNING: setup_dune.sh returned rc=$rc (continuing)"
-fi
 
 setup dunesw v10_16_00d00 -q e26:prof
 
