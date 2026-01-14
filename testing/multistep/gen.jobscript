@@ -31,8 +31,8 @@ echo "Allocated input: did=$did pfn=$pfn rse=$rse"
 JOB_INDEX="${JUSTIN_JOB_INDEX:-0}"
 
 # Output value of expected input environment variables
-echo "# events: $NEVENTS"
-echo "fhicl file: $JOB_FHICL_FILE"
+echo "# events: ${NEVENTS}"
+echo "fhicl file: ${JOB_FHICL_FILE}"
 
 # Work in the sandbox
 cd $PWD
@@ -71,7 +71,7 @@ FCL=${JOB_FHICL_FILE}
 genType=$(echo "$FCL" | awk -F"_" '{print $1}')
 echo "GEN stage type: $genType"
 
-OUTFILE="$genType_${did}_gen.root"
+OUTFILE="${genType}_${did}_gen.root"
 
 echo "Running lar GEN:"
 echo "  FCL: ${FCL}"
@@ -91,6 +91,9 @@ ls -lh "${OUTFILE}"
 # ----------------------------------------------------------------------
 echo "$did" >> justin-processed-dids.txt
 # (Alternative: echo "$pfn" >> justin-processed-pfns.txt)
+
+echo "Input fcl file: ${}JOB_FHICL_FILE}"
+echo "genType: ${genType}"
 
 echo "Wrote processed DID to justin-processed-dids.txt: $did"
 echo "=== GEN job completed successfully ==="
