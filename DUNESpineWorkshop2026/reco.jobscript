@@ -85,7 +85,7 @@ lar -c "${FCL}" -s "${INPUT_DETSIM}" -o "${OUTFILE}" -n -1
 # ----------------------------------------------------------------------
 # rename larcv file
 # ----------------------------------------------------------------------
-LARCVNAME = "${INBASE}_reco_larcv.root"
+LARCVNAME="${INBASE}_reco_larcv.root"
 mv -v larcv.root "${LARCVNAME}"
 
 # ----------------------------------------------------------------------
