@@ -7,7 +7,7 @@ JOBSCRIPT_REF=main
 REPO="SFBayLaser/dune-justin"   # repo that holds your jobscripts
 
 # Output filename patterns produced by each stage
-GEN_OUT="muminus_*_gen.root"
+GEN_OUT="*_gen.root"
 G4_OUT="*_g4.root"
 DETSIM_OUT="*_detsim.root"
 
