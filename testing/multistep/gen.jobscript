@@ -68,7 +68,7 @@ export FHICL_FILE_PATH="$PWD/fhicl:${FHICL_FILE_PATH:-.}"
 FCL=${JOB_FHICL_FILE}
 
 #Can we recover first portion for name?
-genType = $(echo "$FCL" | awk -F"_" '{print $1}')
+genType=$(echo "$FCL" | awk -F"_" '{print $1}')
 echo "GEN stage type: $genType"
 
 OUTFILE="$genType_${did}_gen.root"
