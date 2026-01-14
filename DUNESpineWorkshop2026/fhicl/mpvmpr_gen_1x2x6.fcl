@@ -1,4 +1,4 @@
-#include "gen_mpvmpr_common.fcl"
+#include "mpvmpr_gen_common.fcl"
 
 process_name: GenMPVMPR
 
