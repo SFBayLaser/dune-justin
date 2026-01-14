@@ -2,7 +2,7 @@
 #set -euo pipefail
 
 # ---- user knobs ----
-NGEN=5
+NGEN=50
 JOBSCRIPT_REF=main
 REPO="SFBayLaser/dune-justin"   # repo that holds your jobscripts
 
@@ -65,7 +65,7 @@ justin create-stage --workflow-id "${WFID}" --stage-id 4 \
   --wall-seconds 28800 --rss-mib 8000 \
   --output-pattern "${RECO_OUT}" \
   --output-pattern "${LARCV_OUT}" \
-  --lifetime-days 1
+  --lifetime-days 90
 
 # ---- submit ----
 justin submit-workflow --workflow-id "${WFID}"

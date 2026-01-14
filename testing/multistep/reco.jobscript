@@ -86,13 +86,14 @@ lar -c "${FCL}" -s "${INPUT_DETSIM}" -o "${OUTFILE}" -n -1
 # rename larcv file
 # ----------------------------------------------------------------------
 LARCVNAME = "${INBASE}_reco_larcv.root"
-mv larcv.root $LARCVNAME
+mv -v larcv.root "${LARCVNAME}"
 
 # ----------------------------------------------------------------------
 # Sanity checks
 # ----------------------------------------------------------------------
 test -f "${OUTFILE}" || { echo "ERROR: Output file ${OUTFILE} not produced!"; exit 1; }
-ls -lh "${OUTFILE}"
+test -f "${LARCVNAME}" || { echo "ERROR: Output file ${LARCVNAME} not produced!"; exit 1; }
+
 echo "Sandbox folder contains:"
 ls -lh $PWD
 
