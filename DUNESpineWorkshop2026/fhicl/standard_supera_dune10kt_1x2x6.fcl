@@ -1,0 +1,70 @@
+# standard_reco_dune10kt.fcl
+#
+# Dom Brailsford
+# March 2022
+#
+# Runs the low level reconstruction for DUNE FD
+
+#include "mcreco.fcl"
+
+#include "standard_reco_dune10kt.fcl"
+
+#
+process_name: Supera
+
+services: 
+{
+    @table::services
+    @table::dunefd_1x2x6_reco_services
+}
+
+physics.producers:
+{
+    @table::physics.producers
+    #wclsmcnfsp: @local::dune10kt_1x2x6_mc_nfsp
+
+    ### mc producers
+    mcreco:  @local::standard_mcreco
+}
+
+physics.analyzers:
+{ 
+  superaMC: 
+          {
+            module_type:       "LArSoftSuperaDriver"
+            supera_params:     "supera_dunefdhd_mc.fcl"
+            out_filename:      "larcv.root"
+            unique_filename:   false
+            stream:            "mc"
+            StrictDataLoading: false
+            Verbosity:         3
+          }
+}
+
+services.TFileService.fileName: "supera_hist.root"
+
+source.inputCommands: ["keep *_*_*_*" ]
+
+physics.reco: [ @sequence::dunefd_horizdrift_lowlevelreco,
+                @sequence::dunefd_horizdrift_pd_reco1,
+                @sequence::dunefd_horizdrift_pd_reco2,
+                mcreco ]
+                ##@sequence::dunefd_horizdrift_workflow_reco1 ]
+
+physics.outana: [ superaMC]
+
+physics.end_paths: [outana, stream1]
+
+outputs.out1.fileName: "%ifb_supera.root"
+outputs.out1.dataTier: "supera"
+
+# Configure mcreco to read SEDLite instead of SED and MCParticleLite in addition to MCParticle
+physics.producers.mcreco.G4ModName: @erase
+physics.producers.mcreco.SimChannelLabel: "tpcrawdecoder:simpleSC"
+physics.producers.mcreco.MCParticleLabel: "largeant"
+physics.producers.mcreco.UseSimEnergyDepositLite: false
+physics.producers.mcreco.UseSimEnergyDeposit: false
+physics.producers.mcreco.IncludeDroppedParticles: true #this is now true with larsoft v09_89 and newer
+physics.producers.mcreco.MCParticleDroppedLabel: "largeant:droppedMCParticles"
+physics.producers.mcreco.MCRecoPart.SavePathPDGList: [13,-13,211,-211,111,311,310,130,321,-321,2212,2112,2224,2214,2114,1114,3122,1000010020,1000010030,1000020030,1000020040]
+physics.producers.mcreco.MCRecoPart.TrackIDOffsets: [0,10000000,20000000] #Account for track ID offsets in labeling primaries

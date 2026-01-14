@@ -1,0 +1,107 @@
+#!/bin/bash
+#set -euo pipefail
+
+echo "=== GEN job starting ==="
+echo "Host: $(hostname)"
+echo "PWD(cmd): $(/bin/pwd -P || pwd || true)"
+echo "PWD(var): ${PWD:-unset}"
+echo "JUSTIN_JOB_INDEX=${JUSTIN_JOB_INDEX:-unset}"
+echo "JUSTIN_PATH=${JUSTIN_PATH:-unset}"
+
+# ----------------------------------------------------------------------
+# Get the allocated Monte Carlo "counter file" and remember it
+# ----------------------------------------------------------------------
+if [[ -z "${JUSTIN_PATH:-}" ]]; then
+  echo "ERROR: JUSTIN_PATH is not set (job not running under justIN wrapper?)"
+  exit 2
+fi
+
+alloc="$("$JUSTIN_PATH/justin-get-file")"
+if [[ -z "$alloc" ]]; then
+  echo "No more inputs allocated (workflow complete). Exiting cleanly."
+  exit 0
+fi
+
+did="$(echo "$alloc" | awk '{print $1}')"
+pfn="$(echo "$alloc" | awk '{print $2}')"
+rse="$(echo "$alloc" | awk '{print $3}')"
+echo "Allocated input: did=$did pfn=$pfn rse=$rse"
+
+# Output value of expected input environment variables
+echo "# events: ${NEVENTS}"
+echo "fhicl file: ${JOB_FHICL_FILE}"
+
+# Work in the sandbox
+cd $PWD
+
+# ----------------------------------------------------------------------
+# Grab the tarball that has our fhicl files we'll need
+# ----------------------------------------------------------------------
+FCL_TGZ_URL="https://raw.githubusercontent.com/SFBayLaser/dune-justin/main/bundles/fhicl_bundle.tgz"
+curl -L -o fhicl_bundle.tgz "$FCL_TGZ_URL"
+tar xzf fhicl_bundle.tgz
+
+# ----------------------------------------------------------------------
+# Environment setup
+# ----------------------------------------------------------------------
+echo "Sourcing DUNE setup..."
+# setup_dune.sh can reference unset vars, so disable nounset only while sourcing
+
+source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
+
+setup dunesw v10_16_00d00 -q e26:prof
+
+ups active
+lar --version
+
+# ----------------------------------------------------------------------
+# Point fhicl to our local files
+# ----------------------------------------------------------------------
+export FHICL_FILE_PATH="$PWD/fhicl:${FHICL_FILE_PATH:-.}"
+
+# ----------------------------------------------------------------------
+# Create the starting run/subrun/event number
+# ----------------------------------------------------------------------
+did_short="${did##*:}"
+job_tag="${did_short%.*}"
+jobnum=$(echo "$job_tag" | grep -o '[0-9]\{6\}$' || echo 0)
+RUN_BASE=200000  
+RUN=$((RUN_BASE + jobnum))
+SUBRUN=0
+EVENT=1
+
+# ----------------------------------------------------------------------
+# Run GEN
+# ----------------------------------------------------------------------
+FCL=${JOB_FHICL_FILE}
+
+#Can we recover first portion for name?
+genType=$(echo "$FCL" | awk -F"_" '{print $1}')
+echo "GEN stage type: $genType"
+
+OUTFILE="${genType}_${did}_gen.root"
+
+echo "Running lar GEN:"
+echo "  FCL: ${FCL}"
+echo "  Events: ${NEVENTS}"
+echo "  Output: ${OUTFILE}"
+
+lar -c "${FCL}" -n "${NEVENTS}" -e "${RUN}:${SUBRUN}:${EVENT}" -o "${OUTFILE}"
+
+# ----------------------------------------------------------------------
+# Sanity checks
+# ----------------------------------------------------------------------
+test -f "${OUTFILE}" || { echo "ERROR: ${OUTFILE} not produced"; exit 1; }
+ls -lh "${OUTFILE}"
+
+# ----------------------------------------------------------------------
+# Tell justIN we successfully processed the allocated input
+# ----------------------------------------------------------------------
+echo "$did" >> justin-processed-dids.txt
+# (Alternative: echo "$pfn" >> justin-processed-pfns.txt)
+
+echo "Input fcl file: ${JOB_FHICL_FILE}"
+echo "genType: ${genType}"
+
+echo "Wrote processed DID to justin-processed-dids.txt: $did"
+echo "=== GEN job completed successfully ==="
