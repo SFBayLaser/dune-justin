@@ -62,9 +62,11 @@ export FHICL_FILE_PATH="$PWD/fhicl:${FHICL_FILE_PATH:-.}"
 # ----------------------------------------------------------------------
 # Create the starting run/subrun/event number
 # ----------------------------------------------------------------------
-JOB_INDEX="${JUSTIN_JOB_INDEX:-0}"
+did_short="${did##*:}"
+job_tag="${did_short%.*}"
+jobnum=$(echo "$job_tag" | grep -o '[0-9]\{6\}$' || echo 0)
 RUN_BASE=200000  
-RUN=$((RUN_BASE + JOB_INDEX))
+RUN=$((RUN_BASE + jobnum))
 SUBRUN=0
 EVENT=1
 
