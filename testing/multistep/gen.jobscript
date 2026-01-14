@@ -92,7 +92,7 @@ ls -lh "${OUTFILE}"
 echo "$did" >> justin-processed-dids.txt
 # (Alternative: echo "$pfn" >> justin-processed-pfns.txt)
 
-echo "Input fcl file: ${}JOB_FHICL_FILE}"
+echo "Input fcl file: ${JOB_FHICL_FILE}"
 echo "genType: ${genType}"
 
 echo "Wrote processed DID to justin-processed-dids.txt: $did"

@@ -77,7 +77,7 @@ echo "  FCL:     ${FCL}"
 echo "  Input:   ${INPUT_G4}"
 echo "  Output:  ${OUTFILE}"
 
-lar -c "${FCL}" -s "${INPUT_G4}" -o "${OUTFILE}"
+lar -c "${FCL}" -s "${INPUT_G4}" -o "${OUTFILE}" -n -1
 
 # ----------------------------------------------------------------------
 # Sanity checks

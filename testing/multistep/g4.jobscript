@@ -78,7 +78,7 @@ echo "  FCL:     ${FCL}"
 echo "  Input:   ${INPUT_GEN}"
 echo "  Output:  ${OUTFILE}"
 
-lar -c "${FCL}" -s "${INPUT_GEN}" -o "${OUTFILE}"
+lar -c "${FCL}" -s "${INPUT_GEN}" -o "${OUTFILE}" -n -1
 
 # ----------------------------------------------------------------------
 # Sanity checks
