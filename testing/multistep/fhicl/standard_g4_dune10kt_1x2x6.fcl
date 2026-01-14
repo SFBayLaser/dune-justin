@@ -1,0 +1,75 @@
+#include "standard_g4_dune10kt.fcl"
+
+services: {
+    @table::services
+    @table::dunefd_1x2x6_simulation_services
+}
+
+# swap to 1x2x6 pdfastsim configuration
+physics.producers.PDFastSim: @local::dunefd_1x2x6_pdfastsim
+
+#info reducer
+physics.producers.sedlite.SimEnergyDepositLabel: "IonAndScint"
+physics.producers.sedlite.useOrigTrackID: true #needed since origTrackID not filled for sedlite in SBND
+
+services.message.destinations :
+{
+  STDCOUT:
+  {
+     type:      "cout"      #tells the message service to output this destination to cout
+     threshold: "DEBUG"   #tells the message service that this destination applies to WARNING and higher level messages
+     categories:
+     {
+       generatePrimaries:
+       {
+         limit: 100
+         reportEvery: 1
+       }
+       ConvertPrimaryToGeant4:
+       {
+         limit: 100
+         reportEvery: 1
+       }
+       ParticleListActionService:
+       {
+         limit: 100
+         reportEvery: 1
+       }
+       beginOfEventAction:
+       {
+         limit: 100
+         reportEvery: 1
+       }
+       PrimaryParticle:
+       {
+         limit: 100
+         reportEvery: 1
+       }
+       NotStoredPhysics:
+       {
+         limit: 100
+         reportEvery: 1
+       }
+       YieldList:
+       {
+         limit: 100
+         reportEvery: 1
+       }
+       ParticleListActionService:
+       {
+         limit: 100
+         reportEvery: 1
+       }
+       Offset:
+       {
+         limit: 100
+         reportEvery: 1
+       }
+       default:
+       {
+         limit: 0  #don't print anything at the infomsg level except the explicitly named categories
+         reportEvery: 1
+       }
+     }
+  }
+}

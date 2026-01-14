@@ -1,0 +1,56 @@
+#include "services_dune.fcl"
+#include "multipartvertex_dunefdhd.fcl"
+
+process_name: GenMPVMPR
+
+services:
+{
+  # Load the service that manages root files for histograms.
+  TFileService: { fileName: "mpvmpr_hist.root" }
+  TimeTracker:       {}
+  MemoryTracker:         { } # default is one
+  RandomNumberGenerator: {} #ART native random number generator
+  FileCatalogMetadata:  @local::art_file_catalog_mc
+                        @table::dunefd_simulation_services
+}
+
+source:
+{
+  module_type: EmptyEvent
+  timestampPlugin: { plugin_type: "GeneratedEventTimestamp" }
+  maxEvents:   10          # Number of events to create
+  firstRun:    1           # Run number to use for this file
+  firstEvent:  1           # number of first event in the file
+}
+
+physics:
+{
+ producers:
+ {
+  rns: { module_type: RandomNumberSaver }
+   generator: @local::MultiPartVertex
+   rain: @local::MultiPartRain
+   #beamgate:  @local::icarus_standardbeamgate_BNB  # from beamgates_icarus.fcl
+ }
+
+ simulate: [ rns, generator ] #, rain ] #, beamgate ]
+
+ out_stream: [ out1   ]
+
+ trigger_paths: [simulate]
+
+ end_paths: [out_stream]
+}
+
+outputs:
+{
+ out1:
+ {
+   module_type: RootOutput
+   fileName:    "GenMPVMPR_%tc.root"
+   dataTier:    "simulated"
+   compressionLevel: 1
+ }
+}
+
+services.TFileService.fileName: "GenMPVMPR_ana_%tc.root"
