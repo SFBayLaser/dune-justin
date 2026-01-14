@@ -11,6 +11,7 @@ GEN_OUT="*_gen.root"
 G4_OUT="*_g4.root"
 DETSIM_OUT="*_detsim.root"
 RECO_OUT="*_reco.root"
+LARCV_OUT="*_larcv.root"
 
 # ---- environment ----
 #export prod_db=/cvmfs/dune.opensciencegrid.org/products/dune
@@ -63,6 +64,7 @@ justin create-stage --workflow-id "${WFID}" --stage-id 4 \
   --env JOB_FHICL_FILE="standard_supera_dune10kt_1x2x6.fcl" \
   --wall-seconds 28800 --rss-mib 8000 \
   --output-pattern "${RECO_OUT}" \
+  --output-pattern "${LARCV_OUT}" \
   --lifetime-days 1
 
 # ---- submit ----
