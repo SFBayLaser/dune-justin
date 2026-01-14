@@ -27,9 +27,6 @@ pfn="$(echo "$alloc" | awk '{print $2}')"
 rse="$(echo "$alloc" | awk '{print $3}')"
 echo "Allocated input: did=$did pfn=$pfn rse=$rse"
 
-# Use the job index for naming (or derive from pfn if you prefer)
-JOB_INDEX="${JUSTIN_JOB_INDEX:-0}"
-
 # Output value of expected input environment variables
 echo "# events: ${NEVENTS}"
 echo "fhicl file: ${JOB_FHICL_FILE}"
@@ -63,6 +60,15 @@ lar --version
 export FHICL_FILE_PATH="$PWD/fhicl:${FHICL_FILE_PATH:-.}"
 
 # ----------------------------------------------------------------------
+# Create the starting run/subrun/event number
+# ----------------------------------------------------------------------
+JOB_INDEX="${JUSTIN_JOB_INDEX:-0}"
+RUN_BASE=200000  
+RUN=$((RUN_BASE + JOB_INDEX))
+SUBRUN=0
+EVENT=1
+
+# ----------------------------------------------------------------------
 # Run GEN
 # ----------------------------------------------------------------------
 FCL=${JOB_FHICL_FILE}
@@ -78,7 +84,7 @@ echo "  FCL: ${FCL}"
 echo "  Events: ${NEVENTS}"
 echo "  Output: ${OUTFILE}"
 
-lar -c "${FCL}" -n "${NEVENTS}" -o "${OUTFILE}"
+lar -c "${FCL}" -n "${NEVENTS}" -e "${RUN}:${SUBRUN}:${EVENT}" -o "${OUTFILE}"
 
 # ----------------------------------------------------------------------
 # Sanity checks

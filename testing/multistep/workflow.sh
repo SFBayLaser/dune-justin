@@ -28,7 +28,7 @@ setup justin
 
 # ---- create workflow (draft) ----
 WFID=$(
-  justin create-workflow --description "gen->g4->detsim test" --monte-carlo "${NGEN}" 
+  justin create-workflow --description "gen->reco test" --monte-carlo "${NGEN}" 
 )
 echo "WFID=${WFID}"
 
