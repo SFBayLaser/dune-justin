@@ -38,7 +38,7 @@ justin create-stage --workflow-id "${WFID}" --stage-id 1 \
   --jobscript-git "${REPO}/testing/multistep/gen.jobscript:${JOBSCRIPT_REF}" \
   --wall-seconds 14400 --rss-mib 4000 \
   --env NEVENTS=20 \
-  --env JOB_FHICL_FILE="prod_muminus_0.1-5.0GeV_isotropic_dune10kt_1x2x6.fcl" \
+  --env JOB_FHICL_FILE="mpvmpr_gen_1x2x6.fcl" \
   --output-pattern-next-stage "${GEN_OUT}" \
   --lifetime-days 1
 
