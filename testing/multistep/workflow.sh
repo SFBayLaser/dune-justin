@@ -54,7 +54,7 @@ justin create-stage --workflow-id "${WFID}" --stage-id 3 \
   --jobscript-git "${REPO}/testing/multistep/detsim.jobscript:${JOBSCRIPT_REF}" \
   --env JOB_FHICL_FILE="standard_detsim_dune10kt_1x2x6.fcl" \
   --wall-seconds 28800 --rss-mib 8000 \
-  --output-pattern "${DETSIM_OUT}" \
+  --output-pattern-next-stage "${DETSIM_OUT}" \
   --lifetime-days 1
 
 # ---- stage 4: Reconstruction (final outputs) ----
