@@ -30,6 +30,10 @@ echo "Allocated input: did=$did pfn=$pfn rse=$rse"
 # Use the job index for naming (or derive from pfn if you prefer)
 JOB_INDEX="${JUSTIN_JOB_INDEX:-0}"
 
+# Output value of expected input environment variables
+echo "# events: $NEVENTS"
+echo "fhicl file: $JOB_FHICL_FILE"
+
 # Work in the sandbox
 cd $PWD
 
@@ -61,8 +65,13 @@ export FHICL_FILE_PATH="$PWD/fhicl:${FHICL_FILE_PATH:-.}"
 # ----------------------------------------------------------------------
 # Run GEN
 # ----------------------------------------------------------------------
-FCL=${JOB_FHICL_FILE} 
-OUTFILE="muminus_${did}_gen.root"
+FCL=${JOB_FHICL_FILE}
+
+#Can we recover first portion for name?
+genType = $(echo "$FCL" | awk -F"_" '{print $1}')
+echo "GEN stage type: $genType"
+
+OUTFILE="$genType_${did}_gen.root"
 
 echo "Running lar GEN:"
 echo "  FCL: ${FCL}"
