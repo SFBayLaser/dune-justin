@@ -35,6 +35,9 @@ fi
 
 echo "G4 input file: ${INPUT_G4}"
 
+# Output value of expected input environment variables
+echo "fhicl file: ${JOB_FHICL_FILE}"
+
 # Work in the sandbox
 cd $PWD
 
@@ -66,7 +69,7 @@ export FHICL_FILE_PATH="$PWD/fhicl:${FHICL_FILE_PATH:-.}"
 # ----------------------------------------------------------------------
 # Run DETSIM
 # ----------------------------------------------------------------------
-FCL="standard_detsim_dune10kt_1x2x6.fcl"
+FCL=${JOB_FHICL_FILE}
 
 # Output filename derived from input (your preferred convention)
 INBASE="$(basename "${INPUT_G4}" .root)"

@@ -36,6 +36,9 @@ fi
 
 echo "GEN input file: ${INPUT_GEN}"
 
+# Output value of expected input environment variables
+echo "fhicl file: ${JOB_FHICL_FILE}"
+
 # Work in the sandbox
 cd $PWD
 
@@ -67,7 +70,7 @@ export FHICL_FILE_PATH="$PWD/fhicl:${FHICL_FILE_PATH:-.}"
 # ----------------------------------------------------------------------
 # Run G4
 # ----------------------------------------------------------------------
-FCL="standard_g4_dune10kt_1x2x6.fcl"
+FCL=${JOB_FHICL_FILE}
 
 # Output filename derived from input
 BASE=$(basename "${INPUT_GEN}" .root)

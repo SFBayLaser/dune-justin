@@ -10,6 +10,7 @@ REPO="SFBayLaser/dune-justin"   # repo that holds your jobscripts
 GEN_OUT="*_gen.root"
 G4_OUT="*_g4.root"
 DETSIM_OUT="*_detsim.root"
+RECO_OUT="*_reco.root"
 
 # ---- environment ----
 #export prod_db=/cvmfs/dune.opensciencegrid.org/products/dune
@@ -43,15 +44,25 @@ justin create-stage --workflow-id "${WFID}" --stage-id 1 \
 # ---- stage 2: G4 (consumes stage-1 outputs automatically) ----
 justin create-stage --workflow-id "${WFID}" --stage-id 2 \
   --jobscript-git "${REPO}/testing/multistep/g4.jobscript:${JOBSCRIPT_REF}" \
+  --env JOB_FHICL_FILE="standard_g4_dune10kt_1x2x6.fcl" \
   --wall-seconds 28800 --rss-mib 8000 \
   --output-pattern-next-stage "${G4_OUT}" \
   --lifetime-days 1
 
-# ---- stage 3: DETSIM (final outputs) ----
+# ---- stage 3: DETSIM (consumes stage-2 outputs automagically) ----
 justin create-stage --workflow-id "${WFID}" --stage-id 3 \
   --jobscript-git "${REPO}/testing/multistep/detsim.jobscript:${JOBSCRIPT_REF}" \
+  --env JOB_FHICL_FILE="standard_detsim_dune10kt_1x2x6.fcl" \
   --wall-seconds 28800 --rss-mib 8000 \
   --output-pattern "${DETSIM_OUT}" \
+  --lifetime-days 1
+
+# ---- stage 4: Reconstruction (final outputs) ----
+justin create-stage --workflow-id "${WFID}" --stage-id 4 \
+  --jobscript-git "${REPO}/testing/multistep/reco.jobscript:${JOBSCRIPT_REF}" \
+  --env JOB_FHICL_FILE="standard_supera_dune10kt_1x2x6.fcl" \
+  --wall-seconds 28800 --rss-mib 8000 \
+  --output-pattern "${RECO_OUT}" \
   --lifetime-days 1
 
 # ---- submit ----
