@@ -46,7 +46,7 @@ justin create-stage --workflow-id "${WFID}" --stage-id 1 \
 justin create-stage --workflow-id "${WFID}" --stage-id 2 \
   --jobscript-git "${REPO}/DUNESpineWorkshop2026/g4.jobscript:${JOBSCRIPT_REF}" \
   --env JOB_FHICL_FILE="standard_g4_dune10kt_1x2x6.fcl" \
-  --wall-seconds 28800 --rss-mib 8000 \
+  --wall-seconds 28800 --rss-mib 4000 \
   --output-pattern-next-stage "${G4_OUT}" \
   --lifetime-days 1
 
@@ -54,7 +54,7 @@ justin create-stage --workflow-id "${WFID}" --stage-id 2 \
 justin create-stage --workflow-id "${WFID}" --stage-id 3 \
   --jobscript-git "${REPO}/DUNESpineWorkshop2026/detsim.jobscript:${JOBSCRIPT_REF}" \
   --env JOB_FHICL_FILE="standard_detsim_dune10kt_1x2x6.fcl" \
-  --wall-seconds 28800 --rss-mib 8000 \
+  --wall-seconds 28800 --rss-mib 4000 \
   --output-pattern-next-stage "${DETSIM_OUT}" \
   --lifetime-days 1
 
@@ -62,7 +62,7 @@ justin create-stage --workflow-id "${WFID}" --stage-id 3 \
 justin create-stage --workflow-id "${WFID}" --stage-id 4 \
   --jobscript-git "${REPO}/DUNESpineWorkshop2026/reco.jobscript:${JOBSCRIPT_REF}" \
   --env JOB_FHICL_FILE="standard_mythical_supera_dune10kt_1x2x6.fcl" \
-  --wall-seconds 28800 --rss-mib 8000 \
+  --wall-seconds 28800 --rss-mib 4000 \
   --output-pattern "${RECO_OUT}" \
   --output-pattern "${LARCV_OUT}" \
   --output-rse-expression DUNE_US_FNAL_DISK_STAGE \
