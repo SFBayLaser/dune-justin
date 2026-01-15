@@ -64,7 +64,9 @@ export FHICL_FILE_PATH="$PWD/fhicl:${FHICL_FILE_PATH:-.}"
 # ----------------------------------------------------------------------
 did_short="${did##*:}"
 job_tag="${did_short%.*}"
-jobnum=$(echo "$job_tag" | grep -o '[0-9]\{6\}$' || echo 0)
+jobnum_str=$(echo "$job_tag" | grep -o '[0-9]\{6\}$' || echo 0)
+# force base-10 (avoids octal interpretation)
+jobnum=$((10#${jobnum_str}))
 RUN_BASE=200000  
 RUN=$((RUN_BASE + jobnum))
 SUBRUN=0
