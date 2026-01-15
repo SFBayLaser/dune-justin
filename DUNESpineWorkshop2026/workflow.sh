@@ -61,7 +61,7 @@ justin create-stage --workflow-id "${WFID}" --stage-id 3 \
 # ---- stage 4: Reconstruction (final outputs) ----
 justin create-stage --workflow-id "${WFID}" --stage-id 4 \
   --jobscript-git "${REPO}/DUNESpineWorkshop2026/reco.jobscript:${JOBSCRIPT_REF}" \
-  --env JOB_FHICL_FILE="standard_supera_dune10kt_1x2x6.fcl" \
+  --env JOB_FHICL_FILE="standard_mythical_supera_dune10kt_1x2x6.fcl" \
   --wall-seconds 28800 --rss-mib 8000 \
   --output-pattern "${RECO_OUT}" \
   --output-pattern "${LARCV_OUT}" \
