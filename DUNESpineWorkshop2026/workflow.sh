@@ -35,7 +35,7 @@ echo "WFID=${WFID}"
 
 # ---- stage 1: GEN ----
 justin create-stage --workflow-id "${WFID}" --stage-id 1 \
-  --jobscript-git "${REPO}/testing/multistep/gen.jobscript:${JOBSCRIPT_REF}" \
+  --jobscript-git "${REPO}/DUNESpineWorkshop2026/gen.jobscript:${JOBSCRIPT_REF}" \
   --wall-seconds 14400 --rss-mib 4000 \
   --env NEVENTS=20 \
   --env JOB_FHICL_FILE="mpvmpr_gen_1x2x6.fcl" \
@@ -44,7 +44,7 @@ justin create-stage --workflow-id "${WFID}" --stage-id 1 \
 
 # ---- stage 2: G4 (consumes stage-1 outputs automatically) ----
 justin create-stage --workflow-id "${WFID}" --stage-id 2 \
-  --jobscript-git "${REPO}/testing/multistep/g4.jobscript:${JOBSCRIPT_REF}" \
+  --jobscript-git "${REPO}/DUNESpineWorkshop2026/g4.jobscript:${JOBSCRIPT_REF}" \
   --env JOB_FHICL_FILE="standard_g4_dune10kt_1x2x6.fcl" \
   --wall-seconds 28800 --rss-mib 8000 \
   --output-pattern-next-stage "${G4_OUT}" \
@@ -52,7 +52,7 @@ justin create-stage --workflow-id "${WFID}" --stage-id 2 \
 
 # ---- stage 3: DETSIM (consumes stage-2 outputs automagically) ----
 justin create-stage --workflow-id "${WFID}" --stage-id 3 \
-  --jobscript-git "${REPO}/testing/multistep/detsim.jobscript:${JOBSCRIPT_REF}" \
+  --jobscript-git "${REPO}/DUNESpineWorkshop2026/detsim.jobscript:${JOBSCRIPT_REF}" \
   --env JOB_FHICL_FILE="standard_detsim_dune10kt_1x2x6.fcl" \
   --wall-seconds 28800 --rss-mib 8000 \
   --output-pattern-next-stage "${DETSIM_OUT}" \
@@ -60,7 +60,7 @@ justin create-stage --workflow-id "${WFID}" --stage-id 3 \
 
 # ---- stage 4: Reconstruction (final outputs) ----
 justin create-stage --workflow-id "${WFID}" --stage-id 4 \
-  --jobscript-git "${REPO}/testing/multistep/reco.jobscript:${JOBSCRIPT_REF}" \
+  --jobscript-git "${REPO}/DUNESpineWorkshop2026/reco.jobscript:${JOBSCRIPT_REF}" \
   --env JOB_FHICL_FILE="standard_supera_dune10kt_1x2x6.fcl" \
   --wall-seconds 28800 --rss-mib 8000 \
   --output-pattern "${RECO_OUT}" \
