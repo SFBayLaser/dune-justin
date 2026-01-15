@@ -1,0 +1,11 @@
+# standard_reco_dune10kt.fcl
+#
+# Dom Brailsford
+# March 2022
+#
+# Runs the low level reconstruction for DUNE FD
+
+#include "standard_supera_dune10kt_1x2x6.fcl"
+
+#Turn on production of mythical points
+physics.producers.cluster3d.Hit3DBuilderAlg.SaveMythicalPoints: true
