@@ -62,10 +62,14 @@ export FHICL_FILE_PATH="$PWD/fhicl:${FHICL_FILE_PATH:-.}"
 # ----------------------------------------------------------------------
 # Create the starting run/subrun/event number
 # ----------------------------------------------------------------------
-did_short="${did##*:}"
-job_tag="${did_short%.*}"
-jobnum=$(echo "$job_tag" | grep -o '[0-9]\{6\}$' || echo 0)
-RUN_BASE=200000  
+ddid_short="${did##*:}"         # safe even if no scope; returns whole string
+jobnum_str="${did_short##*-}"   # everything after the last '-': 000028
+jobnum_str="${jobnum_str##0*}"  # drop leading zeros -> 28
+jobnum_str="${jobnum_str:-0}"   # if empty -> 0
+
+jobnum=$((10#$jobnum_str))      # force decimal
+RUN_BASE=200000
+
 RUN=$((RUN_BASE + jobnum))
 SUBRUN=0
 EVENT=1
