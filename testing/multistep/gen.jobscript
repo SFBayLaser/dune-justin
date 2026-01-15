@@ -68,6 +68,7 @@ jobnum_str="${did##*-}"   # everything after the last '-': 000028
 #jobnum_str="${jobnum_str:-0}"   # if empty -> 0
 
 #jobnum=$((10#$jobnum_str))      # force decimal
+jobnum=$(jobnum_str)
 RUN_BASE=200000
 
 RUN=$((RUN_BASE + jobnum))
