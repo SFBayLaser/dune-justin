@@ -62,7 +62,7 @@ export FHICL_FILE_PATH="$PWD/fhicl:${FHICL_FILE_PATH:-.}"
 # ----------------------------------------------------------------------
 # Create the starting run/subrun/event number
 # ----------------------------------------------------------------------
-ddid_short="${did##*:}"         # safe even if no scope; returns whole string
+did_short="${did##*:}"         # safe even if no scope; returns whole string
 jobnum_str="${did_short##*-}"   # everything after the last '-': 000028
 jobnum_str="${jobnum_str##0*}"  # drop leading zeros -> 28
 jobnum_str="${jobnum_str:-0}"   # if empty -> 0
