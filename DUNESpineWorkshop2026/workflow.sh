@@ -29,7 +29,7 @@ setup justin
 
 # ---- create workflow (draft) ----
 WFID=$(
-  justin create-workflow --description "gen->reco test" --monte-carlo "${NGEN}" 
+  justin create-workflow --description "gen->reco 2 hit" --monte-carlo "${NGEN}" 
 )
 echo "WFID=${WFID}"
 
@@ -65,6 +65,7 @@ justin create-stage --workflow-id "${WFID}" --stage-id 4 \
   --wall-seconds 28800 --rss-mib 8000 \
   --output-pattern "${RECO_OUT}" \
   --output-pattern "${LARCV_OUT}" \
+  --output-rse-expression DUNE_US_FNAL_DISK_STAGE \
   --lifetime-days 90
 
 # ---- submit ----
