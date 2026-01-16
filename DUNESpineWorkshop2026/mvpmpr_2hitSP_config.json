@@ -13,7 +13,7 @@
   "stages": [
     {
       "id": 1,
-      "jobscript": "DUNESpineWorkshop2026/gen.jobscript",
+      "jobscript": "MCJobSubmission/gen.jobscript",
       "wall_seconds": 14400,
       "rss_mib": 4000,
       "env": {
@@ -25,7 +25,7 @@
 
     {
       "id": 2,
-      "jobscript": "DUNESpineWorkshop2026/g4.jobscript",
+      "jobscript": "MCJobSubmission/g4.jobscript",
       "wall_seconds": 28800,
       "rss_mib": 6000,
       "env": {
@@ -36,7 +36,7 @@
 
     {
       "id": 3,
-      "jobscript": "DUNESpineWorkshop2026/detsim.jobscript",
+      "jobscript": "MCJobSubmission/detsim.jobscript",
       "wall_seconds": 28800,
       "rss_mib": 6000,
       "env": {
@@ -47,7 +47,7 @@
 
     {
       "id": 4,
-      "jobscript": "DUNESpineWorkshop2026/reco.jobscript",
+      "jobscript": "MCJobSubmission/reco.jobscript",
       "wall_seconds": 28800,
       "rss_mib": 6000,
       "env": {
