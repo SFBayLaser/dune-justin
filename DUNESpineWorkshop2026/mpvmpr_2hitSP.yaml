@@ -1,0 +1,49 @@
+workflow:
+  description: "MPVMPR 2 hit SP"
+  monte_carlo: 50
+
+defaults:
+  repo: "SFBayLaser/dune-justin"
+  ref: "main"
+  lifetime_days: 1
+  rss_mib: 4000
+
+stages:
+  - id: 1
+    name: gen
+    jobscript: "DUNESpineWorkshop2026/gen.jobscript"
+    wall_seconds: 14400
+    env:
+      NEVENTS: "20"
+      JOB_FHICL_FILE: "mpvmpr_gen_1x2x6.fcl"
+    output_pattern_next_stage: "*_gen.root"
+
+  - id: 2
+    name: g4
+    jobscript: "DUNESpineWorkshop2026/g4.jobscript"
+    wall_seconds: 28800
+    env:
+      JOB_FHICL_FILE: "standard_g4_dune10kt_1x2x6.fcl"
+    output_pattern_next_stage: "*_g4.root"
+    # optionally restrict execution sites:
+    sites: ["NIKHEF", "Manchester", "RAL"]
+
+  - id: 3
+    name: detsim
+    jobscript: "DUNESpineWorkshop2026/detsim.jobscript"
+    wall_seconds: 28800
+    env:
+      JOB_FHICL_FILE: "standard_detsim_dune10kt_1x2x6.fcl"
+    output_pattern_next_stage: "*_detsim.root"
+
+  - id: 4
+    name: reco
+    jobscript: "DUNESpineWorkshop2026/reco.jobscript"
+    wall_seconds: 28800
+    env:
+      JOB_FHICL_FILE: "standard_mythical_supera_dune10kt_1x2x6.fcl"
+    output_patterns:
+      - "*_reco.root"
+      - "*_larcv.root"
+    output_rse_expression: "DUNE_US_FNAL_DISK_STAGE"
+    lifetime_days: 90
