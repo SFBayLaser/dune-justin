@@ -119,7 +119,7 @@ ProcessDriver: {
       Origin: 0
       Cluster3DLabels: ["mcst","pcluster","sed","masked_true2reco"]
       Tensor3DLabels: ["reco","pcluster_index","masked_true"]
-      BBoxSize: [1104.0768, 1226.752,  1410.7648] # 2304. 2560. 2944. x 0.4792 for pDUNE vs 2048 pixels of 0.3 mm of SBND; We like base2 number of pixels for ease of pooling in the CNN.
+      BBoxSize: [1104.0768, 1226.752,  1410.7648000000002] # 2304. 2560. 2944. x 0.4792 for pDUNE vs 2048 pixels of 0.3 mm of SBND; We like base2 number of pixels for ease of pooling in the CNN.
       BBoxBottom: [-552.0384, -613.376,    -9.0905] # centered on the detector center with some padding
       VoxelSize: [0.4792,0.4792,0.4792] #4.792 mm pitch
       #BBoxSize: [800., 1300., 1450.] # 2560-->2048 x 0.47 for pDUNE vs 2048 pixels of 0.3 mm of SBND; We like base2 number of pixels for ease of pooling in the CNN.
