@@ -152,7 +152,6 @@ def main():
 
         stage_id = as_str(st_merged["id"])
         repo = st_merged.get("repo", defaults.get("repo"))
-        folder = st_merged.get("folder", defaults.get("folder"))
         ref = st_merged.get("ref", defaults.get("ref"))
         jobscript = st_merged.get("jobscript")
 
@@ -164,7 +163,7 @@ def main():
             "create-stage",
             "--workflow-id", as_str(wfid),
             "--stage-id", stage_id,
-            "--jobscript-git", f"{repo}/{folder}/{jobscript}:{ref}",
+            "--jobscript-git", f"{repo}/{jobscript}:{ref}",
         ]
 
         # Resources

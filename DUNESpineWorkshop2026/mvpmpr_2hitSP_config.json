@@ -6,7 +6,6 @@
 
   "defaults": {
     "repo": "SFBayLaser/dune-justin",
-    "folder": "DUNESpineWorkshop2026",
     "ref": "main",
     "lifetime_days": 1
   },
@@ -18,7 +17,7 @@
       "wall_seconds": 14400,
       "rss_mib": 4000,
       "env": {
-        "NEVENTS": "20",
+        "NEVENTS": "50",
         "JOB_FHICL_FILE": "mpvmpr_gen_1x2x6.fcl"
       },
       "output_pattern_next_stage": "*_gen.root"
