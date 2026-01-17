@@ -33,7 +33,7 @@ physics:
    #beamgate:  @local::icarus_standardbeamgate_BNB  # from beamgates_icarus.fcl
  }
 
- simulate: [ rns, generator ] #, rain ] #, beamgate ]
+ simulate: [ rns, generator, rain ] #, beamgate ]
 
  out_stream: [ out1   ]
 
