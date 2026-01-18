@@ -210,6 +210,10 @@ def main():
         if "lifetime_days" in st_merged and st_merged["lifetime_days"] is not None:
             cmd += ["--lifetime-days", as_str(st_merged["lifetime_days"])]
 
+        # max-distance (optional; can override defaults)
+        if "max_distance" in st_merged and st_merged["max_distance"] is not None:
+            cmd += ["--max-distance", as_str(st_merged["max_distance"])]
+
         # Site restrictions (repeatable --site)
         # (This influences what you saw as Desired_Sites in classads)
         if st_merged.get("sites"):
