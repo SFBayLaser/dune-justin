@@ -29,6 +29,7 @@ echo "Allocated input: did=$did pfn=$pfn rse=$rse"
 
 # Output value of expected input environment variables
 echo "# events: ${NEVENTS}"
+echo "Run base: ${RUN_BASE}"
 echo "fhicl file: ${JOB_FHICL_FILE}"
 
 # Work in the sandbox
@@ -65,7 +66,6 @@ export FHICL_FILE_PATH="$PWD/fhicl:${FHICL_FILE_PATH:-.}"
 did="$(printf '%s' "$did" | tr -d '\r' | xargs)"
 jobnum_str="${did##*-}"         # everything after the last '-': 000028
 jobnum=$((10#$jobnum_str))      # force decimal
-RUN_BASE=200000
 
 RUN=$((RUN_BASE + jobnum))
 SUBRUN=0
