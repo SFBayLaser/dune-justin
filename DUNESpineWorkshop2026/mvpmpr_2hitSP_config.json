@@ -7,7 +7,8 @@
   "defaults": {
     "repo": "SFBayLaser/dune-justin",
     "ref": "main",
-    "lifetime_days": 1
+    "lifetime_days": 1,
+    "max_distance": 30
   },
 
   "stages": [
@@ -18,6 +19,7 @@
       "rss_mib": 4000,
       "env": {
         "NEVENTS": "50",
+        "RUN_BASE": "200000",
         "JOB_FHICL_FILE": "mpvmpr_gen_1x2x6.fcl"
       },
       "output_pattern_next_stage": "*_gen.root"
@@ -27,7 +29,7 @@
       "id": 2,
       "jobscript": "MCJobSubmission/g4.jobscript",
       "wall_seconds": 28800,
-      "rss_mib": 6000,
+      "rss_mib": 4000,
       "env": {
         "JOB_FHICL_FILE": "standard_g4_dune10kt_1x2x6.fcl"
       },
@@ -38,7 +40,7 @@
       "id": 3,
       "jobscript": "MCJobSubmission/detsim.jobscript",
       "wall_seconds": 28800,
-      "rss_mib": 6000,
+      "rss_mib": 4000,
       "env": {
         "JOB_FHICL_FILE": "standard_detsim_dune10kt_1x2x6.fcl"
       },
@@ -49,7 +51,7 @@
       "id": 4,
       "jobscript": "MCJobSubmission/reco.jobscript",
       "wall_seconds": 28800,
-      "rss_mib": 6000,
+      "rss_mib": 4000,
       "env": {
         "JOB_FHICL_FILE": "standard_mythical_supera_dune10kt_1x2x6.fcl"
       },
