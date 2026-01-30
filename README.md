@@ -16,6 +16,12 @@ DUNE distributed computing infrastructure.
 ```
 .
 ├── DUNESpineWorkshop2026/
+	|-- fhicl
+    |-- atmospheric_nu_2hitSP_config.json
+    |-- mvpmpr_2hitSP.yaml
+    |-- mvpmpr_2hitSP_config.json
+    |-- prodgenie_nu_2hitSP_config.json
+├── MCjobSubmission
 │   ├── gen.jobscript
 │   ├── g4.jobscript
 │   ├── detsim.jobscript
@@ -23,8 +29,11 @@ DUNE distributed computing infrastructure.
 │   ├── workflow.sh
 │   ├── mcJobSubmission.py
 │   └── *.json                # workflow configuration files
+|-- Statistics
+	|-- jobStatistics.py
 ├── bundles/
 │   └── fhicl_bundle.tgz       # packaged FHiCL files
+|-- testing                    # old, will be removed in future
 └── README.md
 ```
 
@@ -149,4 +158,139 @@ Interfaces, scripts, and conventions may evolve as justIN and DUNE computing
 infrastructure change.
 
 Feedback and contributions are welcome.
+
+
+---
+
+## Quick Start (10 minutes)
+
+This section walks through creating and launching a minimal multi‑stage workflow end‑to‑end.
+
+1. **Log in to a DUNE GPVM node**
+   ```bash
+   ssh dunegpvmXX.fnal.gov
+   ```
+
+2. **Set up the DUNE + justIN environment**
+   ```bash
+   source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
+   setup justin
+   ```
+
+3. **Prepare a workflow configuration**  
+   Copy an existing JSON config (for example `configs/mpvmpr_2hitSP_config.json`) and adjust:
+   - number of jobs / events
+   - FHICL filenames
+   - RSE and lifetimes
+
+4. **Create and submit the workflow**
+   ```bash
+   python mcJobSubmission.py --config my_config.json
+   ```
+
+5. **Monitor progress**
+   ```bash
+   justin show-workflows
+   justin show-stages --workflow-id <WFID>
+   justin show-jobs   --workflow-id <WFID>
+   ```
+
+6. **Inspect outputs**  
+   Use MetaCat or Rucio to locate final reco outputs:
+   ```bash
+   metacat file show <scope>:<filename>
+   rucio replica list file <scope>:<filename>
+   ```
+
+You should be able to go from zero to running jobs in ~10 minutes once the environment is set up.
+
+---
+
+## Common Failure Modes & Fixes
+
+### Workflow fails immediately with `WORKFLOW_FAILED_TOO_MANY_FILES`
+**Cause:** Too many jobs/files in a single workflow (e.g. O(10k+) outputs).
+
+**Fix:**
+- Split production into multiple workflows under the same campaign
+- Reduce jobs per workflow (e.g. 3–7k jobs per workflow)
+
+---
+
+### Files stuck in `Unallocated`
+**Cause:** Downstream stage cannot allocate inputs (often site or memory constraints).
+
+**Checks:**
+```bash
+justin show-jobs --workflow-id <WFID> --stage-id <N>
+condor_q -better-analyze <cluster.proc>
+```
+
+**Fixes:**
+- Relax `Desired_Sites`
+- Lower `RequestMemory`
+- Allow more output RSEs
+
+---
+
+### Jobs idle forever in HTCondor
+**Cause:** No matching resources satisfy constraints.
+
+**Fix:**
+- Inspect `condor_q -better-analyze`
+- Verify CVMFS requirements
+- Reduce memory or disk requests
+
+---
+
+### GEN/G4/DETSIM runs but job marked failed
+**Cause:** justIN bookkeeping failure (HTTP 500 during `record_results`).
+
+**Notes:**
+- Output files are usually *valid*
+- Re-running the workflow or failing/restarting files is safe
+
+---
+
+### Rucio errors: `certificate expired`
+**Cause:** Expired or missing X509 proxy.
+
+**Fix:**
+```bash
+voms-proxy-init -rfc -voms dune -valid 96:00
+export X509_USER_PROXY=/tmp/x509up_u$(id -u)
+```
+
+---
+
+### FHICL files not found
+**Cause:** `FHICL_FILE_PATH` not set or bundled files missing.
+
+**Fix:**
+- Bundle FHICL directory as `.tgz`
+- Untar in jobscript
+- Set:
+```bash
+export FHICL_FILE_PATH="$PWD/fhicl:${FHICL_FILE_PATH}"
+```
+
+---
+
+## Production Scaling Notes
+
+- **Prefer multiple medium workflows** over one massive workflow
+- Keep GEN/G4/DETSIM lifetimes short (1–2 days)
+- Only long‑term store RECO + analysis outputs
+- Campaign IDs are cheap — use them
+
+---
+
+## Roadmap / To‑Do (Expanded)
+
+- [ ] Campaign‑level submission helper
+- [ ] Automatic workflow chunking for large productions
+- [ ] Retry/auto‑fail logic for transient HTTP errors
+- [ ] Integrated job efficiency dashboard
+- [ ] Example configs for official DUNE geometries
+- [ ] Documentation on MC unit accounting
 
