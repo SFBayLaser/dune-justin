@@ -15,25 +15,24 @@ DUNE distributed computing infrastructure.
 
 ```
 .
-├── DUNESpineWorkshop2026/
-	|-- fhicl
-    |-- atmospheric_nu_2hitSP_config.json
-    |-- mvpmpr_2hitSP.yaml
-    |-- mvpmpr_2hitSP_config.json
-    |-- prodgenie_nu_2hitSP_config.json
-├── MCjobSubmission
+├── DUNESpineWorkshop2026/    # This folder contains configuration files for workshop
+	├── fhicl
+    ├── atmospheric_nu_2hitSP_config.json  # Atmospheric neutrinos
+    ├── mvpmpr_2hitSP.yaml                 # Meant to be example yaml file
+    ├── mvpmpr_2hitSP_config.json          # Multi-particle vertex + "rain"
+    ├── prodgenie_nu_2hitSP_config.json    # beam neutrinos
+├── MCjobSubmission           # This folder contains scripts for submitting workflow
 │   ├── gen.jobscript
 │   ├── g4.jobscript
 │   ├── detsim.jobscript
 │   ├── reco.jobscript
 │   ├── workflow.sh
 │   ├── mcJobSubmission.py
-│   └── *.json                # workflow configuration files
-|-- Statistics
-	|-- jobStatistics.py
+├── Statistics
+	├── jobStatistics.py
 ├── bundles/
 │   └── fhicl_bundle.tgz       # packaged FHiCL files
-|-- testing                    # old, will be removed in future
+├── testing                    # old, will be removed in future
 └── README.md
 ```
 
@@ -128,6 +127,13 @@ Typical statistics of interest:
 Dedicated scripts for aggregating and plotting statistics are expected to evolve
 as production usage grows.
 
+In the meantime, one can "scrape" some information from the workflow job pages and 
+use the script in the repository:
+- First collect the information:
+```bash
+justin show-jobs --workflow-id wfid | awk '{print $1}' > jobids.txt
+```
+- Then use the jobStatistics.py file in the Statistics folder to make plots
 ---
 
 ## Best Practices
@@ -148,6 +154,7 @@ as production usage grows.
 - [ ] Provide example campaign-based production layouts
 - [ ] Add CI checks for jobscript syntax
 - [ ] Expand documentation for new users
+- [ ] Understand and fix some of the lar related job failures
 
 ---
 
