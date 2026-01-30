@@ -1,0 +1,66 @@
+{
+  "workflow": {
+    "description": "atm nu gen->reco 2 hit",
+    "monte_carlo": 1000
+  },
+
+  "defaults": {
+    "repo": "SFBayLaser/dune-justin",
+    "ref": "main",
+    "lifetime_days": 4,
+    "max_distance": 30
+  },
+
+  "stages": [
+    {
+      "id": 1,
+      "jobscript": "MCJobSubmission/gen.jobscript",
+      "wall_seconds": 14400,
+      "rss_mib": 4000,
+      "env": {
+        "NEVENTS": "50",
+        "RUN_BASE": "400000",
+        "JOB_FHICL_FILE": "prodgenie_atmnu_max_weighted_randompolicy_dune10kt_1x2x6.fcl"
+      },
+      "output_pattern_next_stage": "*_gen.root"
+    },
+
+    {
+      "id": 2,
+      "jobscript": "MCJobSubmission/g4.jobscript",
+      "wall_seconds": 28800,
+      "rss_mib": 4000,
+      "env": {
+        "JOB_FHICL_FILE": "standard_g4_dune10kt_1x2x6.fcl"
+      },
+      "output_pattern_next_stage": "*_g4.root"
+    },
+
+    {
+      "id": 3,
+      "jobscript": "MCJobSubmission/detsim.jobscript",
+      "wall_seconds": 28800,
+      "rss_mib": 4000,
+      "env": {
+        "JOB_FHICL_FILE": "standard_detsim_dune10kt_1x2x6.fcl"
+      },
+      "output_pattern_next_stage": "*_detsim.root"
+    },
+
+    {
+      "id": 4,
+      "jobscript": "MCJobSubmission/reco.jobscript",
+      "wall_seconds": 28800,
+      "rss_mib": 4000,
+      "env": {
+        "JOB_FHICL_FILE": "standard_mythical_supera_dune10kt_1x2x6.fcl"
+      },
+      "output_patterns": [
+        "*_reco.root",
+        "*_larcv.root"
+      ],
+      "output_rse_expression": "DUNE_US_FNAL_DISK_STAGE",
+      "lifetime_days": 90
+    }
+  ]
+}
