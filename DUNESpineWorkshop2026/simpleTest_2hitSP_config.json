@@ -8,14 +8,14 @@
     "repo": "SFBayLaser/dune-justin",
     "ref": "main",
     "lifetime_days": 1,
-    "max_distance": 30
+    "max_distance": 60
   },
 
   "stages": [
     {
       "id": 1,
       "jobscript": "MCJobSubmission/gen.jobscript",
-      "wall_seconds": 14400,
+      "wall_seconds": 3600,
       "rss_mib": 4000,
       "env": {
         "NEVENTS": "50",
@@ -28,7 +28,7 @@
     {
       "id": 2,
       "jobscript": "MCJobSubmission/g4.jobscript",
-      "wall_seconds": 28800,
+      "wall_seconds": 7200,
       "rss_mib": 4000,
       "env": {
         "JOB_FHICL_FILE": "standard_g4_dune10kt_1x2x6.fcl"
@@ -39,7 +39,7 @@
     {
       "id": 3,
       "jobscript": "MCJobSubmission/detsim.jobscript",
-      "wall_seconds": 28800,
+      "wall_seconds": 7200,
       "rss_mib": 4000,
       "env": {
         "JOB_FHICL_FILE": "standard_detsim_dune10kt_1x2x6.fcl"
@@ -50,7 +50,7 @@
     {
       "id": 4,
       "jobscript": "MCJobSubmission/reco.jobscript",
-      "wall_seconds": 28800,
+      "wall_seconds": 7200,
       "rss_mib": 4000,
       "env": {
         "JOB_FHICL_FILE": "standard_mythical_supera_dune10kt_1x2x6.fcl"
@@ -59,7 +59,7 @@
         "*_reco.root",
         "*_larcv.root"
       ],
-      "output_rse_expression": "DUNE_US_FNAL_DISK_STAGE",
+      "output_rse_expression": "T3_US_NERSC",
       "lifetime_days": 90
     }
   ]
