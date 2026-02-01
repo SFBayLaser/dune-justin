@@ -217,7 +217,8 @@ first time (see the discussion in the justin tutorial).
    Or you can use the [justin workflow monitoring page](https://dunejustin.fnal.gov/dashboard/?method=list-workflows). 
 
 8. **Inspect outputs**  
-   Use MetaCat or Rucio to locate final reco outputs:
+   Use MetaCat or Rucio to locate final reco outputs (see the [justin tutorial](https://dunejustin.fnal.gov/docs/tutorials.dune.md) for 
+   info on how to set these up):
    ```bash
    metacat file show <scope>:<filename>
    rucio replica list file <scope>:<filename>
