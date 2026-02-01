@@ -22,16 +22,9 @@ DUNE distributed computing infrastructure.
     ├── mvpmpr_2hitSP_config.json          # Multi-particle vertex + "rain"
     ├── prodgenie_nu_2hitSP_config.json    # beam neutrinos
 ├── MCjobSubmission                        # This folder contains scripts for submitting workflow
-│   ├── gen.jobscript
-│   ├── g4.jobscript
-│   ├── detsim.jobscript
-│   ├── reco.jobscript
-│   ├── workflow.sh
-│   ├── mcJobSubmission.py
+│   ├── scripts to submit/run a workflow
 ├── Statistics                             # scripts for getting job statistics
-	├── jobStatistics.py
-   ├── jobStatisticsDisplay.py
-   ├── justinPerformanceExample.png
+	├── scripts to get job statistics
 ├── bundles/
 │   └── fhicl_bundle.tgz                   # packaged FHiCL files
 ├── docs/                                  # For any live html pages we want to serve
