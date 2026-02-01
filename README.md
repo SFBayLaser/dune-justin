@@ -15,24 +15,29 @@ DUNE distributed computing infrastructure.
 
 ```
 .
-├── DUNESpineWorkshop2026/    # This folder contains configuration files for workshop
+├── DUNESpineWorkshop2026/                 # This folder contains configuration files for workshop
 	├── fhicl
     ├── atmospheric_nu_2hitSP_config.json  # Atmospheric neutrinos
     ├── mvpmpr_2hitSP.yaml                 # Meant to be example yaml file
     ├── mvpmpr_2hitSP_config.json          # Multi-particle vertex + "rain"
     ├── prodgenie_nu_2hitSP_config.json    # beam neutrinos
-├── MCjobSubmission           # This folder contains scripts for submitting workflow
+├── MCjobSubmission                        # This folder contains scripts for submitting workflow
 │   ├── gen.jobscript
 │   ├── g4.jobscript
 │   ├── detsim.jobscript
 │   ├── reco.jobscript
 │   ├── workflow.sh
 │   ├── mcJobSubmission.py
-├── Statistics
+├── Statistics                             # scripts for getting job statistics
 	├── jobStatistics.py
+   ├── jobStatisticsDisplay.py
+   ├── justinPerformanceExample.png
 ├── bundles/
-│   └── fhicl_bundle.tgz       # packaged FHiCL files
-├── testing                    # old, will be removed in future
+│   └── fhicl_bundle.tgz                   # packaged FHiCL files
+├── docs/                                  # For any live html pages we want to serve
+    ├── Statistics/
+        ├── justinPeformanceExample.html
+├── testing                                # old, will be removed in future
 └── README.md
 ```
 
@@ -135,7 +140,9 @@ justin show-jobs --workflow-id wfid | awk '{print $1}' > jobids.txt
 ```
 - Then use the jobStatistics.py file in the Statistics folder to make a pandas dataframe
 - jobStatisticsDisplay.py is an example of how to display some useful informatin
-- For example (click on imagge for working example): [<img src="Statistics/justinPerformanceExample.png">](https://sfbaylaser.github.io/dune-justin/Statistics/justinPerformanceExample.html)
+- The following examples demonstrate post-processing of justIN workflows:
+- [<img src="Statistics/justinPerformanceExample.png">](https://sfbaylaser.github.io/dune-justin/Statistics/justinPerformanceExample.html) (click on image for live GitHub Pages report)
+- Generated from workflow 12080, stage 3, exit=0, cpu>0 jobs only.
 ---
 
 ## Best Practices
