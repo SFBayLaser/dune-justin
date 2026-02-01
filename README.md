@@ -172,7 +172,9 @@ Feedback and contributions are welcome.
 
 ## Quick Start (10 minutes)
 
-This section walks through creating and launching a minimal multi‑stage workflow end‑to‑end.
+This section walks through creating and launching a minimal multi‑stage workflow end‑to‑end. Setting up justin follows the steps
+described in the [justin tutorial](https://dunejustin.fnal.gov/docs/tutorials.dune.md). Note that if this is your first time using justin you will need to "authorize your computer" the 
+first time (see the discussion in the justin tutorial).
 
 1. **Log in to a DUNE GPVM node**
    ```bash
