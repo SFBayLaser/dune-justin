@@ -11,10 +11,11 @@ import pandas as pd
 # We start by downloading the lists of jobsub IDs that we get from the following 
 # justin command:
 #
-#    justin show-jobs --workflow-id wfid | awk '{print $1}' > jobids.txt
+#    justin show-jobs --workflow-id wfid --stage-id stageID | awk '{print $1}' > jobids.txt
 #
-# Note that this will download into a single file all jobs in the workflow, including
-# all stages. We will need to parse out the stage we want below
+# Note that this will download into a single file all jobs in the workflow, for the given stageID. 
+# This command needs to be executed once for each stage (as far as I know) so it is good
+# to postfix your "jobids.txt" file with the stage id for later reference
 #
 
 BASE = "https://dunejustin.fnal.gov/dashboard/?method=show-job&jobsub_id={jobid}"
@@ -180,7 +181,7 @@ def getStageInfo(jobIdsFile, stageID: int = 1):
     print(f"Wrote {out_csv}")
 
 
-def getStageInfo_df(jobIdsFile, stage: int = 4):
+def getStageInfo_df(jobIdsFile):
     jobids_path = Path(jobIdsFile)
     print("Input file:", jobIdsFile, ", path:", jobids_path)
     if not jobids_path.exists():
@@ -190,6 +191,7 @@ def getStageInfo_df(jobIdsFile, stage: int = 4):
     
     rows = []
     with requests.Session() as session:
+        print("Input job id file has",len(jobids),"entries")
         for i, jobid in enumerate(jobids, 1):
             fields = fetch_job(session, jobid)
     
@@ -227,3 +229,16 @@ def getStageInfo_df(jobIdsFile, stage: int = 4):
             df[col] = pd.to_numeric(df[col], errors="coerce").astype("Int64")
 
     return df
+
+
+def getAllStageInfo_df(jobIDsFiles,path=""):
+    print("We have",len(jobIDsFiles),"to process with path:",path)
+    
+    dfList = []
+
+    for jobIDsFile in jobIDsFiles:
+        print("Processing:",jobIDsFile)
+
+        dfList.append(getStageInfo_df(path+jobIDsFile))
+
+    return pd.concat(dfList,ignore_index=True)
