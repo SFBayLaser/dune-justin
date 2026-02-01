@@ -198,7 +198,7 @@ first time (see the discussion in the justin tutorial).
    ```
 
 5. **Prepare a workflow configuration**  
-   Copy an existing JSON config (for example `configs/mpvmpr_2hitSP_config.json`) and adjust:
+   Copy an existing JSON config (for example `DUNESpineWorkshop2026/simpleTest_2hitSP_config.json`) and adjust:
    - number of jobs / events
    - FHICL filenames
    - RSE and lifetimes
@@ -207,6 +207,7 @@ first time (see the discussion in the justin tutorial).
    ```bash
    python mcJobSubmission.py --config my_config.json
    ```
+   (You can try `simpleTest_2hitSP_config.json` as an example, it will generate 20 jobs of 50 `prod_muminus` events)
 
 7. **Monitor progress**
    ```bash
