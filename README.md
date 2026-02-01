@@ -135,7 +135,7 @@ justin show-jobs --workflow-id wfid | awk '{print $1}' > jobids.txt
 ```
 - Then use the jobStatistics.py file in the Statistics folder to make a pandas dataframe
 - jobStatisticsDisplay.py is an example of how to display some useful informatin
-- For example (click on imagge for working example): [<img src="Statistics/justinPerformanceExample.png">](https://sfbaylaser.github.io/dune-justin/Statistics/justinJobPerformance.html)
+- For example (click on imagge for working example): [<img src="Statistics/justinPerformanceExample.png">](https://sfbaylaser.github.io/dune-justin/docs/Statistics/justinJobPerformance.html)
 ---
 
 ## Best Practices
