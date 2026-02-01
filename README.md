@@ -178,32 +178,42 @@ This section walks through creating and launching a minimal multi‑stage workfl
    ```bash
    ssh dunegpvmXX.fnal.gov
    ```
+2. **Start an SL7 apptainer**
+   ```bash
+   /cvmfs/oasis.opensciencegrid.org/mis/apptainer/current/bin/apptainer shell --shell=/bin/bash -B /cvmfs,/exp,/nashome,/pnfs/dune,/opt,/run/user,/etc/hostname,/etc/hosts,/etc/krb5.conf --ipc --pid /cvmfs/singularity.opensciencegrid.org/fermilab/fnal-dev-sl7:latest
+   ```
 
-2. **Set up the DUNE + justIN environment**
+3. **Set up the DUNE + justIN environment**
    ```bash
    source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
    setup justin
    ```
 
-3. **Prepare a workflow configuration**  
+4. **Clone a copy of this repository**
+   ```bash
+   cd /exp/dune/app/users/you/
+   git clone https://github.com/SFBayLaser/dune-justin.git
+   ```
+
+5. **Prepare a workflow configuration**  
    Copy an existing JSON config (for example `configs/mpvmpr_2hitSP_config.json`) and adjust:
    - number of jobs / events
    - FHICL filenames
    - RSE and lifetimes
 
-4. **Create and submit the workflow**
+6. **Create and submit the workflow**
    ```bash
    python mcJobSubmission.py --config my_config.json
    ```
 
-5. **Monitor progress**
+7. **Monitor progress**
    ```bash
    justin show-workflows
    justin show-stages --workflow-id <WFID>
    justin show-jobs   --workflow-id <WFID>
    ```
 
-6. **Inspect outputs**  
+8. **Inspect outputs**  
    Use MetaCat or Rucio to locate final reco outputs:
    ```bash
    metacat file show <scope>:<filename>
