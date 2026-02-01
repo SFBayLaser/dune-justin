@@ -133,7 +133,9 @@ use the script in the repository:
 ```bash
 justin show-jobs --workflow-id wfid | awk '{print $1}' > jobids.txt
 ```
-- Then use the jobStatistics.py file in the Statistics folder to make plots
+- Then use the jobStatistics.py file in the Statistics folder to make a pandas dataframe
+- jobStatisticsDisplay.py is an example of how to display some useful informatin
+- For example (click on imagge for working example): [<img src="Statistics/justinPeformanceExample.png">](https://link-to-your-URL/)
 ---
 
 ## Best Practices
