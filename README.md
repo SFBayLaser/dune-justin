@@ -188,6 +188,7 @@ first time (see the discussion in the justin tutorial).
 3. **Set up the DUNE + justIN environment**
    ```bash
    source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
+   setup python v3_9_15
    setup justin
    ```
 
