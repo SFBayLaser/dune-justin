@@ -214,6 +214,7 @@ first time (see the discussion in the justin tutorial).
    justin show-stages --workflow-id <WFID>
    justin show-jobs   --workflow-id <WFID>
    ```
+   Or you can use the [justin workflow monitoring page](https://dunejustin.fnal.gov/dashboard/?method=list-workflows). 
 
 8. **Inspect outputs**  
    Use MetaCat or Rucio to locate final reco outputs:
