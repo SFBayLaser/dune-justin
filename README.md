@@ -141,8 +141,7 @@ justin show-jobs --workflow-id wfid | awk '{print $1}' > jobids.txt
 - Then use the jobStatistics.py file in the Statistics folder to make a pandas dataframe
 - jobStatisticsDisplay.py is an example of how to display some useful informatin
 - The following examples demonstrate post-processing of justIN workflows:
-- [<img src="Statistics/justinPerformanceExample.png">](https://sfbaylaser.github.io/dune-justin/Statistics/justinPerformanceExample.html) (click on image for live GitHub Pages report)
-- Generated from workflow 12080, stage 3, exit=0, cpu>0 jobs only.
+- CPU time (click on image for live GitHub Pages report):[<img src="Statistics/justinPerformanceExample.png">](https://sfbaylaser.github.io/dune-justin/Statistics/justinPerformanceExample.html) Generated from workflow 12080, stage 3, exit=0, cpu>0 jobs only.
 ---
 
 ## Best Practices
