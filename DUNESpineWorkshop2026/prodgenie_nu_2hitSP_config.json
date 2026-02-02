@@ -59,7 +59,7 @@
         "*_reco.root",
         "*_larcv.root"
       ],
-      "output_rse_expression": "DUNE_US_FNAL_DISK_STAGE",
+      "output_rse_expression": "T3_US_NERSC",
       "lifetime_days": 90
     }
   ]
