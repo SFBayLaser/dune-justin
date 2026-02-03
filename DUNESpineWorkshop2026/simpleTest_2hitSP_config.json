@@ -59,6 +59,7 @@
         "*_reco.root",
         "*_larcv.root"
       ],
+      "output_rse": "T3_US_NERSC",
       "output_rse_expression": "T3_US_NERSC",
       "lifetime_days": 90
     }
