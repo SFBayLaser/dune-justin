@@ -8,7 +8,7 @@
     "repo": "SFBayLaser/dune-justin",
     "ref": "main",
     "lifetime_days": 1,
-    "max_distance": 60
+    "max_distance": 100
   },
 
   "stages": [
