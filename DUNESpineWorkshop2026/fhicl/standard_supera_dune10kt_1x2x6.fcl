@@ -58,6 +58,11 @@ physics.end_paths: [outana, stream1]
 outputs.out1.fileName: "%ifb_supera.root"
 outputs.out1.dataTier: "supera"
 
+# reset the gaushit long hits
+physics.producers.gaushit.LongMaxHits:    [25,25,25]
+physics.producers.gaushit.LongPulseWidth: [10,10,10]
+physics.producers.gaushit.MaxMultiHit:    6
+
 # Configure mcreco to read SEDLite instead of SED and MCParticleLite in addition to MCParticle
 physics.producers.mcreco.G4ModName: @erase
 physics.producers.mcreco.SimChannelLabel: "tpcrawdecoder:simpleSC"
