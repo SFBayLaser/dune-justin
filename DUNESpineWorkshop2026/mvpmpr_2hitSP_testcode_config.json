@@ -1,7 +1,7 @@
 {
   "workflow": {
     "description": "gen->reco 2 hit",
-    "monte_carlo": 1000
+    "monte_carlo": 10
   },
 
   "defaults": {
@@ -9,6 +9,8 @@
     "ref": "main",
     "lifetime_days": 1,
     "max_distance": 60
+    "dunesw_version": "v10_17_01d00"
+    "fhicl_files": "https://raw.githubusercontent.com/SFBayLaser/dune-justin/main/bundles/fhicl_bundle.tgz"
   },
 
   "stages": [
@@ -49,11 +51,11 @@
 
     {
       "id": 4,
-      "jobscript": "MCJobSubmission/reco_tarball.jobscript",
+      "jobscript": "MCJobSubmission/reco_rcds.jobscript",
       "wall_seconds": 28800,
       "rss_mib": 4000,
       "env": {
-        "INPUT_TAR_DIR_LOCAL": "/cvmfs/fifeuser2.opensciencegrid.org/sw/dune/89bab08a34ccea3262edbc83c39a72071d6b9b36"
+        "INPUT_TAR_DIR_LOCAL": "/cvmfs/fifeuser1.opensciencegrid.org/sw/dune/12c37983d9519516e6d84296a280e023296d5cdb",
         "JOB_FHICL_FILE": "standard_mythical_supera_dune10kt_1x2x6.fcl"
       },
       "output_patterns": [
@@ -65,3 +67,5 @@
     }
   ]
 }
+
+

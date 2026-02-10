@@ -9,6 +9,7 @@
     "ref": "main",
     "lifetime_days": 4,
     "max_distance": 30
+    "dunesw_version": "v10_17_01d00"
   },
 
   "stages": [

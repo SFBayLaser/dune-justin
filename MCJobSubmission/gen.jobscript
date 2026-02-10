@@ -36,13 +36,6 @@ echo "fhicl file: ${JOB_FHICL_FILE}"
 cd $PWD
 
 # ----------------------------------------------------------------------
-# Grab the tarball that has our fhicl files we'll need
-# ----------------------------------------------------------------------
-FCL_TGZ_URL="https://raw.githubusercontent.com/SFBayLaser/dune-justin/main/bundles/fhicl_bundle.tgz"
-curl -L -o fhicl_bundle.tgz "$FCL_TGZ_URL"
-tar xzf fhicl_bundle.tgz
-
-# ----------------------------------------------------------------------
 # Environment setup
 # ----------------------------------------------------------------------
 echo "Sourcing DUNE setup..."
@@ -50,15 +43,23 @@ echo "Sourcing DUNE setup..."
 
 source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
 
-setup dunesw v10_16_00d00 -q e26:prof
+setup dunesw ${DUNESW_VERSION} -q e26:prof
 
 ups active
 lar --version
 
 # ----------------------------------------------------------------------
-# Point fhicl to our local files
+# Grab the tarball that has our fhicl files we'll need
 # ----------------------------------------------------------------------
-export FHICL_FILE_PATH="$PWD/fhicl:${FHICL_FILE_PATH:-.}"
+if [-n "${FCL_TGZ_URL}"]; then
+  curl -L -o fhicl_bundle.tgz "$FCL_TGZ_URL"
+  tar xzf fhicl_bundle.tgz
+
+  export FHICL_FILE_PATH="$PWD/fhicl:${FHICL_FILE_PATH:-.}"
+else
+  echo "ERROR no path to fhicl files"
+  exit 3
+fi
 
 # ----------------------------------------------------------------------
 # Create the starting run/subrun/event number

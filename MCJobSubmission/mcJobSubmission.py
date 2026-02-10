@@ -182,6 +182,16 @@ def main():
         for k, v in env.items():
             cmd += ["--env", f"{k}={v}"]
 
+        # code version to run (optional; can override defaults)
+        if "dunesw_version" in st_merged and st_merged["dunesw_version"] is not None:
+            cmd += ["--env", "DUNESW_VERSION="+as_str(st_merged["dunesw_version"])]
+        else:
+            cmd += "--env DUNESW_VERSION=v10_17_01d00"
+
+        # Path to FHICL files to pull over
+        if "fhicl_files" in st_merged and st_merged["fhicl_files"] is not None:
+            cmd += ["--env", "FCL_TGZ_URL="+as_str(st_merged["fhicl_files"])]
+
         # Output patterns (repeatable)
         # - final stage typically uses output_patterns (list) or output_pattern (string)
         # - intermediate stage uses output_pattern_next_stage (string)
