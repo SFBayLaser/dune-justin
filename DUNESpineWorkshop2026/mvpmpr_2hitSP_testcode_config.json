@@ -8,8 +8,8 @@
     "repo": "SFBayLaser/dune-justin",
     "ref": "main",
     "lifetime_days": 1,
-    "max_distance": 60
-    "dunesw_version": "v10_17_01d00"
+    "max_distance": 60,
+    "dunesw_version": "v10_17_01d00",
     "fhicl_files": "https://raw.githubusercontent.com/SFBayLaser/dune-justin/main/bundles/fhicl_bundle.tgz"
   },
 
