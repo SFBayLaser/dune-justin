@@ -50,6 +50,13 @@ echo "Sourcing DUNE setup..."
 source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
 #set -u
 
+# ----------------------------------------------------------------------
+# Grab the tarball that has our local software versions
+# ----------------------------------------------------------------------
+if [[ -v INPUT_TAR_DIR_LOCAL]]; then
+  export PRODUCTS=$INPUT_TAR_DIR_LOCAL/localProducts:${PRODUCTS}
+fi
+
 setup dunesw ${DUNESW_VERSION} -q e26:prof
 
 ups active
@@ -58,7 +65,7 @@ lar --version
 # ----------------------------------------------------------------------
 # Grab the tarball that has our fhicl files we'll need
 # ----------------------------------------------------------------------
-if [-n "${FCL_TGZ_URL}"]; then
+if [[ -v FCL_TGZ_URL]]; then
   curl -L -o fhicl_bundle.tgz "$FCL_TGZ_URL"
   tar xzf fhicl_bundle.tgz
 
