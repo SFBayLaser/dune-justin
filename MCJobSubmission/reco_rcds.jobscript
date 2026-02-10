@@ -1,0 +1,112 @@
+#!/bin/bash
+#set -euo pipefail
+
+echo "=== RECO job starting ==="
+echo "Host: $(hostname)"
+echo "PWD(cmd): $(/bin/pwd -P || pwd || true)"
+echo "PWD(var): ${PWD:-unset}"
+echo "JUSTIN_PATH=${JUSTIN_PATH:-unset}"
+echo "JUSTIN_INPUT_FILE=${JUSTIN_INPUT_FILE:-unset}"
+
+# ----------------------------------------------------------------------
+# Allocate the input file via justIN (robust)
+# ----------------------------------------------------------------------
+if [[ -z "${JUSTIN_PATH:-}" ]]; then
+  echo "ERROR: JUSTIN_PATH is not set (not running under justIN wrapper?)"
+  exit 2
+fi
+
+alloc="$("$JUSTIN_PATH/justin-get-file")"
+if [[ -z "$alloc" ]]; then
+  echo "No more inputs allocated for this stage; exiting cleanly."
+  exit 0
+fi
+
+did="$(echo "$alloc" | awk '{print $1}')"
+pfn="$(echo "$alloc" | awk '{print $2}')"
+rse="$(echo "$alloc" | awk '{print $3}')"
+echo "Allocated input: did=$did pfn=$pfn rse=$rse"
+
+INPUT_DETSIM="${pfn:-}"
+if [[ -z "${INPUT_DETSIM}" ]]; then
+  echo "ERROR: allocator returned empty PFN"
+  exit 3
+fi
+
+echo "G4 input file: ${INPUT_DETSIM}"
+
+# Output value of expected input environment variables
+echo "fhicl file: ${JOB_FHICL_FILE}"
+
+# Work in the sandbox
+cd $PWD
+
+# ----------------------------------------------------------------------
+# Environment setup
+# ----------------------------------------------------------------------
+echo "Sourcing DUNE setup..."
+#set +u
+source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
+#set -u
+
+# ----------------------------------------------------------------------
+# Grab the tarball that has our local software versions
+# ----------------------------------------------------------------------
+export PRODUCTS=$INPUT_TAR_DIR_LOCAL/localProducts:${PRODUCTS}
+
+setup dunesw ${DUNESW_VERSION} -q e26:prof
+
+ups active
+lar --version
+
+# ----------------------------------------------------------------------
+# Grab the tarball that has our fhicl files we'll need
+# ----------------------------------------------------------------------
+if [-n "${FCL_TGZ_URL}"]; then
+  curl -L -o fhicl_bundle.tgz "$FCL_TGZ_URL"
+  tar xzf fhicl_bundle.tgz
+
+  export FHICL_FILE_PATH="$PWD/fhicl:${FHICL_FILE_PATH:-.}"
+else
+  echo "ERROR no path to fhicl files"
+  exit 3
+fi
+
+# ----------------------------------------------------------------------
+# Run Reco
+# ----------------------------------------------------------------------
+FCL=${JOB_FHICL_FILE}
+
+# Output filename derived from input (your preferred convention)
+INBASE="$(basename "${INPUT_DETSIM}" .root)"
+OUTFILE="${INBASE}_reco.root"
+
+echo "Running lar DETSIM:"
+echo "  FCL:     ${FCL}"
+echo "  Input:   ${INPUT_DETSIM}"
+echo "  Output:  ${OUTFILE}"
+
+lar -c "${FCL}" -s "${INPUT_DETSIM}" -o "${OUTFILE}" -n -1
+
+# ----------------------------------------------------------------------
+# rename larcv file
+# ----------------------------------------------------------------------
+LARCVNAME="${INBASE}_reco_larcv.root"
+mv -v larcv.root "${LARCVNAME}"
+
+# ----------------------------------------------------------------------
+# Sanity checks
+# ----------------------------------------------------------------------
+test -f "${OUTFILE}" || { echo "ERROR: Output file ${OUTFILE} not produced!"; exit 1; }
+test -f "${LARCVNAME}" || { echo "ERROR: Output file ${LARCVNAME} not produced!"; exit 1; }
+
+echo "Sandbox folder contains:"
+ls -lh $PWD
+
+# ----------------------------------------------------------------------
+# Tell justIN we successfully processed the allocated input
+# ----------------------------------------------------------------------
+echo "$did" >> justin-processed-dids.txt
+echo "Wrote processed DID: $did"
+
+echo "=== RECOjob completed successfully ==="
