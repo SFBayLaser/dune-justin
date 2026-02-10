@@ -23,6 +23,7 @@
 #include "opticaldetectorservices_dune.fcl"
 #include "OpSlicer.fcl"
 #include "SolarOpFlash.fcl"
+#include "cluster3Dmodule.fcl"
 #include "cluster3dalgorithms_dune.fcl"
 #include "supera_modules.fcl"
 
@@ -44,7 +45,7 @@ dunefd_horizdrift_producers:
   spsolve:           @local::dunefd_horizdrift_spacepointsolver
   hitfd:             @local::dunefd_disambigfromsp
   #hitfd:             @local::dunefd_hitfinderfd
-  cluster3d:         @local::standard_cluster3d
+  cluster3d:         @local::standard_cluster3ddune
   # 2D clustering
   linecluster:        @local::dune35t_linecluster
   trajcluster:          @local::dunefdmc_trajcluster
