@@ -46,7 +46,8 @@ source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
 # ----------------------------------------------------------------------
 # Grab the tarball that has our local software versions
 # ----------------------------------------------------------------------
-if [ -n "$INPUT_TAR_DIR_LOCAL"]; then
+if [ -n "${INPUT_TAR_DIR_LOCAL:-}" ]; then
+  echo "Using path to local builds: ${INPUT_TAR_DIR_LOCAL}"
   export PRODUCTS=$INPUT_TAR_DIR_LOCAL/localProducts:${PRODUCTS}
 fi
 
@@ -58,7 +59,7 @@ lar --version
 # ----------------------------------------------------------------------
 # Grab the tarball that has our fhicl files we'll need
 # ----------------------------------------------------------------------
-if [ -n "$FCL_TGZ_URL"]; then
+if [ -n "${FCL_TGZ_URL:-}" ]; then
   curl -L -o fhicl_bundle.tgz "$FCL_TGZ_URL"
   tar xzf fhicl_bundle.tgz
 
