@@ -183,6 +183,10 @@ def main():
             cmd += ["--env", f"{k}={v}"]
 
         # code version to run (optional; can override defaults)
+        if "tarfile_dir" in st_merged and st_merged["tarfile_dir"] is not None:
+            cmd += ["--env", "INPUT_TAR_DIR_LOCAL="+as_str(st_merged["tarfile_dir"])]
+
+        # code version to run (optional; can override defaults)
         if "dunesw_version" in st_merged and st_merged["dunesw_version"] is not None:
             cmd += ["--env", "DUNESW_VERSION="+as_str(st_merged["dunesw_version"])]
         else:
