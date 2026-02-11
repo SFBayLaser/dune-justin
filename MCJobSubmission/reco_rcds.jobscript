@@ -83,10 +83,11 @@ FCL=${JOB_FHICL_FILE}
 INBASE="$(basename "${INPUT_DETSIM}" .root)"
 OUTFILE="${INBASE}_reco.root"
 
-echo "Running lar DETSIM:"
+echo "Running lar RECO:"
 echo "  FCL:     ${FCL}"
 echo "  Input:   ${INPUT_DETSIM}"
 echo "  Output:  ${OUTFILE}"
+echo "  FHICL:   ${FHICL_FILE_PATH}"
 
 lar -c "${FCL}" -s "${INPUT_DETSIM}" -o "${OUTFILE}" -n -1
 

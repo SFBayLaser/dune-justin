@@ -49,12 +49,16 @@ source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
 if [ -n "${INPUT_TAR_DIR_LOCAL:-}" ]; then
   echo "Using path to local builds: ${INPUT_TAR_DIR_LOCAL}"
   export PRODUCTS=$INPUT_TAR_DIR_LOCAL/localProducts:${PRODUCTS}
+  export CETPKG_INSTALL=$INPUT_TAR_DIR_LOCAL/localProducts
 fi
 
 setup dunesw ${DUNESW_VERSION} -q e26:prof
 
 ups active
 lar --version
+ups list dunesw
+
+exit 3
 
 # ----------------------------------------------------------------------
 # Grab the tarball that has our fhicl files we'll need
