@@ -54,6 +54,7 @@ source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
 # ----------------------------------------------------------------------
 if [ -n "${INPUT_TAR_DIR_LOCAL:-}" ]; then
   export PRODUCTS=$INPUT_TAR_DIR_LOCAL/localProducts:${PRODUCTS}
+  export CETPKG_INSTALL=$INPUT_TAR_DIR_LOCAL/localProducts
 fi
 
 setup dunesw ${DUNESW_VERSION} -q e26:prof

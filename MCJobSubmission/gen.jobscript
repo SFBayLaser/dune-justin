@@ -54,11 +54,10 @@ fi
 
 setup dunesw ${DUNESW_VERSION} -q e26:prof
 
+# diagnostics when this doesn't work...
 ups active
 lar --version
 ups list dunesw
-
-exit 3
 
 # ----------------------------------------------------------------------
 # Grab the tarball that has our fhicl files we'll need
