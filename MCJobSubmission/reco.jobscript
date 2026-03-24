@@ -57,6 +57,7 @@ lar --version
 # ----------------------------------------------------------------------
 # Grab the tarball that has our fhicl files we'll need
 # ----------------------------------------------------------------------
+echo "url to fhicl file bundle: $FCL_TGZ_URL"
 if [-n "${FCL_TGZ_URL}"]; then
   curl -L -o fhicl_bundle.tgz "$FCL_TGZ_URL"
   tar xzf fhicl_bundle.tgz

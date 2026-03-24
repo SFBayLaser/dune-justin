@@ -289,7 +289,6 @@ dunefd_horizdrift_producers.gaushit.CalDataModuleLabel: "tpcrawdecoder:gauss"
 
 dunefd_horizdrift_producers.cluster3d.HitFinderModuleLabel:               ["gaushit"]
 dunefd_horizdrift_producers.cluster3d.Hit3DBuilderAlg:                    @local::standard_snippethit3dbuilderDUNE   
-dunefd_horizdrift_producers.cluster3d.Hit3DBuilderAlg.SaveMythicalPoints: true
 dunefd_horizdrift_producers.cluster3d.Hit3DBuilderAlg.MaxHitChiSquare:    10.
 dunefd_horizdrift_producers.cluster3d.MakeSpacePointsOnly:                true
 
