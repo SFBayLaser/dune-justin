@@ -1,7 +1,7 @@
 {
   "workflow": {
     "description": "gen->reco 2 hit",
-    "monte_carlo": 100
+    "monte_carlo": 10
   },
 
   "defaults": {
@@ -20,7 +20,7 @@
       "wall_seconds": 14400,
       "rss_mib": 4000,
       "env": {
-        "NEVENTS": "1000",
+        "NEVENTS": "250",
         "RUN_BASE": "010000",
         "JOB_FHICL_FILE": "mpvmpr_gen_1x2x6.fcl"
       },
