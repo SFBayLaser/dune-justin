@@ -1,7 +1,7 @@
 {
   "workflow": {
     "description": "gen->reco 2 hit",
-    "monte_carlo": 250
+    "monte_carlo": 10
   },
 
   "defaults": {
