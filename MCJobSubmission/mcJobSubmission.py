@@ -198,7 +198,7 @@ def main():
 
         # Limit sites?
         if "limit_sites" in st_merged and st_merged["limit_sites"] is True:
-            cmd += "--append_condor_requirements='(GLIDEIN_Site=="FNAL_FERMIGRID") || regexp("NERSC", GLIDEIN_Site)'"
+            cmd += "--append_condor_requirements='(GLIDEIN_Site==\"FNAL_FERMIGRID\") || regexp(\"NERSC\", GLIDEIN_Site)'"
 
         # Output patterns (repeatable)
         # - final stage typically uses output_patterns (list) or output_pattern (string)
