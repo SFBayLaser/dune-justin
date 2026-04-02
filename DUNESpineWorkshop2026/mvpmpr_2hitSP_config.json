@@ -1,15 +1,16 @@
 {
   "workflow": {
     "description": "gen->reco 2 hit",
-    "monte_carlo": 10
+    "monte_carlo": 250
   },
 
   "defaults": {
     "repo": "SFBayLaser/dune-justin",
     "ref": "main",
-    "lifetime_days": 1,
+    "lifetime_days": 4,
     "max_distance": 60,
     "dunesw_version": "v10_20_03d00",
+    "limit_sites": true,
     "fhicl_files": "https://raw.githubusercontent.com/SFBayLaser/dune-justin/main/bundles/fhicl_bundle.tgz"
   },
 
