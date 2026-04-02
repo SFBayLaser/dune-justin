@@ -10,7 +10,8 @@
     "lifetime_days": 4,
     "max_distance": 60,
     "dunesw_version": "v10_20_03d00",
-    "limit_sites": true,
+    "limit_sites": false,
+    "sites": ["US_FNAL_FermiGrid"],
     "fhicl_files": "https://raw.githubusercontent.com/SFBayLaser/dune-justin/main/bundles/fhicl_bundle.tgz"
   },
 
