@@ -196,6 +196,10 @@ def main():
         if "fhicl_files" in st_merged and st_merged["fhicl_files"] is not None:
             cmd += ["--env", "FCL_TGZ_URL="+as_str(st_merged["fhicl_files"])]
 
+        # Limit sites?
+        if "limit_sites" in st_merged and st_merged["limit_sites"] is True:
+            cmd += "--append_condor_requirements='(GLIDEIN_Site=="FNAL_FERMIGRID") || regexp("NERSC", GLIDEIN_Site)'"
+
         # Output patterns (repeatable)
         # - final stage typically uses output_patterns (list) or output_pattern (string)
         # - intermediate stage uses output_pattern_next_stage (string)
