@@ -10,6 +10,7 @@
     "lifetime_days": 4,
     "max_distance": 60,
     "dunesw_version": "v10_20_03d00",
+    "limit_sites": false,
     "fhicl_files": "https://raw.githubusercontent.com/SFBayLaser/dune-justin/main/bundles/fhicl_bundle.tgz"
   },
 
@@ -20,7 +21,7 @@
       "wall_seconds": 14400,
       "rss_mib": 4000,
       "env": {
-        "NEVENTS": "500",
+        "NEVENTS": "200",
         "RUN_BASE": "020000",
         "JOB_FHICL_FILE": "mpvmpr_gen_1x2x6.fcl"
       },
