@@ -1,7 +1,7 @@
 {
   "workflow": {
     "description": "nu gen->reco 2 hit",
-    "monte_carlo": 1000
+    "monte_carlo": 500
   },
 
   "defaults": {
@@ -9,7 +9,7 @@
     "ref": "main",
     "lifetime_days": 4,
     "max_distance": 60
-    "dunesw_version": "v10_17_01d00"
+    "dunesw_version": "v10_20_03d00"
     "fhicl_files": "https://raw.githubusercontent.com/SFBayLaser/dune-justin/main/bundles/fhicl_bundle.tgz"
   },
 
@@ -20,7 +20,7 @@
       "wall_seconds": 14400,
       "rss_mib": 4000,
       "env": {
-        "NEVENTS": "50",
+        "NEVENTS": "200",
         "RUN_BASE": "500000",
         "JOB_FHICL_FILE": "prodgenie_nu_dune10kt_1x2x6.fcl"
       },

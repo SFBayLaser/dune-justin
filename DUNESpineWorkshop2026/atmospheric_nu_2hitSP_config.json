@@ -1,15 +1,15 @@
 {
   "workflow": {
     "description": "atm nu gen->reco 2 hit",
-    "monte_carlo": 1000
+    "monte_carlo": 500
   },
 
   "defaults": {
     "repo": "SFBayLaser/dune-justin",
     "ref": "main",
-    "lifetime_days": 4,
+    "lifetime_days": 6,
     "max_distance": 30
-    "dunesw_version": "v10_17_01d00"
+    "dunesw_version": "v10_20_03d00"
   },
 
   "stages": [
@@ -19,7 +19,7 @@
       "wall_seconds": 14400,
       "rss_mib": 4000,
       "env": {
-        "NEVENTS": "50",
+        "NEVENTS": "200",
         "RUN_BASE": "400000",
         "JOB_FHICL_FILE": "prodgenie_atmnu_max_weighted_randompolicy_dune10kt_1x2x6.fcl"
       },
