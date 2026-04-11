@@ -21,7 +21,7 @@
       "rss_mib": 4000,
       "env": {
         "NEVENTS": "200",
-        "RUN_BASE": "400000",
+        "RUN_BASE": "500000",
         "JOB_FHICL_FILE": "prodgenie_atmnu_max_weighted_randompolicy_dune10kt_1x2x6.fcl"
       },
       "output_pattern_next_stage": "*_gen.root"
