@@ -31,7 +31,7 @@ physics.producers.generator.UseBoost :       false
 
 physics.producers.generator.ParticleParameter.PDGCode      : [[-11,11,-13,13],      [22,111],     [211,-211],          [2212],         [2112],  [130, 321, -321, 310],    [3122] ]
 physics.producers.generator.ParticleParameter.MinMulti     : [              1,             0,             0,               0,               0,                      0,         0 ]
-physics.producers.generator.ParticleParameter.MaxMulti     : [              1,             2,             2,               5,               3,                      0,         1 ]
+physics.producers.generator.ParticleParameter.MaxMulti     : [              1,             2,             2,               5,               3,                      1,         1 ]
 physics.producers.generator.ParticleParameter.ProbWeight   : [              1,             1,             1,               1,               1,                   0.25,      0.25 ]   
 physics.producers.generator.ParticleParameter.KERange      : [    [0.01,15.0],     [0.01,2.5],    [0.01,2.5],       [0.02,1.],      [0.02,1.],              [0.01,5.], [0.01,3.] ]
 physics.producers.generator.ParticleParameter.MomRange     : []
