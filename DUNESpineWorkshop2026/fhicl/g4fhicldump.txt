@@ -1,0 +1,1292 @@
+# Produced from 'fhicl-dump' using:
+#   Input  : standard_g4_dune10kt_1x2x6.fcl
+#   Policy : cet::filepath_maker
+#   Path   : "FHICL_FILE_PATH"
+
+outputs: {
+   out1: {
+      compressionLevel: 1
+      dataTier: "simulated"
+      fileName: "%ifb_g4.root"
+      module_type: "RootOutput"
+   }
+}
+physics: {
+   end_paths: [
+      "stream1"
+   ]
+   producers: {
+      IonAndScint: {
+         ISCalcAlg: "Correlated"
+         Instances: "LArG4DetectorServicevolTPCInner;LArG4DetectorServicevolTPCPlaneVInner;LArG4DetectorServicevolTPCActiveOuter;LArG4DetectorServicevolTPCPlaneUInner;LArG4DetectorServicevolTPCPlaneZInner;LArG4DetectorServicevolTPCActiveInner;LArG4DetectorServicevolTPCActive,LArG4DetectorServicevolTPCInner0;LArG4DetectorServicevolTPCPlaneVInner0;LArG4DetectorServicevolTPCPlaneUInner0;LArG4DetectorServicevolTPCPlaneZInner0;LArG4DetectorServicevolTPCActiveInner0;LArG4DetectorServicevolTPCActive0;LArG4DetectorServicevolTPCInner1;LArG4DetectorServicevolTPCPlaneVInner1;LArG4DetectorServicevolTPCPlaneUInner1;LArG4DetectorServicevolTPCPlaneZInner1;LArG4DetectorServicevolTPCActiveInner1;LArG4DetectorServicevolTPCActive1"
+         module_type: "IonAndScint"
+      }
+      PDFastSim: {
+         DoFastComponent: true
+         DoReflectedLight: false
+         DoSlowComponent: true
+         GeoPropTimeOnly: false
+         IncludeAnodeReflections: false
+         IncludePropTime: true
+         OnlyActiveVolume: true
+         OnlyOneCryostat: false
+         OpaqueCathode: true
+         OpticalPathTool: {
+            tool_type: "StandardOpticalPath"
+         }
+         ScintTimeTool: {
+            FastDecayTime: 6
+            FastRisingTime: 0
+            LogLevel: 1
+            SlowDecayTime: 1600
+            SlowRisingTime: 0
+            tool_type: "ScintTimeLAr"
+         }
+         SimulationLabel: "IonAndScint"
+         UseLitePhotons: true
+         UseXeAbsorption: false
+         VUVHits: {
+            DomePDCorr: false
+            FlatPDCorr: true
+            GH_PARS_flat: [
+               [
+                  1.23286,
+                  1.20491,
+                  1.1597,
+                  1.08148,
+                  9.86607e-1,
+                  8.68075e-1,
+                  7.25637e-1,
+                  6.33551e-1,
+                  4.69717e-1
+               ],
+               [
+                  1.50325e2,
+                  1.50109e2,
+                  1.56294e2,
+                  1.69271e2,
+                  1.79642e2,
+                  2.129e2,
+                  2.32173e2,
+                  2.26557e2,
+                  2.15166e2
+               ],
+               [
+                  1.90558e1,
+                  1.88478e1,
+                  1.88757e1,
+                  1.87149e1,
+                  5.08662e1,
+                  4.92247e1,
+                  5.76717e1,
+                  1.5792e2,
+                  1.72494e2
+               ],
+               [
+                  -3000,
+                  -3000,
+                  -3000,
+                  -3000,
+                  -1000,
+                  -1000,
+                  -1000,
+                  -100,
+                  -100
+               ]
+            ]
+            GH_border_angulo_flat: [
+               5,
+               15,
+               25,
+               35,
+               45,
+               55,
+               65,
+               75,
+               85
+            ]
+            GH_border_flat: [
+               [
+                  -9.63855e-5,
+                  -6.82604e-5,
+                  -9.63478e-5,
+                  -1.21181e-4,
+                  -1.26611e-4,
+                  -1.15481e-4,
+                  -8.61492e-5,
+                  -1.12594e-4,
+                  -7.80935e-5
+               ],
+               [
+                  -6.62469e-2,
+                  -5.04497e-2,
+                  -5.96321e-2,
+                  -4.18021e-2,
+                  -3.42462e-2,
+                  -5.31668e-2,
+                  -5.22639e-2,
+                  -5.78887e-2,
+                  -5.91081e-2
+               ],
+               [
+                  -5.93207e-3,
+                  -6.72713e-3,
+                  -2.0843e-3,
+                  -2.16374e-3,
+                  9.01291e-3,
+                  3.85402e-3,
+                  6.6081e-3,
+                  3.41547e-2,
+                  4.46519e-2
+               ]
+            ]
+            MaxPDDistance: 1000
+            VerticalBorderCorrectionMode: false
+            delta_angulo_vuv: 10
+         }
+         VUVTiming: {
+            Distances_exp: [
+               0,
+               25,
+               50,
+               75,
+               100,
+               125,
+               150,
+               175,
+               200,
+               225,
+               250,
+               275,
+               300,
+               325,
+               350,
+               375
+            ]
+            Distances_landau: [
+               0,
+               25,
+               50,
+               75,
+               100,
+               125,
+               150,
+               175,
+               200,
+               225,
+               250,
+               275,
+               300,
+               325,
+               350,
+               375,
+               400,
+               425,
+               450,
+               475,
+               500,
+               525,
+               550,
+               575,
+               600,
+               625,
+               650,
+               675,
+               700,
+               725
+            ]
+            Expo_over_Landau_norm: [
+               [
+                  2.76789e-3,
+                  2.76789e-3,
+                  3.62807e-2,
+                  8.1067e-2,
+                  1.11523e-1,
+                  1.06485e-1,
+                  1.23852e-1,
+                  1.44239e-1,
+                  1.68534e-1,
+                  2.01111e-1,
+                  2.34443e-1,
+                  2.69284e-1,
+                  3.00041e-1,
+                  3.20541e-1,
+                  3.42403e-1,
+                  3.56125e-1
+               ],
+               [
+                  2.42526e-2,
+                  2.42526e-2,
+                  8.6063e-2,
+                  1.01552e-1,
+                  1.34787e-1,
+                  1.71863e-1,
+                  1.52519e-1,
+                  2.03461e-1,
+                  2.24872e-1,
+                  2.79135e-1,
+                  3.04123e-1,
+                  3.17034e-1,
+                  3.41433e-1,
+                  3.60053e-1,
+                  3.82877e-1,
+                  3.91287e-1
+               ]
+            ]
+            Mpv: [
+               [
+                  1.77134,
+                  1.77134,
+                  3.85131,
+                  5.593,
+                  7.46645,
+                  9.44108,
+                  1.15899e1,
+                  1.38189e1,
+                  1.62753e1,
+                  1.88619e1,
+                  2.16428e1,
+                  2.44828e1,
+                  2.7189e1,
+                  2.96607e1,
+                  3.23706e1,
+                  3.52212e1,
+                  4.14392e1,
+                  4.32475e1,
+                  4.5939e1,
+                  4.85748e1,
+                  5.14841e1,
+                  5.14841e1,
+                  5.14841e1,
+                  5.14841e1,
+                  5.14841e1,
+                  5.14841e1,
+                  5.14841e1,
+                  5.14841e1,
+                  5.14841e1,
+                  5.14841e1
+               ],
+               [
+                  1.91282,
+                  1.91282,
+                  4.31774,
+                  5.90297,
+                  8.90329,
+                  1.18104e1,
+                  1.29629e1,
+                  1.70555e1,
+                  1.95031e1,
+                  2.47774e1,
+                  2.7175e1,
+                  2.98128e1,
+                  3.35619e1,
+                  3.66553e1,
+                  4.30021e1,
+                  4.6059e1,
+                  5.26953e1,
+                  5.51056e1,
+                  5.99728e1,
+                  6.52979e1,
+                  6.79593e1,
+                  7.10675e1,
+                  7.47855e1,
+                  7.9689e1,
+                  8.53232e1,
+                  9.0818e1,
+                  9.70409e1,
+                  1.032e2,
+                  1.11306e2,
+                  1.176e2
+               ]
+            ]
+            Norm_over_entries: [
+               [
+                  2.741e1,
+                  2.741e1,
+                  2.57134,
+                  1.47775,
+                  9.6034e-1,
+                  6.68723e-1,
+                  4.87808e-1,
+                  3.62789e-1,
+                  2.77659e-1,
+                  2.24883e-1,
+                  1.85199e-1,
+                  1.59048e-1,
+                  1.43393e-1,
+                  1.34121e-1,
+                  1.25978e-1,
+                  1.15751e-1,
+                  9.21523e-2,
+                  9.07023e-2,
+                  8.56498e-2,
+                  8.14134e-2,
+                  7.50844e-2,
+                  7.50844e-2,
+                  7.50844e-2,
+                  7.50844e-2,
+                  7.50844e-2,
+                  7.50844e-2,
+                  7.50844e-2,
+                  7.50844e-2,
+                  7.50844e-2,
+                  7.50844e-2
+               ],
+               [
+                  3.79032,
+                  3.79032,
+                  1.25862,
+                  9.28939e-1,
+                  5.66822e-1,
+                  3.19336e-1,
+                  3.31336e-1,
+                  2.19171e-1,
+                  1.78579e-1,
+                  1.35635e-1,
+                  1.19011e-1,
+                  1.09138e-1,
+                  9.91792e-2,
+                  9.1753e-2,
+                  7.87281e-2,
+                  7.43768e-2,
+                  6.63083e-2,
+                  6.48284e-2,
+                  6.08437e-2,
+                  5.72599e-2,
+                  5.61134e-2,
+                  5.43579e-2,
+                  5.29609e-2,
+                  5.19021e-2,
+                  5.10434e-2,
+                  5.04866e-2,
+                  5.03902e-2,
+                  5.07405e-2,
+                  5.03883e-2,
+                  4.97511e-2
+               ]
+            ]
+            Slope: [
+               [
+                  -2.05783e-1,
+                  -2.05783e-1,
+                  -1.57344e-1,
+                  -1.24546e-1,
+                  -9.49427e-2,
+                  -6.40574e-2,
+                  -5.09928e-2,
+                  -4.21876e-2,
+                  -3.60771e-2,
+                  -3.27956e-2,
+                  -2.997e-2,
+                  -2.80924e-2,
+                  -2.69181e-2,
+                  -2.59104e-2,
+                  -2.48679e-2,
+                  -2.33511e-2
+               ],
+               [
+                  -1.57151e-1,
+                  -1.57151e-1,
+                  -1.0447e-1,
+                  -8.75509e-2,
+                  -6.05052e-2,
+                  -4.35416e-2,
+                  -4.0128e-2,
+                  -3.25951e-2,
+                  -2.92046e-2,
+                  -2.55942e-2,
+                  -2.41776e-2,
+                  -2.26607e-2,
+                  -2.13594e-2,
+                  -2.037e-2,
+                  -1.81767e-2,
+                  -1.72752e-2
+               ]
+            ]
+            Width: [
+               [
+                  1.0303e-1,
+                  1.0303e-1,
+                  3.13506e-1,
+                  5.25492e-1,
+                  7.16541e-1,
+                  9.69894e-1,
+                  1.29961,
+                  1.73657,
+                  2.30482,
+                  2.94669,
+                  3.71951,
+                  4.53258,
+                  5.24435,
+                  5.79945,
+                  6.53951,
+                  7.34736,
+                  1.20305e1,
+                  1.24263e1,
+                  1.34917e1,
+                  1.47245e1,
+                  1.66202e1,
+                  1.66202e1,
+                  1.66202e1,
+                  1.66202e1,
+                  1.66202e1,
+                  1.66202e1,
+                  1.66202e1,
+                  1.66202e1,
+                  1.66202e1,
+                  1.66202e1
+               ],
+               [
+                  0,
+                  2.81535e-1,
+                  6.33816e-1,
+                  8.0694e-1,
+                  1.46701,
+                  2.32209,
+                  2.20895,
+                  3.56751,
+                  4.23966,
+                  6.11748,
+                  6.97923,
+                  7.82035,
+                  9.05225,
+                  1.01422e1,
+                  1.26053e1,
+                  1.36305e1,
+                  1.77093e1,
+                  1.83244e1,
+                  1.99961e1,
+                  2.21072e1,
+                  2.34653e1,
+                  2.53052e1,
+                  2.75297e1,
+                  3.05683e1,
+                  3.48304e1,
+                  3.97456e1,
+                  4.51447e1,
+                  5.13363e1,
+                  5.84681e1,
+                  6.30122e1
+               ]
+            ]
+            angle_bin_timing_vuv: 45
+            inflexion_point_distance: 400
+            max_d: 1000
+            min_d: 25
+            step_size: 1
+            vuv_vgroup_max: 18
+            vuv_vgroup_mean: 1.35e1
+         }
+         module_type: "PDFastSimPAR"
+      }
+      largeant: {
+         enableVisualization: false
+         macroPath: ".:./macros"
+         module_type: "larg4Main"
+         visMacro: "vis.mac"
+      }
+      rns: {
+         module_type: "RandomNumberSaver"
+      }
+      sedlite: {
+         ElectronDriftVel: 1.6e-1
+         SimEnergyDepositLabel: "IonAndScint"
+         VoxelSizeX: 4.7e-1
+         VoxelSizeY: 4.7e-1
+         VoxelSizeZ: 4.7e-1
+         module_type: "G4InfoReducer"
+         useOrigTrackID: true
+      }
+      simplemerge: {
+         InputSourcesLabels: [
+            "largeant",
+            "largeant:droppedMCParticles"
+         ]
+         ResetMotherIDs: [
+            1e7,
+            2e7
+         ]
+         module_type: "SimpleMerge"
+      }
+   }
+   simulate: [
+      "rns",
+      "largeant",
+      "IonAndScint",
+      "PDFastSim",
+      "sedlite",
+      "simplemerge"
+   ]
+   stream1: [
+      "out1"
+   ]
+   trigger_paths: [
+      "simulate"
+   ]
+}
+process_name: "G4"
+services: {
+   ActionHolder: {}
+   AuxDetGeometry: {
+      GDML: "dune10kt_v6_refactored_1x2x6.gdml"
+      Name: "dune10kt_v6_1x2x6"
+      SortingParameters: {
+         tool_type: "AuxDetGeoObjectSorterYZX"
+      }
+   }
+   BackTrackerService: {
+      BackTracker: {
+         G4ModuleLabel: "largeant"
+         MinimumHitEnergyFraction: 1e-1
+         SimChannelModuleLabel: "tpcrawdecoder:simpleSC"
+      }
+   }
+   ChannelStatusService: {
+      BadChannels: []
+      NoisyChannels: []
+      service_provider: "SimpleChannelStatusService"
+   }
+   DatabaseUtil: {
+      DBHostName: "fnalpgsdev.fnal.gov"
+      DBName: "dune_dev"
+      DBUser: "dune_reader"
+      PassFileName: ".lpswd"
+      Port: 5438
+      ShouldConnect: false
+      TableName: "main_run"
+      ToughErrorTreatment: false
+   }
+   DetectorClocksService: {
+      ClockSpeedExternal: 3.125e1
+      ClockSpeedOptical: 6.25e1
+      ClockSpeedTPC: 2
+      ClockSpeedTrigger: 16
+      DefaultBeamTime: 0
+      DefaultTrigTime: 0
+      FramePeriod: 1600
+      G4RefTime: 0
+      InheritClockConfig: false
+      TrigModuleName: ""
+      TriggerOffsetTPC: 0
+      service_provider: "DetectorClocksServiceStandard"
+   }
+   DetectorHolder: {}
+   DetectorPropertiesService: {
+      DriftVelFudgeFactor: 1
+      Efield: [
+         5e-1,
+         6.66e-1,
+         8e-1
+      ]
+      Electronlifetime: 10400
+      ElectronsToADC: 6.8906513e-3
+      IncludeInterPlanePitchInXTickOffsets: false
+      NumberTimeSamples: 4492
+      ReadOutWindowSize: 4492
+      SimpleBoundaryProcess: true
+      SternheimerA: 1.956e-1
+      SternheimerCbar: 5.2146
+      SternheimerK: 3
+      SternheimerX0: 2e-1
+      SternheimerX1: 3
+      Temperature: 87
+      TimeOffsetU: 0
+      TimeOffsetV: 0
+      TimeOffsetZ: 0
+      UseIcarusMicrobooneDriftModel: false
+      service_provider: "DetectorPropertiesServiceStandard"
+   }
+   FileCatalogMetadata: {
+      applicationFamily: "art"
+      applicationVersion: "development"
+      fileType: "mc"
+      group: "dune"
+      runType: "physics"
+   }
+   Geometry: {
+      GDML: "dune10kt_v6_refactored_1x2x6.gdml"
+      Name: "dune10kt_v6_1x2x6"
+      SortingParameters: {
+         tool_type: "GeoObjectSorterAPA"
+      }
+      SurfaceY: 147828
+   }
+   GeometryConfigurationWriter: {}
+   LArFFT: {
+      FFTOption: ""
+      FFTSize: 0
+      FitBins: 5
+   }
+   LArG4Detector: {
+      category: "world"
+      gdmlFileName_: "dune10kt_v6_refactored_1x2x6.gdml"
+      stepLimits: [
+         4e-1,
+         4e-1,
+         4e-1
+      ]
+      volumeNames: [
+         "volTPCActiveInner0",
+         "volTPCActiveInner1",
+         "volTPCActiveOuter"
+      ]
+   }
+   LArG4Parameters: {
+      CosmogenicK0Bias: 0
+      CosmogenicXSMNBiasFactor: 1
+      CosmogenicXSMNBiasOn: 0
+      DisableWireplanes: false
+      ElectronClusterSize: 600
+      EllipsModBoxA: 9.04e-1
+      EllipsModBoxB: 2.04e-1
+      EllipsModBoxR: 1.25
+      EnabledPhysics: [
+         "Em",
+         "SynchrotronAndGN",
+         "Ion",
+         "Hadron",
+         "Decay",
+         "HadronElastic",
+         "Stopping",
+         "NeutronTrackingCut"
+      ]
+      KeepEMShowerDaughters: false
+      LarqlAlpha: 3.72e-2
+      LarqlBeta: 1.24e-2
+      LarqlChi0A: 3.38427e-3
+      LarqlChi0B: -6.57037
+      LarqlChi0C: 1.88418
+      LarqlChi0D: 1.29379e-4
+      LongitudinalDiffusion: 4e-9
+      MinNumberOfElCluster: 0
+      ModBoxA: 9.3e-1
+      ModBoxB: 2.12e-1
+      ModifyProtonCut: false
+      NewProtonCut: 0
+      OpticalParamModels: [
+         "OverlaidWireplanes"
+      ]
+      OpticalParamOrientations: [
+         0
+      ]
+      OpticalParamParameters: [
+         [
+            [
+               60,
+               3,
+               1.5e-1
+            ],
+            [
+               -60,
+               3,
+               1.5e-1
+            ],
+            [
+               0,
+               3,
+               1.5e-1
+            ]
+         ]
+      ]
+      OpticalParamVolumes: [
+         "volTPCPlaneVert_PV"
+      ]
+      OpticalSimVerbosity: 0
+      ParticleKineticEnergyCut: 1e-5
+      QAlpha: 4.3e-1
+      QProton: 1
+      RecombA: 8e-1
+      Recombk: 4.86e-2
+      SkipWireSignalInTPCs: []
+      StoreTrajectories: true
+      TransverseDiffusion: 8.8e-9
+      UseCustomPhysics: false
+      UseEllipsModBoxRecomb: false
+      UseLitePhotons: true
+      UseModBoxRecomb: true
+      UseModLarqlRecomb: false
+      VisualizationEnergyCut: 1e-2
+      VisualizeNeutrals: false
+      Wph: 1.95e1
+   }
+   LArPropertiesService: {
+      AbsLengthEnergies: [
+         4,
+         5,
+         6,
+         7,
+         8,
+         9,
+         10,
+         11
+      ]
+      AbsLengthSpectrum: [
+         8000,
+         8000,
+         8000,
+         8000,
+         8000,
+         2000,
+         2000,
+         2000
+      ]
+      AlphaScintYield: 16800
+      AlphaScintYieldRatio: 5.6e-1
+      Argon39DecayRate: 0
+      AtomicMass: 3.9948e1
+      AtomicNumber: 18
+      ElectronScintYield: 20000
+      ElectronScintYieldRatio: 2.7e-1
+      EnableCerenkovLight: false
+      ExcitationEnergy: 188
+      FastScintEnergies: [
+         7.2,
+         7.9,
+         8.3,
+         8.6,
+         8.9,
+         9.1,
+         9.3,
+         9.6,
+         9.7,
+         9.8,
+         10,
+         1.02e1,
+         1.03e1,
+         1.06e1,
+         11,
+         1.16e1,
+         1.19e1
+      ]
+      FastScintSpectrum: [
+         0,
+         4e-2,
+         1.2e-1,
+         2.7e-1,
+         4.4e-1,
+         6.2e-1,
+         8e-1,
+         9.1e-1,
+         9.2e-1,
+         8.5e-1,
+         7e-1,
+         5e-1,
+         3.1e-1,
+         1.3e-1,
+         4e-2,
+         1e-2,
+         0
+      ]
+      KaonScintYield: 24000
+      KaonScintYieldRatio: 2.3e-1
+      LoadExtraMatProperties: true
+      MuonScintYield: 24000
+      MuonScintYieldRatio: 2.3e-1
+      PionScintYield: 24000
+      PionScintYieldRatio: 2.3e-1
+      ProtonScintYield: 19200
+      ProtonScintYieldRatio: 2.9e-1
+      RIndexEnergies: [
+         1.18626,
+         1.68626,
+         2.18626,
+         2.68626,
+         3.18626,
+         3.68626,
+         4.18626,
+         4.68626,
+         5.18626,
+         5.68626,
+         6.18626,
+         6.68626,
+         7.18626,
+         7.68626,
+         8.18626,
+         8.68626,
+         9.18626,
+         9.68626,
+         1.01863e1,
+         1.06863e1,
+         1.11863e1
+      ]
+      RIndexSpectrum: [
+         1.24664,
+         1.2205,
+         1.22694,
+         1.22932,
+         1.23124,
+         1.23322,
+         1.23545,
+         1.23806,
+         1.24116,
+         1.24489,
+         1.24942,
+         1.25499,
+         1.26197,
+         1.2709,
+         1.28263,
+         1.29865,
+         1.32169,
+         1.35747,
+         1.42039,
+         1.56011,
+         2.16626
+      ]
+      RadiationLength: 1.955e1
+      RayleighEnergies: [
+         1.18626,
+         1.68626,
+         2.18626,
+         2.68626,
+         3.18626,
+         3.68626,
+         4.18626,
+         4.68626,
+         5.18626,
+         5.68626,
+         6.18626,
+         6.68626,
+         7.18626,
+         7.68626,
+         8.18626,
+         8.68626,
+         9.18626,
+         9.68626,
+         1.01863e1,
+         1.06863e1,
+         1.11863e1
+      ]
+      RayleighSpectrum: [
+         1.2008e6,
+         390747,
+         128633,
+         5.49691e4,
+         2.71918e4,
+         1.48537e4,
+         8.7169e3,
+         5.39742e3,
+         3.48137e3,
+         2.31651e3,
+         1.57763e3,
+         1.09202e3,
+         7.63045e2,
+         5.34232e2,
+         3.71335e2,
+         2.52942e2,
+         1.6538e2,
+         9.99003e1,
+         5.12653e1,
+         1.7495e1,
+         9.64341e-1
+      ]
+      ReflectiveSurfaceDiffuseFractions: [
+         [
+            5e-1,
+            5e-1,
+            5e-1
+         ]
+      ]
+      ReflectiveSurfaceEnergies: [
+         7,
+         9,
+         10
+      ]
+      ReflectiveSurfaceNames: [
+         "STEEL_STAINLESS_Fe7Cr2Ni"
+      ]
+      ReflectiveSurfaceReflectances: [
+         [
+            2.5e-1,
+            2.5e-1,
+            2.5e-1
+         ]
+      ]
+      ScintBirksConstant: 6.9e-2
+      ScintByParticleType: false
+      ScintFastTimeConst: 6
+      ScintPreScale: 5e-2
+      ScintResolutionScale: 1
+      ScintSlowTimeConst: 1590
+      ScintYield: 24000
+      ScintYieldRatio: 2.3e-1
+      SlowScintEnergies: [
+         7.2,
+         7.9,
+         8.3,
+         8.6,
+         8.9,
+         9.1,
+         9.3,
+         9.6,
+         9.7,
+         9.8,
+         10,
+         1.02e1,
+         1.03e1,
+         1.06e1,
+         11,
+         1.16e1,
+         1.19e1
+      ]
+      SlowScintSpectrum: [
+         0,
+         4e-2,
+         1.2e-1,
+         2.7e-1,
+         4.4e-1,
+         6.2e-1,
+         8e-1,
+         9.1e-1,
+         9.2e-1,
+         8.5e-1,
+         7e-1,
+         5e-1,
+         3.1e-1,
+         1.3e-1,
+         4e-2,
+         1e-2,
+         0
+      ]
+      TpbAbsorptionEnergies: [
+         5e-2,
+         1.77,
+         2.0675,
+         7.42,
+         7.75,
+         8.16,
+         8.73,
+         9.78,
+         1.069e1,
+         5.039e1
+      ]
+      TpbAbsorptionSpectrum: [
+         100000,
+         100000,
+         100000,
+         1e-3,
+         1e-11,
+         1e-11,
+         1e-11,
+         1e-11,
+         1e-11,
+         1e-11
+      ]
+      TpbEmmisionEnergies: [
+         5e-2,
+         1,
+         1.5,
+         2.25,
+         2.481,
+         2.819,
+         2.952,
+         2.988,
+         3.024,
+         3.1,
+         3.14,
+         3.1807,
+         3.54,
+         5.5,
+         5.039e1
+      ]
+      TpbEmmisionSpectrum: [
+         0,
+         0,
+         0,
+         5.88e-2,
+         2.35e-1,
+         8.53e-1,
+         1,
+         1,
+         9.259e-1,
+         7.04e-1,
+         2.96e-2,
+         1.1e-2,
+         0,
+         0,
+         0
+      ]
+      TpbTimeConstant: 2.5
+      service_provider: "LArPropertiesServiceStandard"
+   }
+   LArVoxelCalculator: {
+      VoxelEnergyCut: 1e-6
+      VoxelOffsetT: -2500
+      VoxelOffsetX: 0
+      VoxelOffsetY: 0
+      VoxelOffsetZ: 0
+      VoxelSizeT: 5000
+      VoxelSizeX: 3e-2
+      VoxelSizeY: 3e-2
+      VoxelSizeZ: 3e-2
+   }
+   MCTruthEventAction: {
+      service_type: "MCTruthEventActionService"
+   }
+   MagneticField: {
+      FieldDescriptions: [
+         {
+            ConstantField: [
+               0,
+               0,
+               0
+            ]
+            MagnetizedVolume: "volWorld"
+            UseField: 0
+         }
+      ]
+      service_provider: "MagneticFieldServiceStandard"
+   }
+   MemoryTracker: {}
+   NuRandomService: {
+      endOfJobSummary: true
+      policy: "perEvent"
+   }
+   OpDetResponseInterface: {
+      ChannelConversion: "none"
+      FracLong: 0
+      FracShort: 0
+      LambdaLong: 0
+      LambdaShort: 0
+      LightGuideAttenuation: false
+      LongAxis: "z"
+      QuantumEfficiency: 3e-2
+      WavelengthCutHigh: 10000
+      WavelengthCutLow: 0
+      service_provider: "DUNEOpDetResponse"
+   }
+   ParticleInventoryService: {
+      ParticleInventory: {
+         EveIdCalculator: "EmEveIdCalculator"
+         G4ModuleLabel: "largeant"
+      }
+   }
+   ParticleListAction: {
+      EnergyCut: 1e-5
+      KeepDroppedParticlesInVolumes: [
+         "volTPCActive"
+      ]
+      KeepSecondToLast: true
+      KeepTransportation: true
+      SparsifyMargin: 1.5e-2
+      SparsifyTrajectories: true
+      StoreDroppedMCParticles: true
+      keepEMShowerDaughters: false
+      keepGenTrajectories: [
+         "generator"
+      ]
+      keepOnlyPrimaryFullTrajectories: false
+      service_type: "ParticleListActionService"
+      storeTrajectories: true
+   }
+   PhotonBackTrackerService: {
+      PhotonBackTracker: {
+         Delay: 260
+         G4ModuleLabels: [
+            "PDFastSim"
+         ]
+         MinimumHitEnergyFraction: 1e-1
+      }
+   }
+   PhysicsList: {
+      BoundaryInvokeSD: false
+      CerenkovMaxBetaChange: 10
+      CerenkovMaxNumPhotons: 100
+      CerenkovStackPhotons: false
+      DumpList: true
+      NeutronKinELimit: 0
+      NeutronTimeLimit: 0
+      PhysicsListName: "QGSP_BERT"
+      ScintillationByParticleType: false
+      ScintillationStackPhotons: false
+      ScintillationTrackInfo: false
+      ScintillationTrackSecondariesFirst: false
+      Verbosity: 1
+      WLSProfile: "delta"
+      enableAbsorption: false
+      enableBoundary: false
+      enableCerenkov: false
+      enableMieHG: false
+      enableNeutronLimit: false
+      enableOptical: false
+      enableRayleigh: false
+      enableScintillation: false
+      enableStepLimit: true
+      enableWLS: false
+   }
+   PhysicsListHolder: {}
+   RandomNumberGenerator: {}
+   SignalShapingServiceDUNE: {
+      ADCPerPCAtLowestASICGain: 13160
+      ASICGainInMVPerFC: [
+         14,
+         14,
+         14
+      ]
+      CalibResponseTOffset: [
+         0,
+         0,
+         0
+      ]
+      Col3DCorrection: 2.5
+      ColFieldParams: [
+         8,
+         16,
+         7.5e-1
+      ]
+      ColFieldRespAmp: 1
+      ColFieldShape: "x^[2]/(1.0+(x/[0])^[1])"
+      ColFilter: "[0]*exp(-0.5*(((x-[1])/[2])^2)^[3])"
+      ColFilterParams: [
+         1.03,
+         8e-2,
+         1.5e-1,
+         2.17
+      ]
+      DebugFieldShape: false
+      DeconNorm: 200
+      FieldBins: 400
+      FieldResponseFname: "FieldResponse/dune35t_response_v1.0.root"
+      FieldResponseHistoName: "FieldResponse"
+      FieldResponseTOffset: [
+         -32500,
+         -32500,
+         -32500
+      ]
+      FilterFunctionFname: "uboone_filters_v0.1.root"
+      FilterHistoName: "noisefilter_%d"
+      GetFilterFromHisto: false
+      Ind3DCorrection: 1.5
+      IndUFieldParams: [
+         8.43e-3,
+         1.534e-1,
+         1.77,
+         0,
+         5e-1
+      ]
+      IndUFieldRespAmp: 1
+      IndUFieldShape: "[0]*(1.0+[3]*tanh(x-[4]))*([4]-x)*exp(-0.5*((x-[4])/[2])^2.0)"
+      IndUFilter: "gaus(0)*exp(-0.5*pow(x/[3],[4]))"
+      IndUFilterParams: [
+         1.73,
+         1.69,
+         1.55,
+         1.9e-1,
+         3.75
+      ]
+      IndVFieldParams: [
+         8.43e-3,
+         1.534e-1,
+         1.77,
+         0,
+         5e-1
+      ]
+      IndVFieldRespAmp: 1
+      IndVFieldShape: "[0]*(1.0+[3]*tanh(x-[4]))*([4]-x)*exp(-0.5*((x-[4])/[2])^2.0)"
+      IndVFilter: "gaus(0)*exp(-0.5*pow(x/[3],[4]))"
+      IndVFilterParams: [
+         1.73,
+         1.69,
+         1.55,
+         1.9e-1,
+         3.75
+      ]
+      InputFieldRespSamplingPeriod: 100
+      Nbit: 14
+      NoiseFactVec: [
+         [
+            1.12,
+            8.6e-1,
+            6e-1,
+            5.5e-1
+         ],
+         [
+            1.12,
+            8.6e-1,
+            6e-1,
+            5.5e-1
+         ],
+         [
+            8.9e-1,
+            6.6e-1,
+            4.8e-1,
+            4.3e-1
+         ]
+      ]
+      ShapeTimeConst: [
+         2,
+         2,
+         2
+      ]
+      UseFunctionFieldShape: false
+      UseHistogramFieldShape: true
+   }
+   SpaceCharge: {
+      CalibrationInputFilename: "SCEoffsets.root"
+      EnableCalEfieldSCE: false
+      EnableCalSpatialSCE: false
+      EnableCorrSCE: false
+      EnableSimEfieldSCE: false
+      EnableSimSpatialSCE: false
+      InputFilename: "SCEoffsets.root"
+      RepresentationType: "Parametric"
+      service_provider: "SpaceChargeServiceStandard"
+   }
+   TFileService: {
+      fileName: "g4_hist.root"
+   }
+   TimeTracker: {}
+   WireReadout: {
+      ChannelsPerOpDet: 1
+      service_provider: "DUNEWireReadout"
+   }
+   message: {
+      destinations: {
+         STDCOUT: {
+            categories: {
+               ConvertPrimaryToGeant4: {
+                  limit: 100
+                  reportEvery: 1
+               }
+               NotStoredPhysics: {
+                  limit: 100
+                  reportEvery: 1
+               }
+               Offset: {
+                  limit: 100
+                  reportEvery: 1
+               }
+               ParticleListActionService: {
+                  limit: 100
+                  reportEvery: 1
+               }
+               PrimaryParticle: {
+                  limit: 100
+                  reportEvery: 1
+               }
+               YieldList: {
+                  limit: 100
+                  reportEvery: 1
+               }
+               beginOfEventAction: {
+                  limit: 100
+                  reportEvery: 1
+               }
+               default: {
+                  limit: 0
+                  reportEvery: 1
+               }
+               generatePrimaries: {
+                  limit: 100
+                  reportEvery: 1
+               }
+            }
+            threshold: "DEBUG"
+            type: "cout"
+         }
+      }
+   }
+}
+source: {
+   maxEvents: 10
+   module_type: "RootInput"
+}

@@ -1,0 +1,4001 @@
+# Produced from 'fhicl-dump' using:
+#   Input  : standard_supera_dune10kt_1x2x6.fcl
+#   Policy : cet::filepath_maker
+#   Path   : "FHICL_FILE_PATH"
+
+adcPlotDftTemplate: {
+   ChannelSelection: ""
+   ChannelStatusFlag: 0
+   HistSummaryTitle: ""
+   LogLevel: 1
+   PlotChannelGroups: []
+   PlotChannelRanges: []
+   PlotDataView: ""
+   PlotName: ""
+   PlotOverlayGroups: 1
+   PlotSizeX: 1400
+   PlotSizeY: 1000
+   PlotSplitX: 4
+   PlotSplitY: 4
+   PlotSummaryNames: []
+   SampleFreq: 2000
+   XMax: 0
+   XMin: 0
+   YMinLog: 0
+   tool_type: "AdcChannelDftPlotter"
+}
+adcSampleFreq: 2000
+data: {
+   dune_ClockUnit: "Mtick"
+   dune_TriggerClockRate: 5e7
+}
+outputs: {
+   out1: {
+      compressionLevel: 1
+      dataTier: "supera"
+      fileName: "%ifb_supera.root"
+      module_type: "RootOutput"
+      saveMemoryObjectThreshold: 0
+   }
+}
+physics: {
+   analyzers: {
+      superaMC: {
+         StrictDataLoading: false
+         Verbosity: 3
+         module_type: "LArSoftSuperaDriver"
+         out_filename: "larcv.root"
+         stream: "mc"
+         supera_params: "supera_dunefdhd_mc.fcl"
+         unique_filename: false
+      }
+   }
+   end_paths: [
+      "outana",
+      "stream1"
+   ]
+   outana: [
+      "superaMC"
+   ]
+   producers: {
+      anglerecohits: {
+         HitLabel: "hitfd"
+         HitToSpacePointLabel: "pandora"
+         NeutrinoAngularRecoAlg: {
+            CalorimetryAlg: {
+               CalAmpConstants: [
+                  9.033e-4,
+                  1.0287e-3,
+                  8.8e-4
+               ]
+               CalAreaConstants: [
+                  5.122e-3,
+                  5.102e-3,
+                  5.045e-3
+               ]
+               CaloDoLifeTimeCorrection: true
+               CaloLifeTimeForm: 0
+               CaloUseModBox: true
+            }
+            CalorimetryLabel: "pandoracalo"
+            DistanceToWallThreshold: 20
+         }
+         PFPLabel: "pandora"
+         PFPShowerLabel: "pandoraShower"
+         PFPTrackLabel: "pandoraTrack"
+         PIDACut: 10
+         ParticleIDLabel: "pandorapid"
+         RecoMethod: 5
+         ShowerLabel: "pandoraShower"
+         ShowerToHitLabel: "pandoraShower"
+         TrackLabel: "pandoraTrack"
+         TrackToHitLabel: "pandoraTrack"
+         WireLabel: "wclsmcnfsp:gauss"
+         module_type: "NuAngularReco"
+      }
+      anglereconue: {
+         HitLabel: "hitfd"
+         HitToSpacePointLabel: "pandora"
+         NeutrinoAngularRecoAlg: {
+            CalorimetryAlg: {
+               CalAmpConstants: [
+                  9.033e-4,
+                  1.0287e-3,
+                  8.8e-4
+               ]
+               CalAreaConstants: [
+                  5.122e-3,
+                  5.102e-3,
+                  5.045e-3
+               ]
+               CaloDoLifeTimeCorrection: true
+               CaloLifeTimeForm: 0
+               CaloUseModBox: true
+            }
+            CalorimetryLabel: "pandoracalo"
+            DistanceToWallThreshold: 20
+         }
+         PFPLabel: "pandora"
+         PFPShowerLabel: "pandoraShower"
+         PFPTrackLabel: "pandoraTrack"
+         PIDACut: 10
+         ParticleIDLabel: "pandorapid"
+         RecoMethod: 2
+         ShowerLabel: "pandoraShower"
+         ShowerToHitLabel: "pandoraShower"
+         TrackLabel: "pandoraTrack"
+         TrackToHitLabel: "pandoraTrack"
+         WireLabel: "wclsmcnfsp:gauss"
+         module_type: "NuAngularReco"
+      }
+      anglereconuepfps: {
+         HitLabel: "hitfd"
+         HitToSpacePointLabel: "pandora"
+         NeutrinoAngularRecoAlg: {
+            CalorimetryAlg: {
+               CalAmpConstants: [
+                  9.033e-4,
+                  1.0287e-3,
+                  8.8e-4
+               ]
+               CalAreaConstants: [
+                  5.122e-3,
+                  5.102e-3,
+                  5.045e-3
+               ]
+               CaloDoLifeTimeCorrection: true
+               CaloLifeTimeForm: 0
+               CaloUseModBox: true
+            }
+            CalorimetryLabel: "pandoracalo"
+            DistanceToWallThreshold: 20
+         }
+         PFPLabel: "pandora"
+         PFPShowerLabel: "pandoraShower"
+         PFPTrackLabel: "pandoraTrack"
+         PIDACut: 10
+         ParticleIDLabel: "pandorapid"
+         RecoMethod: 3
+         ShowerLabel: "pandoraShower"
+         ShowerToHitLabel: "pandoraShower"
+         TrackLabel: "pandoraTrack"
+         TrackToHitLabel: "pandoraTrack"
+         WireLabel: "wclsmcnfsp:gauss"
+         module_type: "NuAngularReco"
+      }
+      anglereconumu: {
+         HitLabel: "hitfd"
+         HitToSpacePointLabel: "pandora"
+         NeutrinoAngularRecoAlg: {
+            CalorimetryAlg: {
+               CalAmpConstants: [
+                  9.033e-4,
+                  1.0287e-3,
+                  8.8e-4
+               ]
+               CalAreaConstants: [
+                  5.122e-3,
+                  5.102e-3,
+                  5.045e-3
+               ]
+               CaloDoLifeTimeCorrection: true
+               CaloLifeTimeForm: 0
+               CaloUseModBox: true
+            }
+            CalorimetryLabel: "pandoracalo"
+            DistanceToWallThreshold: 20
+         }
+         PFPLabel: "pandora"
+         PFPShowerLabel: "pandoraShower"
+         PFPTrackLabel: "pandoraTrack"
+         PIDACut: 10
+         ParticleIDLabel: "pandorapid"
+         RecoMethod: 1
+         ShowerLabel: "pandoraShower"
+         ShowerToHitLabel: "pandoraShower"
+         TrackLabel: "pandoraTrack"
+         TrackToHitLabel: "pandoraTrack"
+         WireLabel: "wclsmcnfsp:gauss"
+         module_type: "NuAngularReco"
+      }
+      anglereconumupfps: {
+         HitLabel: "hitfd"
+         HitToSpacePointLabel: "pandora"
+         NeutrinoAngularRecoAlg: {
+            CalorimetryAlg: {
+               CalAmpConstants: [
+                  9.033e-4,
+                  1.0287e-3,
+                  8.8e-4
+               ]
+               CalAreaConstants: [
+                  5.122e-3,
+                  5.102e-3,
+                  5.045e-3
+               ]
+               CaloDoLifeTimeCorrection: true
+               CaloLifeTimeForm: 0
+               CaloUseModBox: true
+            }
+            CalorimetryLabel: "pandoracalo"
+            DistanceToWallThreshold: 20
+         }
+         PFPLabel: "pandora"
+         PFPShowerLabel: "pandoraShower"
+         PFPTrackLabel: "pandoraTrack"
+         PIDACut: 10
+         ParticleIDLabel: "pandorapid"
+         RecoMethod: 4
+         ShowerLabel: "pandoraShower"
+         ShowerToHitLabel: "pandoraShower"
+         TrackLabel: "pandoraTrack"
+         TrackToHitLabel: "pandoraTrack"
+         WireLabel: "wclsmcnfsp:gauss"
+         module_type: "NuAngularReco"
+      }
+      blurredcluster: {
+         BlurredClusterAlg: {
+            BlurTick: 12
+            BlurWire: 6
+            ChargeThreshold: 7e-2
+            ClusterTickDistance: 2
+            ClusterWireDistance: 2
+            Detector: "dunefd"
+            MaxTickWidthBlur: 10
+            MinNeighbours: 0
+            MinSeed: 1e-1
+            MinSize: 2
+            NeighboursThreshold: 0
+            SigmaTick: 6
+            SigmaWire: 4
+            TimeThreshold: 500
+         }
+         CreateDebugPDF: false
+         GlobalTPCRecon: true
+         HitsModuleLabel: "linecluster"
+         MergeClusterAlg: {
+            MaxMergeSeparation: 30
+            MinMergeClusterSize: 3
+            ProjWidthThreshold: 2e-1
+         }
+         MergeClusters: false
+         PFParticleModuleLabel: "pandora"
+         ShowerReconOnly: false
+         TrackModuleLabel: "pmtrack"
+         TrackShowerSeparationAlg: {
+            ConeAngle: 15
+            CylinderCut: 2e-1
+            CylinderRadius: 20
+            RectangleCut: 5e-1
+            RectangleWidth: 1
+            ShowerConeCut: 5
+            TrackVertexCut: 5
+         }
+         VertexModuleLabel: "linecluster"
+         module_type: "BlurredClustering"
+      }
+      caldata: {
+         BeamEventLabel: ""
+         ChannelRanges: []
+         DecoderTool: ""
+         DigitLabel: "daq"
+         DoAssns: true
+         DoGroups: true
+         IntermediateStates: []
+         LogLevel: 1
+         OnlineChannelMapTool: "pd_onlineChannelMapByFemb"
+         OutputDigitName: ""
+         TimeStampName: ""
+         WireName: ""
+         module_type: "DataPrepModule"
+      }
+      cluster3d: {
+         ClusterAlg: {
+            ClusterParamsBuilder: {
+               ClusterMaxLostFraction: 5e-1
+               ClusterMinHits: 3
+               ClusterMinUniqueFraction: 5e-1
+               PrincipalComponentsAlg: {
+                  ParallelLines: 1e-5
+               }
+               tool_type: "ClusterParamsBuilder"
+            }
+            EnableMonitoring: true
+            PrincipalComponentsAlg: {
+               ParallelLines: 1e-5
+            }
+            kdTree: {
+               EnableMonitoring: true
+               PairSigmaPeakTime: 3
+               RefLeafBestDist: 5e-1
+            }
+            tool_type: "MinSpanTreeAlg"
+         }
+         ClusterMergeAlg: {
+            AxisAngleScaleFactor: 5
+            EnableMonitoring: true
+            MinTransEigenVal: 9e-2
+            PrincipalComponentsAlg: {
+               ParallelLines: 1e-5
+            }
+            tool_type: "ClusterMergeAlg"
+         }
+         ClusterParamsBuilder: {
+            ClusterMaxLostFraction: 5e-1
+            ClusterMinHits: 3
+            ClusterMinUniqueFraction: 5e-1
+            PrincipalComponentsAlg: {
+               ParallelLines: 1e-5
+            }
+            tool_type: "ClusterParamsBuilder"
+         }
+         ClusterPathAlg: {
+            ClusterAlg: {
+               ClusterParamsBuilder: {
+                  ClusterMaxLostFraction: 5e-1
+                  ClusterMinHits: 3
+                  ClusterMinUniqueFraction: 5e-1
+                  PrincipalComponentsAlg: {
+                     ParallelLines: 1e-5
+                  }
+                  tool_type: "ClusterParamsBuilder"
+               }
+               EnableMonitoring: true
+               MinPairPts: 2
+               kdTree: {
+                  EnableMonitoring: true
+                  PairSigmaPeakTime: 3
+                  RefLeafBestDist: 5e-1
+               }
+               tool_type: "DBScanAlg"
+            }
+            EnableMonitoring: true
+            MinTinyClusterSize: 40
+            PrincipalComponentsAlg: {
+               ParallelLines: 1e-5
+            }
+            tool_type: "ClusterPathFinder"
+         }
+         EnableMonitoring: false
+         EnableProduction: false
+         Hit3DBuilderAlg: {
+            DeltaPeakTimeSig: 1.75
+            EnableMonitoring: true
+            HitFinderTagVec: [
+               "gaushit"
+            ]
+            HitWidthScaleFactor: 3
+            LongHitsStretchFactor: 1.5
+            MakeAssociations: false
+            MaxHitChiSquare: 10
+            MaxMythicalChiSquare: 25
+            MinPHFor2HitPoints: 4
+            OutputHistograms: false
+            PHLowSelection: 8
+            PulseHeightFraction: 4e-1
+            RangeNumSigma: 3
+            SaveBadChannelPairs: true
+            SaveMythicalPoints: true
+            UseT0Offsets: false
+            WirePitchScaleFactor: 1.9
+            ZPosOffset: 0
+            tool_type: "SnippetHit3DBuilderDUNE"
+         }
+         HitFinderModuleLabel: [
+            "gaushit"
+         ]
+         MakeSpacePointsOnly: true
+         PCASeedFinderAlg: {
+            GapDistance: 5
+            MinAllowedCosAng: 7e-1
+            NumSeed2DHits: 80
+            PrincipalComponentsAlg: {
+               ParallelLines: 1e-5
+            }
+         }
+         ParallelHitsAlg: {
+            GapDistance: 20
+            MaxNumEdgeHits: 1000
+            NumSeed2DHits: 80
+            PrincipalComponentsAlg: {
+               ParallelLines: 1e-5
+            }
+         }
+         PrincipalComponentsAlg: {
+            ParallelLines: 1e-5
+         }
+         SeedFinderAlg: {
+            DisplayHoughHist: false
+            HalfRhoBins: 75
+            HiThresholdFrac: 5e-2
+            HiThresholdMin: 5
+            LoThresholdFrac: 8.5e-1
+            MaxLoopsPerCluster: 3
+            MaximumGap: 5
+            Minimum3DHits: 5
+            NumAveDocas: 6
+            NumSeed2DHits: 80
+            NumSkippedHits: 10
+            PrincipalComponentsAlg: {
+               ParallelLines: 1e-5
+            }
+            ThetaBins: 360
+         }
+         SkeletonAlg: {
+            MaximumDeltaTicks: 10
+            MinimumDeltaTicks: 5e-2
+         }
+         module_type: "Cluster3DDUNE"
+      }
+      cvneva: {
+         CVNType: "Tensorflow"
+         MultiplePMs: false
+         PixelMapInput: "cvnmap"
+         ResultLabel: "cvnresult"
+         TFNetHandler: {
+            ChargeLogScale: false
+            LibPath: ""
+            NImageTDCs: 500
+            NImageWires: 500
+            NInputs: 3
+            NOutputs: 7
+            ReverseViews: [
+               false,
+               true,
+               false
+            ]
+            TFBundle: ""
+            TFProtoBuf: "cvmfs/dune.osgstorage.org/pnfs/fnal.gov/usr/dune/persistent/stash/CVN/beam/v03_00_00/dune_cvn_hd_2x6_nu_2023_tf26_v03_00_00.pb"
+            UseBundle: false
+         }
+         module_type: "CVNEvaluator"
+      }
+      cvnmap: {
+         ClusterPMLabel: "cvnmap"
+         HitsModuleLabel: "hitfd"
+         MinClusterHits: 100
+         TdcWidth: 500
+         TimeResolution: 1500
+         UnwrappedPixelMap: 1
+         WireLength: 2880
+         module_type: "CVNMapper"
+      }
+      emshower: {
+         CNNEMModuleLabel: "emtrkmichelid:emtrkmichel"
+         ClusterModuleLabel: "pandora"
+         EMShowerAlg: {
+            CalorimetryAlg: {
+               CalAmpConstants: [
+                  9.033e-4,
+                  1.0287e-3,
+                  8.8e-4
+               ]
+               CalAreaConstants: [
+                  5.122e-3,
+                  5.102e-3,
+                  5.045e-3
+               ]
+               CaloDoLifeTimeCorrection: true
+               CaloLifeTimeForm: 0
+               CaloUseModBox: true
+            }
+            Detector: "dune10kt"
+            MinTrackLength: 3
+            Nfithits: [
+               50,
+               30,
+               20,
+               20
+            ]
+            Nfitpass: 4
+            ProjectionMatchingAlg: {
+               FineTuningEps: 1e-4
+               HitTestingDist2D: 5e-1
+               HitWeightU: 1
+               HitWeightV: 1
+               HitWeightZ: 1
+               MinTwoViewFraction: 4e-1
+               NodeMargin3D: 3
+               OptimizationEps: 1e-2
+               TrkValidationDist2D: 1
+            }
+            ShowerEnergyAlg: {
+               UGradient: 7.69985e-6
+               UIntercept: -1.60794e-2
+               VGradient: 7.70957e-6
+               VIntercept: -1.60174e-2
+               ZGradient: 7.30337e-6
+               ZIntercept: -1.91387e-2
+            }
+            SpacePointSize: 1e-1
+            Toler: [
+               30,
+               5,
+               2,
+               2
+            ]
+            dEdxTrackLength: 3
+         }
+         FindBadPlanes: true
+         HitsModuleLabel: "linecluster"
+         MakeSpacePoints: true
+         MinTrackLikeScore: 1e-1
+         PFParticleModuleLabel: "pandora"
+         SaveNonCompleteShowers: true
+         TrackModuleLabel: "pandoraTrack"
+         UseCNNtoIDEMHit: false
+         UseCNNtoIDEMPFP: true
+         VertexModuleLabel: "pandora"
+         module_type: "EMShower"
+      }
+      emtrkmichelid: {
+         BatchSize: 256
+         ClusterModuleLabel: "linecluster"
+         HitModuleLabel: "linecluster"
+         PointIdAlg: {
+            AdcMax: 150
+            AdcMin: -50
+            BlurKernel: []
+            CalibrateAmpl: false
+            CalibrateLifetime: true
+            CalorimetryAlg: {
+               CalAmpConstants: [
+                  5.88726e-4,
+                  1.18998e-3
+               ]
+               CalAreaConstants: [
+                  7.73887e-3,
+                  1.78186e-2
+               ]
+               CaloDoLifeTimeCorrection: true
+               CaloLifeTimeForm: 0
+               CaloUseModBox: true
+            }
+            CoherentSigma: 0
+            DownscaleFn: "mean"
+            DownscaleFullView: false
+            DriftWindow: 6
+            NNetModelFile: "CnnModels/cnn_ndkemtrk_pitch_5_wire_44_drift_48_down_6_mean_notes_AtmAndNdk.nnet"
+            NNetOutputs: [
+               "track",
+               "em",
+               "michel",
+               "none"
+            ]
+            NoiseSigma: 0
+            OutMax: 15
+            OutMin: -5
+            PatchSizeD: 48
+            PatchSizeW: 44
+         }
+         TrackModuleLabel: ""
+         Views: []
+         WireLabel: "tpcrawdecoder:gauss"
+         module_type: "EmTrackMichelId"
+      }
+      energyrecnc: {
+         HitLabel: "hitfd"
+         HitToSpacePointLabel: "pandora"
+         LongestTrackMethod: 0
+         NeutrinoEnergyRecoAlg: {
+            AngleCorrection: 7.57e-1
+            CalorimetryAlg: {
+               CalAmpConstants: [
+                  9.033e-4,
+                  1.0287e-3,
+                  8.8e-4
+               ]
+               CalAreaConstants: [
+                  5.122e-3,
+                  5.102e-3,
+                  5.045e-3
+               ]
+               CaloDoLifeTimeCorrection: true
+               CaloLifeTimeForm: 0
+               CaloUseModBox: true
+            }
+            CheckValidScattered: true
+            DistanceToWallThreshold: 20
+            GradNuEHadEn: 1
+            GradNuMuHadEnCont: 1
+            GradNuMuHadEnExit: 1
+            GradShwEnergy: 1
+            GradTrkMomMCS: 1
+            GradTrkMomRange: 1
+            IntNuEHadEn: 0
+            IntNuMuHadEnCont: 0
+            IntNuMuHadEnExit: 0
+            IntShwEnergy: 0
+            IntTrkMomMCS: 0
+            IntTrkMomRange: 0
+            MCSAngleMethod: 3
+            MCSMethod: "Chi2"
+            MaxMomentumMCS: 100000
+            MaxResolutionMCSChi2: 0
+            MaxResolutionMCSLLHD: 800
+            MaxTrackLengthMCS: 3000
+            MinResolutionMCSChi2: 0
+            MinResolutionMCSLLHD: 1e-3
+            MinTrackLengthMCS: 0
+            MuonRangeToMCSThreshold: 7e-1
+            NStepsChi2: 6
+            RecombFactor: 6.3e-1
+            SegmentSizeMCS: 10
+         }
+         PFParticleLabel: "pandora"
+         ParticleSelectionAlg: {
+            CalorimetryAlg: {
+               CalAmpConstants: [
+                  9.033e-4,
+                  1.0287e-3,
+                  8.8e-4
+               ]
+               CalAreaConstants: [
+                  5.122e-3,
+                  5.102e-3,
+                  5.045e-3
+               ]
+               CaloDoLifeTimeCorrection: true
+               CaloLifeTimeForm: 0
+               CaloUseModBox: true
+            }
+            DistanceToWallThreshold: 20
+            ESelectMethod: 0
+            MaxEPIDA: 15
+            MaxETotalCaloForTracks: 2e-1
+            MaxMuContainedCalo: 1
+            MaxMuLength: 17000
+            MaxMuPIDA: 13
+            MaxMuPIDAAggressive: 10
+            MaxMuTotalCalo: 2
+            MaxPionTrkLength: 350
+            MaxPrTrkCalo: 1.5
+            MaxPrTrkMom: 2
+            MinMuPIDAShower: 5
+            MinMuTotalCalo: 3e-1
+            MinPionNTrk: 2
+            MinPionTrkLength: 20
+            MinPionTrkLengthNotContained: 10
+            MinPrPIDAShower: 13
+            MinPrPIDATrack: 10
+            MuSelectMethod: 0
+            ParticleIDModuleLabel: "pandorapid"
+            PionSelectMethod: 0
+            Plane: 3
+            PrMomByRangeMaxLength: 3000
+            PrMomByRangeMinLength: 0
+            PrSelectMethod: 0
+            RecombFactor: 6.3e-1
+         }
+         RecoMethod: 3
+         ShowerLabel: "pandoraShower"
+         ShowerToHitLabel: "pandoraShower"
+         TrackLabel: "pandoraTrack"
+         TrackToHitLabel: "pandoraTrack"
+         UsePID: false
+         WireLabel: "tpcrawdecoder:gauss"
+         module_type: "EnergyReco"
+      }
+      energyrecnue: {
+         HitLabel: "hitfd"
+         HitToSpacePointLabel: "pandora"
+         LongestTrackMethod: 0
+         NeutrinoEnergyRecoAlg: {
+            AngleCorrection: 7.57e-1
+            CalorimetryAlg: {
+               CalAmpConstants: [
+                  9.033e-4,
+                  1.0287e-3,
+                  8.8e-4
+               ]
+               CalAreaConstants: [
+                  5.122e-3,
+                  5.102e-3,
+                  5.045e-3
+               ]
+               CaloDoLifeTimeCorrection: true
+               CaloLifeTimeForm: 0
+               CaloUseModBox: true
+            }
+            CheckValidScattered: true
+            DistanceToWallThreshold: 20
+            GradNuEHadEn: 1
+            GradNuMuHadEnCont: 1
+            GradNuMuHadEnExit: 1
+            GradShwEnergy: 1
+            GradTrkMomMCS: 1
+            GradTrkMomRange: 1
+            IntNuEHadEn: 0
+            IntNuMuHadEnCont: 0
+            IntNuMuHadEnExit: 0
+            IntShwEnergy: 0
+            IntTrkMomMCS: 0
+            IntTrkMomRange: 0
+            MCSAngleMethod: 3
+            MCSMethod: "Chi2"
+            MaxMomentumMCS: 100000
+            MaxResolutionMCSChi2: 0
+            MaxResolutionMCSLLHD: 800
+            MaxTrackLengthMCS: 3000
+            MinResolutionMCSChi2: 0
+            MinResolutionMCSLLHD: 1e-3
+            MinTrackLengthMCS: 0
+            MuonRangeToMCSThreshold: 7e-1
+            NStepsChi2: 6
+            RecombFactor: 6.3e-1
+            SegmentSizeMCS: 10
+         }
+         PFParticleLabel: "pandora"
+         ParticleSelectionAlg: {
+            CalorimetryAlg: {
+               CalAmpConstants: [
+                  9.033e-4,
+                  1.0287e-3,
+                  8.8e-4
+               ]
+               CalAreaConstants: [
+                  5.122e-3,
+                  5.102e-3,
+                  5.045e-3
+               ]
+               CaloDoLifeTimeCorrection: true
+               CaloLifeTimeForm: 0
+               CaloUseModBox: true
+            }
+            DistanceToWallThreshold: 20
+            ESelectMethod: 0
+            MaxEPIDA: 15
+            MaxETotalCaloForTracks: 2e-1
+            MaxMuContainedCalo: 1
+            MaxMuLength: 17000
+            MaxMuPIDA: 13
+            MaxMuPIDAAggressive: 10
+            MaxMuTotalCalo: 2
+            MaxPionTrkLength: 350
+            MaxPrTrkCalo: 1.5
+            MaxPrTrkMom: 2
+            MinMuPIDAShower: 5
+            MinMuTotalCalo: 3e-1
+            MinPionNTrk: 2
+            MinPionTrkLength: 20
+            MinPionTrkLengthNotContained: 10
+            MinPrPIDAShower: 13
+            MinPrPIDATrack: 10
+            MuSelectMethod: 0
+            ParticleIDModuleLabel: "pandorapid"
+            PionSelectMethod: 0
+            Plane: 3
+            PrMomByRangeMaxLength: 3000
+            PrMomByRangeMinLength: 0
+            PrSelectMethod: 0
+            RecombFactor: 6.3e-1
+         }
+         RecoMethod: 2
+         ShowerLabel: "pandoraShower"
+         ShowerToHitLabel: "pandoraShower"
+         TrackLabel: "pandoraTrack"
+         TrackToHitLabel: "pandoraTrack"
+         UsePID: false
+         WireLabel: "tpcrawdecoder:gauss"
+         module_type: "EnergyReco"
+      }
+      energyrecnumu: {
+         HitLabel: "hitfd"
+         HitToSpacePointLabel: "pandora"
+         LongestTrackMethod: 0
+         NeutrinoEnergyRecoAlg: {
+            AngleCorrection: 7.57e-1
+            CalorimetryAlg: {
+               CalAmpConstants: [
+                  9.033e-4,
+                  1.0287e-3,
+                  8.8e-4
+               ]
+               CalAreaConstants: [
+                  5.122e-3,
+                  5.102e-3,
+                  5.045e-3
+               ]
+               CaloDoLifeTimeCorrection: true
+               CaloLifeTimeForm: 0
+               CaloUseModBox: true
+            }
+            CheckValidScattered: true
+            DistanceToWallThreshold: 20
+            GradNuEHadEn: 1
+            GradNuMuHadEnCont: 1
+            GradNuMuHadEnExit: 1
+            GradShwEnergy: 1
+            GradTrkMomMCS: 1
+            GradTrkMomRange: 1
+            IntNuEHadEn: 0
+            IntNuMuHadEnCont: 0
+            IntNuMuHadEnExit: 0
+            IntShwEnergy: 0
+            IntTrkMomMCS: 0
+            IntTrkMomRange: 0
+            MCSAngleMethod: 3
+            MCSMethod: "Chi2"
+            MaxMomentumMCS: 100000
+            MaxResolutionMCSChi2: 0
+            MaxResolutionMCSLLHD: 800
+            MaxTrackLengthMCS: 3000
+            MinResolutionMCSChi2: 0
+            MinResolutionMCSLLHD: 1e-3
+            MinTrackLengthMCS: 0
+            MuonRangeToMCSThreshold: 7e-1
+            NStepsChi2: 6
+            RecombFactor: 6.3e-1
+            SegmentSizeMCS: 10
+         }
+         PFParticleLabel: "pandora"
+         ParticleSelectionAlg: {
+            CalorimetryAlg: {
+               CalAmpConstants: [
+                  9.033e-4,
+                  1.0287e-3,
+                  8.8e-4
+               ]
+               CalAreaConstants: [
+                  5.122e-3,
+                  5.102e-3,
+                  5.045e-3
+               ]
+               CaloDoLifeTimeCorrection: true
+               CaloLifeTimeForm: 0
+               CaloUseModBox: true
+            }
+            DistanceToWallThreshold: 20
+            ESelectMethod: 0
+            MaxEPIDA: 15
+            MaxETotalCaloForTracks: 2e-1
+            MaxMuContainedCalo: 1
+            MaxMuLength: 17000
+            MaxMuPIDA: 13
+            MaxMuPIDAAggressive: 10
+            MaxMuTotalCalo: 2
+            MaxPionTrkLength: 350
+            MaxPrTrkCalo: 1.5
+            MaxPrTrkMom: 2
+            MinMuPIDAShower: 5
+            MinMuTotalCalo: 3e-1
+            MinPionNTrk: 2
+            MinPionTrkLength: 3.5
+            MinPionTrkLengthNotContained: 10
+            MinPrPIDAShower: 13
+            MinPrPIDATrack: 10
+            MuSelectMethod: 0
+            ParticleIDModuleLabel: "pandorapid"
+            PionSelectMethod: 0
+            Plane: 3
+            PrMomByRangeMaxLength: 3000
+            PrMomByRangeMinLength: 0
+            PrSelectMethod: 0
+            RecombFactor: 6.3e-1
+         }
+         RecoMethod: 1
+         ShowerLabel: "pandoraShower"
+         ShowerToHitLabel: "pandoraShower"
+         TrackLabel: "pandoraTrack"
+         TrackToHitLabel: "pandoraTrack"
+         UsePID: false
+         WireLabel: "tpcrawdecoder:gauss"
+         module_type: "EnergyReco"
+      }
+      energyrecnumumcs: {
+         HitLabel: "hitfd"
+         HitToSpacePointLabel: "pandora"
+         LongestTrackMethod: 2
+         NeutrinoEnergyRecoAlg: {
+            AngleCorrection: 7.57e-1
+            CalorimetryAlg: {
+               CalAmpConstants: [
+                  9.033e-4,
+                  1.0287e-3,
+                  8.8e-4
+               ]
+               CalAreaConstants: [
+                  5.122e-3,
+                  5.102e-3,
+                  5.045e-3
+               ]
+               CaloDoLifeTimeCorrection: true
+               CaloLifeTimeForm: 0
+               CaloUseModBox: true
+            }
+            CheckValidScattered: true
+            DistanceToWallThreshold: 20
+            GradNuEHadEn: 1
+            GradNuMuHadEnCont: 1
+            GradNuMuHadEnExit: 1
+            GradShwEnergy: 1
+            GradTrkMomMCS: 1
+            GradTrkMomRange: 1
+            IntNuEHadEn: 0
+            IntNuMuHadEnCont: 0
+            IntNuMuHadEnExit: 0
+            IntShwEnergy: 0
+            IntTrkMomMCS: 0
+            IntTrkMomRange: 0
+            MCSAngleMethod: 3
+            MCSMethod: "Chi2"
+            MaxMomentumMCS: 100000
+            MaxResolutionMCSChi2: 0
+            MaxResolutionMCSLLHD: 800
+            MaxTrackLengthMCS: 3000
+            MinResolutionMCSChi2: 0
+            MinResolutionMCSLLHD: 1e-3
+            MinTrackLengthMCS: 0
+            MuonRangeToMCSThreshold: 7e-1
+            NStepsChi2: 6
+            RecombFactor: 6.3e-1
+            SegmentSizeMCS: 10
+         }
+         PFParticleLabel: "pandora"
+         ParticleSelectionAlg: {
+            CalorimetryAlg: {
+               CalAmpConstants: [
+                  9.033e-4,
+                  1.0287e-3,
+                  8.8e-4
+               ]
+               CalAreaConstants: [
+                  5.122e-3,
+                  5.102e-3,
+                  5.045e-3
+               ]
+               CaloDoLifeTimeCorrection: true
+               CaloLifeTimeForm: 0
+               CaloUseModBox: true
+            }
+            DistanceToWallThreshold: 20
+            ESelectMethod: 0
+            MaxEPIDA: 15
+            MaxETotalCaloForTracks: 2e-1
+            MaxMuContainedCalo: 1
+            MaxMuLength: 17000
+            MaxMuPIDA: 13
+            MaxMuPIDAAggressive: 10
+            MaxMuTotalCalo: 2
+            MaxPionTrkLength: 350
+            MaxPrTrkCalo: 1.5
+            MaxPrTrkMom: 2
+            MinMuPIDAShower: 5
+            MinMuTotalCalo: 3e-1
+            MinPionNTrk: 2
+            MinPionTrkLength: 3.5
+            MinPionTrkLengthNotContained: 10
+            MinPrPIDAShower: 13
+            MinPrPIDATrack: 10
+            MuSelectMethod: 0
+            ParticleIDModuleLabel: "pandorapid"
+            PionSelectMethod: 0
+            Plane: 3
+            PrMomByRangeMaxLength: 3000
+            PrMomByRangeMinLength: 0
+            PrSelectMethod: 0
+            RecombFactor: 6.3e-1
+         }
+         RecoMethod: 1
+         ShowerLabel: "pandoraShower"
+         ShowerToHitLabel: "pandoraShower"
+         TrackLabel: "pandoraTrack"
+         TrackToHitLabel: "pandoraTrack"
+         UsePID: false
+         WireLabel: "tpcrawdecoder:gauss"
+         module_type: "EnergyReco"
+      }
+      energyrecnumumcsllhd: {
+         HitLabel: "hitfd"
+         HitToSpacePointLabel: "pandora"
+         LongestTrackMethod: 2
+         NeutrinoEnergyRecoAlg: {
+            AngleCorrection: 7.57e-1
+            CalorimetryAlg: {
+               CalAmpConstants: [
+                  9.033e-4,
+                  1.0287e-3,
+                  8.8e-4
+               ]
+               CalAreaConstants: [
+                  5.122e-3,
+                  5.102e-3,
+                  5.045e-3
+               ]
+               CaloDoLifeTimeCorrection: true
+               CaloLifeTimeForm: 0
+               CaloUseModBox: true
+            }
+            CheckValidScattered: true
+            DistanceToWallThreshold: 20
+            GradNuEHadEn: 1
+            GradNuMuHadEnCont: 1
+            GradNuMuHadEnExit: 1
+            GradShwEnergy: 1
+            GradTrkMomMCS: 1
+            GradTrkMomRange: 1
+            IntNuEHadEn: 0
+            IntNuMuHadEnCont: 0
+            IntNuMuHadEnExit: 0
+            IntShwEnergy: 0
+            IntTrkMomMCS: 0
+            IntTrkMomRange: 0
+            MCSAngleMethod: 3
+            MCSMethod: "Chi2"
+            MaxMomentumMCS: 100000
+            MaxResolutionMCSChi2: 0
+            MaxResolutionMCSLLHD: 800
+            MaxTrackLengthMCS: 3000
+            MinResolutionMCSChi2: 0
+            MinResolutionMCSLLHD: 1e-3
+            MinTrackLengthMCS: 0
+            MuonRangeToMCSThreshold: 7e-1
+            NStepsChi2: 6
+            RecombFactor: 6.3e-1
+            SegmentSizeMCS: 10
+         }
+         PFParticleLabel: "pandora"
+         ParticleSelectionAlg: {
+            CalorimetryAlg: {
+               CalAmpConstants: [
+                  9.033e-4,
+                  1.0287e-3,
+                  8.8e-4
+               ]
+               CalAreaConstants: [
+                  5.122e-3,
+                  5.102e-3,
+                  5.045e-3
+               ]
+               CaloDoLifeTimeCorrection: true
+               CaloLifeTimeForm: 0
+               CaloUseModBox: true
+            }
+            DistanceToWallThreshold: 20
+            ESelectMethod: 0
+            MaxEPIDA: 15
+            MaxETotalCaloForTracks: 2e-1
+            MaxMuContainedCalo: 1
+            MaxMuLength: 17000
+            MaxMuPIDA: 13
+            MaxMuPIDAAggressive: 10
+            MaxMuTotalCalo: 2
+            MaxPionTrkLength: 350
+            MaxPrTrkCalo: 1.5
+            MaxPrTrkMom: 2
+            MinMuPIDAShower: 5
+            MinMuTotalCalo: 3e-1
+            MinPionNTrk: 2
+            MinPionTrkLength: 3.5
+            MinPionTrkLengthNotContained: 10
+            MinPrPIDAShower: 13
+            MinPrPIDATrack: 10
+            MuSelectMethod: 0
+            ParticleIDModuleLabel: "pandorapid"
+            PionSelectMethod: 0
+            Plane: 3
+            PrMomByRangeMaxLength: 3000
+            PrMomByRangeMinLength: 0
+            PrSelectMethod: 0
+            RecombFactor: 6.3e-1
+         }
+         RecoMethod: 1
+         ShowerLabel: "pandoraShower"
+         ShowerToHitLabel: "pandoraShower"
+         TrackLabel: "pandoraTrack"
+         TrackToHitLabel: "pandoraTrack"
+         UsePID: false
+         WireLabel: "tpcrawdecoder:gauss"
+         module_type: "EnergyReco"
+      }
+      energyrecnumurange: {
+         HitLabel: "hitfd"
+         HitToSpacePointLabel: "pandora"
+         LongestTrackMethod: 1
+         NeutrinoEnergyRecoAlg: {
+            AngleCorrection: 7.57e-1
+            CalorimetryAlg: {
+               CalAmpConstants: [
+                  9.033e-4,
+                  1.0287e-3,
+                  8.8e-4
+               ]
+               CalAreaConstants: [
+                  5.122e-3,
+                  5.102e-3,
+                  5.045e-3
+               ]
+               CaloDoLifeTimeCorrection: true
+               CaloLifeTimeForm: 0
+               CaloUseModBox: true
+            }
+            CheckValidScattered: true
+            DistanceToWallThreshold: 20
+            GradNuEHadEn: 1
+            GradNuMuHadEnCont: 1
+            GradNuMuHadEnExit: 1
+            GradShwEnergy: 1
+            GradTrkMomMCS: 1
+            GradTrkMomRange: 1
+            IntNuEHadEn: 0
+            IntNuMuHadEnCont: 0
+            IntNuMuHadEnExit: 0
+            IntShwEnergy: 0
+            IntTrkMomMCS: 0
+            IntTrkMomRange: 0
+            MCSAngleMethod: 3
+            MCSMethod: "Chi2"
+            MaxMomentumMCS: 100000
+            MaxResolutionMCSChi2: 0
+            MaxResolutionMCSLLHD: 800
+            MaxTrackLengthMCS: 3000
+            MinResolutionMCSChi2: 0
+            MinResolutionMCSLLHD: 1e-3
+            MinTrackLengthMCS: 0
+            MuonRangeToMCSThreshold: 7e-1
+            NStepsChi2: 6
+            RecombFactor: 6.3e-1
+            SegmentSizeMCS: 10
+         }
+         PFParticleLabel: "pandora"
+         ParticleSelectionAlg: {
+            CalorimetryAlg: {
+               CalAmpConstants: [
+                  9.033e-4,
+                  1.0287e-3,
+                  8.8e-4
+               ]
+               CalAreaConstants: [
+                  5.122e-3,
+                  5.102e-3,
+                  5.045e-3
+               ]
+               CaloDoLifeTimeCorrection: true
+               CaloLifeTimeForm: 0
+               CaloUseModBox: true
+            }
+            DistanceToWallThreshold: 20
+            ESelectMethod: 0
+            MaxEPIDA: 15
+            MaxETotalCaloForTracks: 2e-1
+            MaxMuContainedCalo: 1
+            MaxMuLength: 17000
+            MaxMuPIDA: 13
+            MaxMuPIDAAggressive: 10
+            MaxMuTotalCalo: 2
+            MaxPionTrkLength: 350
+            MaxPrTrkCalo: 1.5
+            MaxPrTrkMom: 2
+            MinMuPIDAShower: 5
+            MinMuTotalCalo: 3e-1
+            MinPionNTrk: 2
+            MinPionTrkLength: 3.5
+            MinPionTrkLengthNotContained: 10
+            MinPrPIDAShower: 13
+            MinPrPIDATrack: 10
+            MuSelectMethod: 0
+            ParticleIDModuleLabel: "pandorapid"
+            PionSelectMethod: 0
+            Plane: 3
+            PrMomByRangeMaxLength: 3000
+            PrMomByRangeMinLength: 0
+            PrSelectMethod: 0
+            RecombFactor: 6.3e-1
+         }
+         RecoMethod: 1
+         ShowerLabel: "pandoraShower"
+         ShowerToHitLabel: "pandoraShower"
+         TrackLabel: "pandoraTrack"
+         TrackToHitLabel: "pandoraTrack"
+         UsePID: false
+         WireLabel: "tpcrawdecoder:gauss"
+         module_type: "EnergyReco"
+      }
+      gaushit: {
+         AllHitsInstanceName: ""
+         AreaMethod: 0
+         AreaNorms: [
+            1.325e1,
+            1.325e1,
+            1.325e1
+         ]
+         CalDataModuleLabel: "tpcrawdecoder:gauss"
+         Chi2NDF: 50
+         FilterHits: false
+         HitFilterAlg: {
+            AlgName: "HitFilterAlg"
+            MinPulseHeight: [
+               5,
+               5,
+               5
+            ]
+            MinPulseSigma: [
+               1,
+               1,
+               1
+            ]
+         }
+         HitFinderToolVec: {
+            CandidateHitsPlane0: {
+               Plane: 0
+               RoiThreshold: 6
+               fNextADCThreshold: 0
+               tool_type: "CandHitStandard"
+            }
+            CandidateHitsPlane1: {
+               Plane: 1
+               RoiThreshold: 6
+               fNextADCThreshold: 0
+               tool_type: "CandHitStandard"
+            }
+            CandidateHitsPlane2: {
+               Plane: 2
+               RoiThreshold: 6
+               fNextADCThreshold: 0
+               tool_type: "CandHitStandard"
+            }
+         }
+         InitWidth: [
+            6,
+            6,
+            6
+         ]
+         LongMaxHits: [
+            25,
+            25,
+            25
+         ]
+         LongPulseWidth: [
+            10,
+            10,
+            10
+         ]
+         MaxMultiHit: 8
+         PeakFitter: {
+            MaxWidthMult: 3
+            MinWidth: 5e-1
+            PeakAmpRange: 2
+            PeakRangeFact: 2
+            tool_type: "PeakFitterMrqdt"
+         }
+         PulseHeightCuts: [
+            3,
+            3,
+            3
+         ]
+         PulseRatioCuts: [
+            3.5e-1,
+            4e-1,
+            2e-1
+         ]
+         PulseWidthCuts: [
+            2,
+            1.5,
+            1
+         ]
+         module_type: "GausHitFinder"
+      }
+      hitfd: {
+         ExcludeTPCs: []
+         HitModuleLabel: "gaushit"
+         MaxDistance: 1000
+         MonitoringPlots: false
+         MoveLeftovers: "repeat"
+         NumNeighbors: 2
+         SpModuleLabel: "spsolve"
+         UseNeighbors: true
+         module_type: "DisambigFromSpacePoints"
+      }
+      linecluster: {
+         ClusterCrawlerAlg: {
+            AllowNoHitWire: 1
+            ChgCut: [
+               8e-1,
+               8e-1,
+               8e-1
+            ]
+            ChgNearCut: 1.5
+            ChgNearWindow: 40
+            ChiCut: [
+               4,
+               8,
+               10
+            ]
+            ChkClusterDS: true
+            ClProjErrFac: 3
+            DebugHit: 0
+            DebugPlane: -1
+            DebugWire: 0
+            DoMerge: [
+               false,
+               true,
+               true
+            ]
+            FindHammerClusters: true
+            FindStarVertices: true
+            FindVLAClusters: false
+            FindVertices: [
+               true,
+               true,
+               true
+            ]
+            HitErrFac: 2e-1
+            HitMergeChiCut: 2.5
+            HitMinAmp: 2
+            KillGarbageClusters: 1e-1
+            KinkAngCut: [
+               4e-1,
+               4e-1,
+               1.5
+            ]
+            KinkChiRat: [
+               1.2,
+               1.2,
+               0
+            ]
+            LAClusAngleCut: 60
+            LAClusMaxHitsFit: 4
+            LACrawl: [
+               true,
+               true,
+               true
+            ]
+            MaxHitsFit: [
+               100,
+               8,
+               4
+            ]
+            MaxWirSkip: [
+               25,
+               8,
+               0
+            ]
+            MergeAllHits: false
+            MergeChgCut: [
+               8e-1,
+               8e-1,
+               8e-1
+            ]
+            MergeOverlapAngCut: 1e-1
+            MinAmp: [
+               5,
+               5,
+               5
+            ]
+            MinHitFrac: 6e-1
+            MinHits: [
+               50,
+               8,
+               3
+            ]
+            MinWirAfterSkip: [
+               2,
+               2,
+               1
+            ]
+            NHitsAve: [
+               20,
+               8,
+               2
+            ]
+            NumPass: 3
+            RefineVertexClusters: false
+            TimeDelta: [
+               8,
+               8,
+               20
+            ]
+            Vertex2DCut: 10
+            Vertex3DCut: 5
+            VtxClusterSplit: true
+         }
+         DoRawDigitAssns: false
+         DoWireAssns: true
+         HitFinderModuleLabel: "hitfd"
+         module_type: "LineCluster"
+      }
+      mcreco: {
+         IncludeDroppedParticles: true
+         MCParticleDroppedLabel: "largeant:droppedMCParticles"
+         MCParticleLabel: "largeant"
+         MCRecoEdep: {
+            DebugMode: false
+            SaveMCHit: false
+         }
+         MCRecoPart: {
+            SavePathPDGList: [
+               13,
+               -13,
+               211,
+               -211,
+               111,
+               311,
+               310,
+               130,
+               321,
+               -321,
+               2212,
+               2112,
+               2224,
+               2214,
+               2114,
+               1114,
+               3122,
+               1.00001002e9,
+               1.00001003e9,
+               1.00002003e9,
+               1.00002004e9
+            ]
+            TrackIDOffsets: [
+               0,
+               1e7,
+               2e7
+            ]
+         }
+         MCShowerRecoAlg: {
+            DebugMode: false
+            MCShowerRecoPart: {
+               DebugMode: false
+            }
+            MinNumDaughters: 0
+            MinShowerEnergy: 10
+         }
+         MCTrackRecoAlg: {
+            DebugMode: false
+         }
+         SimChannelLabel: "tpcrawdecoder:simpleSC"
+         UseSimEnergyDeposit: false
+         UseSimEnergyDepositLite: false
+         module_type: "MCReco"
+      }
+      opdec: {
+         ApplyPostBLCorrection: false
+         ApplyPostfilter: true
+         AutoScale: true
+         IgnoreChannels: []
+         InputModule: "opdigi"
+         InputPolarity: 1
+         InstanceName: ""
+         LineNoiseRMS: 2.6
+         NoiseTemplateFiles: []
+         NoiseTemplateMapChannels: []
+         NoiseTemplateMapTemplates: []
+         NoiseTemplatePath: ""
+         Pedestal: 1500
+         PedestalBuffer: 20
+         PreTrigger: 100
+         SPETemplateFileDataColumn: 0
+         SPETemplateFiles: [
+            "SPE_DAPHNE2_FBK_2022.dat"
+         ]
+         SPETemplateMapChannels: [
+            -1
+         ]
+         SPETemplateMapTemplates: [
+            0
+         ]
+         SPETemplatePath: ""
+         Samples: 1000
+         Scale: 1
+         WfmFilter: {
+            Cutoff: 1
+            Name: "Wiener"
+         }
+         WfmPostfilter: {
+            Cutoff: 1.8
+            Name: "Gauss"
+         }
+         module_type: "Deconvolution"
+      }
+      opflash: {
+         BinWidth: 1
+         FlashThreshold: 3.5
+         InputModule: "ophitspe"
+         TrigCoinc: 2.5
+         WidthTolerance: 5e-1
+         module_type: "OpFlashFinder"
+      }
+      ophitspe: {
+         AreaToPE: true
+         ChannelMasks: []
+         GenModule: "generator"
+         HitAlgoPset: {
+            ADCThreshold: 3
+            EndADCThreshold: 1
+            EndNSigmaThreshold: 1
+            MinPulseWidth: 1
+            NSigmaThreshold: 1
+            Name: "SlidingWindow"
+            NumPostSample: 2
+            NumPreSample: 2
+            PositivePolarity: true
+            TailADCThreshold: 1
+            TailNSigmaThreshold: 1
+            Verbosity: false
+         }
+         HitThreshold: 3
+         InputDigiType: "recob"
+         InputLabels: [
+            ""
+         ]
+         InputModule: "opdec"
+         InputModuledigi: "opdigi"
+         PedAlgoPset: {
+            Method: 0
+            Name: "Edges"
+            NumSampleFront: 3
+            NumSampleTail: 3
+         }
+         SPEArea: 100
+         SPEShift: 0
+         ScalingFactor: 100
+         UseCalibrator: false
+         module_type: "OpHitFinderDeco"
+         reco_man: {
+            module_type: "PulseRecoManager"
+         }
+      }
+      opslicer: {
+         BreakTime: "10"
+         MinN: "10"
+         OpHitModuleLabel: "ophitspe"
+         R0: "6"
+         RScale: "600"
+         TScale: "1.6"
+         TrigCoinc: "2.5"
+         module_type: "OpSlicer"
+      }
+      pandora: {
+         ConfigFile: "PandoraSettings_Master_DUNEFD.xml"
+         EnableLineGaps: true
+         EnableMCParticles: true
+         EnableProduction: true
+         GeantModuleLabel: "largeant"
+         HitFinderModuleLabel: "hitfd"
+         PrintOverallRecoStatus: false
+         ShouldPerformSliceId: false
+         ShouldRunAllHitsCosmicReco: false
+         ShouldRunCosmicHitRemoval: false
+         ShouldRunCosmicRecoOption: false
+         ShouldRunNeutrinoRecoOption: true
+         ShouldRunSlicing: false
+         ShouldRunStitching: false
+         SimChannelModuleLabel: "tpcrawdecoder:simpleSC"
+         UseGlobalCoordinates: true
+         UseHitWidths: true
+         module_type: "StandardPandora"
+      }
+      pandoraShower: {
+         AllowPartialShowers: true
+         PFParticleLabel: "pandora"
+         ShowerBestPlaneLabel: "ShowerBestPlane"
+         ShowerDirectionLabel: "ShowerDirection"
+         ShowerEnergyLabel: "ShowerEnergy"
+         ShowerFinderTools: [
+            {
+               BaseTools: {
+                  EnableEventDisplay: false
+                  LArPandoraShowerAlg: {
+                     InitialTrackInputLabel: "InitialTrack"
+                     InitialTrackSpacePointsInputLabel: "InitialTrackSpacePoints"
+                     SCEXFlip: false
+                     ShowerDirectionInputLabel: "ShowerDirection"
+                     ShowerStartPositionInputLabel: "ShowerStartPosition"
+                     UseCollectionOnly: false
+                  }
+               }
+               ShowerDirectionInputLabel: "ShowerDirection"
+               ShowerStartPositionOutputLabel: "ShowerStartPosition"
+               tool_type: "ShowerPFPVertexStartPosition"
+            },
+            {
+               BaseTools: {
+                  EnableEventDisplay: false
+                  LArPandoraShowerAlg: {
+                     InitialTrackInputLabel: "InitialTrack"
+                     InitialTrackSpacePointsInputLabel: "InitialTrackSpacePoints"
+                     SCEXFlip: false
+                     ShowerDirectionInputLabel: "ShowerDirection"
+                     ShowerStartPositionInputLabel: "ShowerStartPosition"
+                     UseCollectionOnly: false
+                  }
+               }
+               ChargeWeighted: false
+               NSegments: 6
+               ShowerCentreOutputLabel: "ShowerCentre"
+               ShowerDirectionOutputLabel: "ShowerDirection"
+               ShowerPCAOutputLabel: "ShowerPCA"
+               ShowerStartPositionInputLabel: "ShowerStartPosition"
+               UseStartPosition: true
+               tool_type: "ShowerPCADirection"
+            },
+            {
+               BaseTools: {
+                  EnableEventDisplay: false
+                  LArPandoraShowerAlg: {
+                     InitialTrackInputLabel: "InitialTrack"
+                     InitialTrackSpacePointsInputLabel: "InitialTrackSpacePoints"
+                     SCEXFlip: false
+                     ShowerDirectionInputLabel: "ShowerDirection"
+                     ShowerStartPositionInputLabel: "ShowerStartPosition"
+                     UseCollectionOnly: false
+                  }
+               }
+               Percentile: 9e-1
+               ShowerDirectionInputLabel: "ShowerDirection"
+               ShowerLengthOutputLabel: "ShowerLength"
+               ShowerOpeningAngleOutputLabel: "ShowerOpeningAngle"
+               ShowerStartPositionInputLabel: "ShowerStartPosition"
+               tool_type: "ShowerLengthPercentile"
+            },
+            {
+               BaseTools: {
+                  EnableEventDisplay: false
+                  LArPandoraShowerAlg: {
+                     InitialTrackInputLabel: "InitialTrack"
+                     InitialTrackSpacePointsInputLabel: "InitialTrackSpacePoints"
+                     SCEXFlip: false
+                     ShowerDirectionInputLabel: "ShowerDirection"
+                     ShowerStartPositionInputLabel: "ShowerStartPosition"
+                     UseCollectionOnly: false
+                  }
+               }
+               CalorimetryAlg: {
+                  CalAmpConstants: [
+                     9.033e-4,
+                     1.0287e-3,
+                     8.8e-4
+                  ]
+                  CalAreaConstants: [
+                     5.122e-3,
+                     5.102e-3,
+                     5.045e-3
+                  ]
+                  CaloDoLifeTimeCorrection: true
+                  CaloLifeTimeForm: 0
+                  CaloUseModBox: true
+               }
+               RecombinationFactor: 6.4e-1
+               ShowerBestPlaneOutputLabel: "ShowerBestPlane"
+               ShowerEnergyOutputLabel: "ShowerEnergy"
+               tool_type: "ShowerNumElectronsEnergy"
+            },
+            {
+               BaseTools: {
+                  EnableEventDisplay: false
+                  LArPandoraShowerAlg: {
+                     InitialTrackInputLabel: "InitialTrack"
+                     InitialTrackSpacePointsInputLabel: "InitialTrackSpacePoints"
+                     SCEXFlip: false
+                     ShowerDirectionInputLabel: "ShowerDirection"
+                     ShowerStartPositionInputLabel: "ShowerStartPosition"
+                     UseCollectionOnly: false
+                  }
+               }
+               DebugEVD: false
+               ForwardHitsOnly: true
+               InitialTrackHitsOutputLabel: "InitialTrackHits3DCylinder"
+               InitialTrackSpacePointsOutputLabel: "InitialTrackSpacePoints3DCylinder"
+               MaxPerpendicularDist: 4
+               MaxProjectionDist: 5.8
+               ShowerDirectionInputLabel: "ShowerDirection"
+               ShowerStartPositionInputLabel: "ShowerStartPosition"
+               tool_type: "Shower3DCylinderTrackHitFinder"
+            },
+            {
+               BaseTools: {
+                  EnableEventDisplay: false
+                  LArPandoraShowerAlg: {
+                     InitialTrackInputLabel: "InitialTrack"
+                     InitialTrackSpacePointsInputLabel: "InitialTrackSpacePoints"
+                     SCEXFlip: false
+                     ShowerDirectionInputLabel: "ShowerDirection"
+                     ShowerStartPositionInputLabel: "ShowerStartPosition"
+                     UseCollectionOnly: false
+                  }
+               }
+               CalorimetryAlg: {
+                  CalAmpConstants: [
+                     9.033e-4,
+                     1.0287e-3,
+                     8.8e-4
+                  ]
+                  CalAreaConstants: [
+                     5.122e-3,
+                     5.102e-3,
+                     5.045e-3
+                  ]
+                  CaloDoLifeTimeCorrection: true
+                  CaloLifeTimeForm: 0
+                  CaloUseModBox: true
+               }
+               InitialTrackHitsInputLabel: "InitialTrackHits3DCylinder"
+               MaxHitPlane: true
+               MissFirstPoint: true
+               ShowerBestPlaneOutputLabel: "ShowerBestPlane"
+               ShowerDirectionInputLabel: "ShowerDirection"
+               ShowerStartPositionInputLabel: "ShowerStartPosition"
+               ShowerdEdxOutputLabel: "ShowerdEdx"
+               SumHitSnippets: false
+               dEdxTrackLength: 5.7
+               tool_type: "ShowerUnidirectiondEdx"
+            },
+            {
+               BaseTools: {
+                  EnableEventDisplay: false
+                  LArPandoraShowerAlg: {
+                     InitialTrackInputLabel: "InitialTrack"
+                     InitialTrackSpacePointsInputLabel: "InitialTrackSpacePoints"
+                     SCEXFlip: false
+                     ShowerDirectionInputLabel: "ShowerDirection"
+                     ShowerStartPositionInputLabel: "ShowerStartPosition"
+                     UseCollectionOnly: false
+                  }
+               }
+               ChargeWeighted: false
+               DistanceCut: 999
+               ForwardHitsOnly: true
+               InitialTrackHitsOutputLabel: "InitialTrackHits"
+               InitialTrackSpacePointsOutputLabel: "InitialTrackSpacePoints"
+               MakeTrackSeed: true
+               MaxAverageResidual: 7.5e-1
+               MaxResidualDiff: 7.5e-1
+               NMissPoints: 9
+               ShowerDirectionInputLabel: "ShowerDirection"
+               ShowerStartPositionInputLabel: "ShowerStartPosition"
+               StartDistanceCut: 0
+               StartFitSize: 9
+               TrackMaxAdjacentSPDistance: 2
+               UseShowerDirection: true
+               tool_type: "ShowerIncrementalTrackHitFinder"
+            },
+            {
+               BaseTools: {
+                  EnableEventDisplay: false
+                  LArPandoraShowerAlg: {
+                     InitialTrackInputLabel: "InitialTrack"
+                     InitialTrackSpacePointsInputLabel: "InitialTrackSpacePoints"
+                     SCEXFlip: false
+                     ShowerDirectionInputLabel: "ShowerDirection"
+                     ShowerStartPositionInputLabel: "ShowerStartPosition"
+                     UseCollectionOnly: false
+                  }
+               }
+               InitialTrackHitsInputLabel: "InitialTrackHits"
+               InitialTrackLengthOutputLabel: "InitialTrackLength"
+               InitialTrackOutputLabel: "InitialTrack"
+               InitialTrackSpacePointsInputLabel: "InitialTrackSpacePoints"
+               MinTrajectoryPoints: 2
+               ShowerDirectionInputLabel: "ShowerDirection"
+               ShowerStartPositionInputLabel: "ShowerStartPosition"
+               SlidingFitHalfWindow: 12
+               tool_type: "ShowerPandoraSlidingFitTrackFinder"
+            },
+            {
+               BaseTools: {
+                  EnableEventDisplay: false
+                  LArPandoraShowerAlg: {
+                     InitialTrackInputLabel: "InitialTrack"
+                     InitialTrackSpacePointsInputLabel: "InitialTrackSpacePoints"
+                     SCEXFlip: false
+                     ShowerDirectionInputLabel: "ShowerDirection"
+                     ShowerStartPositionInputLabel: "ShowerStartPosition"
+                     UseCollectionOnly: false
+                  }
+               }
+               CalorimetryAlg: {
+                  CalAmpConstants: [
+                     9.033e-4,
+                     1.0287e-3,
+                     8.8e-4
+                  ]
+                  CalAreaConstants: [
+                     5.122e-3,
+                     5.102e-3,
+                     5.045e-3
+                  ]
+                  CaloDoLifeTimeCorrection: true
+                  CaloLifeTimeForm: 0
+                  CaloUseModBox: true
+               }
+               CutStartPosition: false
+               InitialTrackHitsInputLabel: "InitialTrackHits"
+               InitialTrackInputLabel: "InitialTrack"
+               InitialTrackSpacePointsInputLabel: "InitialTrackSpacePoints"
+               MaxDist: 4
+               MinAngleToWire: 0
+               MinDistCutOff: 0
+               ResultsOverrideMode: 0
+               SCECorrectEField: false
+               SCECorrectPitch: false
+               SCEInputCorrected: false
+               ShapingTime: 999
+               ShowerBestPlaneOutputLabel: "ShowerBestPlane"
+               ShowerStartPositionInputLabel: "ShowerStartPosition"
+               ShowerdEdxOutputLabel: "ShowerdEdx"
+               ShowerdEdxVecOutputLabel: "ShowerdEdxVec"
+               SumHitSnippets: false
+               T0Correct: false
+               UseMedian: true
+               dEdxCut: 999
+               dEdxTrackLength: 4.6
+               tool_type: "ShowerTrajPointdEdx"
+            }
+         ]
+         ShowerLengthLabel: "ShowerLength"
+         ShowerOpeningAngleLabel: "ShowerOpeningAngle"
+         ShowerStartPositionLabel: "ShowerStartPosition"
+         ShowerdEdxLabel: "ShowerdEdx"
+         UseAllParticles: true
+         Verbose: 0
+         module_type: "LArPandoraModularShowerCreation"
+      }
+      pandoraTrack: {
+         PFParticleLabel: "pandora"
+         UseAllParticles: true
+         module_type: "LArPandoraTrackCreation"
+      }
+      pandoracalo: {
+         CaloAlg: {
+            CalAmpConstants: [
+               9.033e-4,
+               1.0287e-3,
+               8.8e-4
+            ]
+            CalAreaConstants: [
+               5.122e-3,
+               5.102e-3,
+               5.045e-3
+            ]
+            CaloDoLifeTimeCorrection: true
+            CaloLifeTimeForm: 0
+            CaloUseModBox: true
+         }
+         CorrectSCE: false
+         FlipTrack_dQdx: false
+         MakeTree: false
+         SpacePointModuleLabel: "pandora"
+         T0ModuleLabel: ""
+         TrackModuleLabel: "pandoraTrack"
+         UseArea: true
+         module_type: "Calorimetry"
+      }
+      pandorapid: {
+         CalorimetryModuleLabel: "pandoracalo"
+         Chi2PIDAlg: {
+            TemplateFile: "dEdxrestemplates.root"
+            UseMedian: true
+         }
+         TrackModuleLabel: "pandoraTrack"
+         module_type: "Chi2ParticleID"
+      }
+      planecluster: {
+         AdjClusterRad: 100
+         ClusterAlgoAdjChannel: 3
+         ClusterAlgoTime: 1.25e1
+         ClusterChargeVariable: "Integral"
+         ClusterInd0MatchTime: 0
+         ClusterInd1MatchTime: 0
+         ClusterMatchCharge: 6e-1
+         ClusterMatchNHit: 2
+         ClusterMatchTime: 10
+         ClusterPreselectionNHits: 0
+         HitLabel: "hitfd"
+         module_type: "PerPlaneCluster"
+      }
+      pmtrack: {
+         ClusterModuleLabel: "linecluster"
+         EmClusterModuleLabel: "trkshowersplit"
+         HitModuleLabel: "linecluster"
+         PMAlgCosmicTagging: {
+            ApparentStopperMargin: 5
+            FullCrossingMargin: 15
+            NonBeamT0Margin: 100
+            OutOfDriftMargin: 5
+            StopperBuffer: 2
+            TagApparentStopper: false
+            TagFullHeightTracks: false
+            TagFullLengthTracks: false
+            TagFullWidthTracks: false
+            TagNonBeamT0Tracks: false
+            TagOutOfDriftTracks: false
+            TagTopFrontBack: true
+            TopFrontBackMargin: 5
+            VetoActualStopper: false
+         }
+         PMAlgStitching: {
+            NodesFromEnd: 2
+            StitchingThreshold: 10
+         }
+         PMAlgTracking: {
+            AdcImageAlg: {
+               AdcMax: 150
+               AdcMin: -50
+               BlurKernel: []
+               CalibrateAmpl: false
+               CalibrateLifetime: true
+               CalorimetryAlg: {
+                  CalAmpConstants: [
+                     5.88726e-4,
+                     1.18998e-3
+                  ]
+                  CalAreaConstants: [
+                     7.73887e-3,
+                     1.78186e-2
+                  ]
+                  CaloDoLifeTimeCorrection: true
+                  CaloLifeTimeForm: 0
+                  CaloUseModBox: true
+               }
+               CoherentSigma: 0
+               DownscaleFn: "mean"
+               DownscaleFullView: true
+               DriftWindow: 6
+               NoiseSigma: 0
+               OutMax: 15
+               OutMin: -5
+            }
+            AdcValidationThr: [
+               1,
+               1,
+               1
+            ]
+            AutoFlip_dQdx: true
+            FlipDownward: false
+            FlipToBeam: false
+            FlipToX: false
+            MatchT0inAPACrossing: false
+            MatchT0inCPACrossing: false
+            MergeAngle: 2
+            MergeTransverseShift: 2
+            MergeWithinTPC: false
+            MinSeedSize1stPass: 20
+            MinSeedSize2ndPass: 2
+            RunVertexing: true
+            StitchAngle: 10
+            StitchBetweenTPCs: true
+            StitchDistToWall: 3
+            StitchTransverseShift: 3
+            TrackLikeThreshold: 0
+            Validation: "hits"
+         }
+         PMAlgVertexing: {
+            FindKinks: false
+            KinkMinDeg: 2.5
+            KinkMinStd: 5
+            MinTrackLength: 3
+         }
+         ProjectionMatchingAlg: {
+            FineTuningEps: 1e-4
+            HitTestingDist2D: 5e-1
+            HitWeightU: 1
+            HitWeightV: 1
+            HitWeightZ: 1
+            MinTwoViewFraction: 4e-1
+            NodeMargin3D: 3
+            OptimizationEps: 1e-2
+            TrkValidationDist2D: 1
+         }
+         SaveOnlyBranchingVtx: false
+         SavePmaNodes: false
+         WireModuleLabel: "tpcrawdecoder:gauss"
+         module_type: "PMAlgTrackMaker"
+      }
+      pmtrackcalo: {
+         CaloAlg: {
+            CalAmpConstants: [
+               9.033e-4,
+               1.0287e-3,
+               8.8e-4
+            ]
+            CalAreaConstants: [
+               5.122e-3,
+               5.102e-3,
+               5.045e-3
+            ]
+            CaloDoLifeTimeCorrection: true
+            CaloLifeTimeForm: 0
+            CaloUseModBox: true
+         }
+         CorrectSCE: false
+         FlipTrack_dQdx: false
+         MakeTree: false
+         SpacePointModuleLabel: "pmtrack"
+         T0ModuleLabel: ""
+         TrackModuleLabel: "pmtrack"
+         UseArea: true
+         module_type: "Calorimetry"
+      }
+      pmtrackpid: {
+         CalorimetryModuleLabel: "pmtrackcalo"
+         Chi2PIDAlg: {
+            TemplateFile: "dEdxrestemplates.root"
+            UseMedian: true
+         }
+         TrackModuleLabel: "pmtrack"
+         module_type: "Chi2ParticleID"
+      }
+      pmtracktc: {
+         ClusterModuleLabel: "trajcluster"
+         EmClusterModuleLabel: ""
+         HitModuleLabel: "trajcluster"
+         PMAlgCosmicTagging: {
+            ApparentStopperMargin: 5
+            FullCrossingMargin: 15
+            NonBeamT0Margin: 100
+            OutOfDriftMargin: 5
+            StopperBuffer: 2
+            TagApparentStopper: false
+            TagFullHeightTracks: false
+            TagFullLengthTracks: false
+            TagFullWidthTracks: false
+            TagNonBeamT0Tracks: false
+            TagOutOfDriftTracks: false
+            TagTopFrontBack: true
+            TopFrontBackMargin: 5
+            VetoActualStopper: false
+         }
+         PMAlgStitching: {
+            NodesFromEnd: 2
+            StitchingThreshold: 10
+         }
+         PMAlgTracking: {
+            AdcImageAlg: {
+               AdcMax: 150
+               AdcMin: -50
+               BlurKernel: []
+               CalibrateAmpl: false
+               CalibrateLifetime: true
+               CalorimetryAlg: {
+                  CalAmpConstants: [
+                     5.88726e-4,
+                     1.18998e-3
+                  ]
+                  CalAreaConstants: [
+                     7.73887e-3,
+                     1.78186e-2
+                  ]
+                  CaloDoLifeTimeCorrection: true
+                  CaloLifeTimeForm: 0
+                  CaloUseModBox: true
+               }
+               CoherentSigma: 0
+               DownscaleFn: "mean"
+               DownscaleFullView: true
+               DriftWindow: 6
+               NoiseSigma: 0
+               OutMax: 15
+               OutMin: -5
+            }
+            AdcValidationThr: [
+               1,
+               1,
+               1
+            ]
+            AutoFlip_dQdx: true
+            FlipDownward: false
+            FlipToBeam: false
+            FlipToX: false
+            MatchT0inAPACrossing: false
+            MatchT0inCPACrossing: false
+            MergeAngle: 2
+            MergeTransverseShift: 2
+            MergeWithinTPC: false
+            MinSeedSize1stPass: 20
+            MinSeedSize2ndPass: 2
+            RunVertexing: true
+            StitchAngle: 10
+            StitchBetweenTPCs: true
+            StitchDistToWall: 3
+            StitchTransverseShift: 3
+            TrackLikeThreshold: 0
+            Validation: "hits"
+         }
+         PMAlgVertexing: {
+            FindKinks: false
+            KinkMinDeg: 2.5
+            KinkMinStd: 5
+            MinTrackLength: 3
+         }
+         ProjectionMatchingAlg: {
+            FineTuningEps: 1e-4
+            HitTestingDist2D: 5e-1
+            HitWeightU: 1
+            HitWeightV: 1
+            HitWeightZ: 1
+            MinTwoViewFraction: 4e-1
+            NodeMargin3D: 3
+            OptimizationEps: 1e-2
+            TrkValidationDist2D: 1
+         }
+         SaveOnlyBranchingVtx: false
+         SavePmaNodes: false
+         WireModuleLabel: "tpcrawdecoder:gauss"
+         module_type: "PMAlgTrackMaker"
+      }
+      pmtracktccalo: {
+         CaloAlg: {
+            CalAmpConstants: [
+               9.033e-4,
+               1.0287e-3,
+               8.8e-4
+            ]
+            CalAreaConstants: [
+               5.122e-3,
+               5.102e-3,
+               5.045e-3
+            ]
+            CaloDoLifeTimeCorrection: true
+            CaloLifeTimeForm: 0
+            CaloUseModBox: true
+         }
+         CorrectSCE: false
+         FlipTrack_dQdx: false
+         MakeTree: false
+         SpacePointModuleLabel: "pmtracktc"
+         T0ModuleLabel: ""
+         TrackModuleLabel: "pmtracktc"
+         UseArea: true
+         module_type: "Calorimetry"
+      }
+      pmtracktcpid: {
+         CalorimetryModuleLabel: "pmtracktccalo"
+         Chi2PIDAlg: {
+            TemplateFile: "dEdxrestemplates.root"
+            UseMedian: true
+         }
+         TrackModuleLabel: "pmtracktc"
+         module_type: "Chi2ParticleID"
+      }
+      pmtrajfit: {
+         HitModuleLabel: "linecluster"
+         PMAlgFitting: {
+            RunVertexing: false
+            TrackingOnlyPdg: [
+               0
+            ]
+            TrackingSkipPdg: [
+               0
+            ]
+         }
+         PMAlgVertexing: {
+            FindKinks: false
+            KinkMinDeg: 2.5
+            KinkMinStd: 5
+            MinTrackLength: 3
+         }
+         PfpModuleLabel: "pandora"
+         ProjectionMatchingAlg: {
+            FineTuningEps: 1e-4
+            HitTestingDist2D: 5e-1
+            HitWeightU: 1
+            HitWeightV: 1
+            HitWeightZ: 1
+            MinTwoViewFraction: 4e-1
+            NodeMargin3D: 3
+            OptimizationEps: 1e-2
+            TrkValidationDist2D: 1
+         }
+         SaveOnlyBranchingVtx: false
+         SavePmaNodes: false
+         module_type: "PMAlgTrajFitter"
+      }
+      pmtrajfitcalo: {
+         CaloAlg: {
+            CalAmpConstants: [
+               9.033e-4,
+               1.0287e-3,
+               8.8e-4
+            ]
+            CalAreaConstants: [
+               5.122e-3,
+               5.102e-3,
+               5.045e-3
+            ]
+            CaloDoLifeTimeCorrection: true
+            CaloLifeTimeForm: 0
+            CaloUseModBox: true
+         }
+         CorrectSCE: false
+         FlipTrack_dQdx: false
+         MakeTree: false
+         SpacePointModuleLabel: "pmtrajfit"
+         T0ModuleLabel: ""
+         TrackModuleLabel: "pmtrajfit"
+         UseArea: true
+         module_type: "Calorimetry"
+      }
+      pmtrajfitpid: {
+         CalorimetryModuleLabel: "pmtrajfitcalo"
+         Chi2PIDAlg: {
+            TemplateFile: "dEdxrestemplates.root"
+            UseMedian: true
+         }
+         TrackModuleLabel: "pmtrajfit"
+         module_type: "Chi2ParticleID"
+      }
+      pmtrajfittc: {
+         HitModuleLabel: "trajcluster"
+         PMAlgFitting: {
+            RunVertexing: true
+            TrackingOnlyPdg: [
+               0
+            ]
+            TrackingSkipPdg: [
+               0
+            ]
+         }
+         PMAlgVertexing: {
+            FindKinks: false
+            KinkMinDeg: 2.5
+            KinkMinStd: 5
+            MinTrackLength: 3
+         }
+         PfpModuleLabel: "trajcluster"
+         ProjectionMatchingAlg: {
+            FineTuningEps: 1e-4
+            HitTestingDist2D: 5e-1
+            HitWeightU: 1
+            HitWeightV: 1
+            HitWeightZ: 1
+            MinTwoViewFraction: 4e-1
+            NodeMargin3D: 3
+            OptimizationEps: 1e-2
+            TrkValidationDist2D: 1
+         }
+         SaveOnlyBranchingVtx: false
+         SavePmaNodes: false
+         module_type: "PMAlgTrajFitter"
+      }
+      pmtrajfittccalo: {
+         CaloAlg: {
+            CalAmpConstants: [
+               9.033e-4,
+               1.0287e-3,
+               8.8e-4
+            ]
+            CalAreaConstants: [
+               5.122e-3,
+               5.102e-3,
+               5.045e-3
+            ]
+            CaloDoLifeTimeCorrection: true
+            CaloLifeTimeForm: 0
+            CaloUseModBox: true
+         }
+         CorrectSCE: false
+         FlipTrack_dQdx: false
+         MakeTree: false
+         SpacePointModuleLabel: "pmtrajfittc"
+         T0ModuleLabel: ""
+         TrackModuleLabel: "pmtrajfittc"
+         UseArea: true
+         module_type: "Calorimetry"
+      }
+      pmtrajfittcpid: {
+         CalorimetryModuleLabel: "pmtrajfittccalo"
+         Chi2PIDAlg: {
+            TemplateFile: "dEdxrestemplates.root"
+            UseMedian: true
+         }
+         TrackModuleLabel: "pmtrajfittc"
+         module_type: "Chi2ParticleID"
+      }
+      rns: {
+         module_type: "RandomNumberSaver"
+      }
+      solarcluster: {
+         AdjClusterRad: 100
+         ClusterAlgoAdjChannel: 3
+         ClusterAlgoTime: 1.25e1
+         ClusterChargeVariable: "Integral"
+         ClusterInd0MatchTime: 0
+         ClusterInd1MatchTime: 0
+         ClusterLabel: "planecluster"
+         ClusterMatchCharge: 6e-1
+         ClusterMatchNHit: 2
+         ClusterMatchTime: 10
+         ClusterPreselectionNHits: 0
+         Debug: true
+         GEANT4Label: "largeant"
+         HitLabel: "hitfd"
+         SignalLabel: "marley"
+         module_type: "SolarCluster"
+      }
+      solarflash: {
+         Debug: true
+         OpFlashAlgoHitDuplicates: true
+         OpFlashAlgoHotVertexThld: 3e-1
+         OpFlashAlgoMaxTime: 9.6e-1
+         OpFlashAlgoMinTime: 3.2e-1
+         OpFlashAlgoNHit: 3
+         OpFlashAlgoPE: 1.5
+         OpFlashAlgoRad: 300
+         OpFlashAlgoTriggerPE: 1.5
+         OpFlashTimeOffset: 1.81e1
+         OpHitLabel: "ophitspe"
+         OpHitTime2us: false
+         OpHitTimeVariable: "PeakTime"
+         OpWaveformLabel: "opdec"
+         XACathodeX: 0
+         XAFinalCapZ: 0
+         XAMembraneY: 0
+         XAStartCapZ: 0
+         module_type: "SolarOpFlash"
+      }
+      spsolve: {
+         AllowBadCollectionHit: true
+         AllowBadInductionHit: true
+         Alpha: 5e-2
+         Fit: true
+         HitLabel: "gaushit"
+         HitReaderTool: {
+            tool_type: "HitsStandard"
+         }
+         MaxIterationsNoReg: 100
+         MaxIterationsReg: 100
+         MaxNTriplets: 0
+         MinNHits: 20
+         WireIntersectThreshold: 3e-1
+         WireIntersectThresholdDriftDir: 3e-1
+         XHitOffset: 0
+         module_type: "SpacePointSolver"
+      }
+      trajcluster: {
+         DoRawDigitAssns: false
+         DoWireAssns: true
+         HitModuleLabel: "hitfd"
+         MaxSliceHits: 50000
+         SaveAll2DVertices: false
+         SpacePointHitAssnLabel: "hitpdune"
+         SpacePointModuleLabel: "NA"
+         TrajClusterAlg: {
+            AngleRanges: [
+               40,
+               85,
+               90
+            ]
+            CaloAlg: {
+               CalAmpConstants: [
+                  9.033e-4,
+                  1.0287e-3,
+                  8.8e-4
+               ]
+               CalAreaConstants: [
+                  5.122e-3,
+                  5.102e-3,
+                  5.045e-3
+               ]
+               CaloDoLifeTimeCorrection: true
+               CaloLifeTimeForm: 0
+               CaloUseModBox: true
+            }
+            ChargeCuts: [
+               4,
+               1.5e-1,
+               2.5e-1
+            ]
+            ChkStopCuts: [
+               10,
+               8,
+               1.5
+            ]
+            DebugConfig: []
+            DeltaRayTag: [
+               10,
+               5,
+               500
+            ]
+            HitErrFac: 4e-1
+            JTMaxHitSep: 3
+            KinkCuts: [
+               8,
+               15,
+               1,
+               10
+            ]
+            Match3DCuts: [
+               5e-1,
+               10000,
+               1,
+               2,
+               2,
+               2.5,
+               1
+            ]
+            MaxAngleCode: [
+               0,
+               1,
+               2
+            ]
+            MaxChi: 20
+            MaxWireSkipNoSignal: 3
+            MaxWireSkipWithSignal: 100
+            MinAmp: 1
+            MinMCSMom: [
+               0,
+               0,
+               0
+            ]
+            MinPts: [
+               3,
+               3,
+               3
+            ]
+            MinPtsFit: [
+               3,
+               3,
+               3
+            ]
+            Mode: 1
+            MultHitSep: 2.5
+            MuonTag: [
+               40,
+               500,
+               40,
+               3
+            ]
+            NPtsAve: 10
+            PFPStitchCuts: [
+               2e-2,
+               3,
+               2
+            ]
+            ProjectionErrFactor: 2
+            QualityCuts: [
+               8e-1,
+               3
+            ]
+            SaveCRTree: false
+            SaveShowerTree: false
+            ShowerTag: [
+               1,
+               100,
+               10,
+               50,
+               2.5,
+               1,
+               0,
+               3,
+               5,
+               7e-1,
+               1,
+               10,
+               -13
+            ]
+            SkipAlgs: []
+            TagCosmics: false
+            VLAStepSize: 1.5
+            Vertex2DCuts: [
+               6,
+               8,
+               45,
+               3,
+               3,
+               50,
+               6e-1,
+               30,
+               8e-1,
+               8e-1
+            ]
+            Vertex3DCuts: [
+               8e-1,
+               2,
+               3
+            ]
+            VertexScoreWeights: [
+               1,
+               2,
+               10,
+               2
+            ]
+         }
+         module_type: "TrajCluster"
+      }
+      trkshowersplit: {
+         FindHugeShowers: true
+         FindMoreShowers: false
+         HitModuleLabel: "linecluster"
+         Segmentation2DAlg: {
+            DenseHitRadius: 5
+            DenseMinNHits: 100
+            DenseMinNVtx: 5
+            DenseVtxRadius: 1
+            MaxLineDist: 2e-1
+            RadiusMax: 1
+            RadiusMin: 5e-1
+         }
+         module_type: "TrackShowerHits"
+      }
+      wclsmcnfsp: {}
+}
+   reco: [
+      "gaushit",
+      "cluster3d",
+      "opdec",
+      "ophitspe",
+      "opflash",
+      "opslicer",
+      "mcreco"
+   ]
+   stream1: [
+      "out1"
+   ]
+   trigger_paths: [
+      "reco"
+   ]
+}
+process_name: "Supera"
+services: {
+   AdcDeconvolutionService: {
+      LogLevel: 1
+      service_provider: "DuneDeconvolutionService"
+   }
+   AdcRoiBuildingService: {
+      LogLevel: 1
+      NSigmaEnd: 1
+      NSigmaStart: 3
+      PadHigh: 50
+      PadLow: 50
+      service_provider: "DuneRoiBuildingService"
+   }
+   AdcWireBuildingService: {
+      LogLevel: 1
+      service_provider: "StandardAdcWireBuildingService"
+   }
+   AuxDetGeometry: {
+      GDML: "dune10kt_v6_refactored_1x2x6.gdml"
+      Name: "dune10kt_v6_1x2x6"
+      SortingParameters: {
+         tool_type: "AuxDetGeoObjectSorterYZX"
+      }
+   }
+   BackTrackerService: {
+      BackTracker: {
+         G4ModuleLabel: "largeant"
+         MinimumHitEnergyFraction: 1e-1
+         SimChannelModuleLabel: "tpcrawdecoder:simpleSC"
+      }
+   }
+   ChannelGroupService: {
+      ApaRops: []
+      LogLevel: 1
+      service_provider: "GeoApaChannelGroupService"
+   }
+   ChannelStatusService: {
+      BadChannels: []
+      NoisyChannels: []
+      service_provider: "SimpleChannelStatusService"
+   }
+   DatabaseUtil: {
+      DBHostName: "fnalpgsdev.fnal.gov"
+      DBName: "dune_dev"
+      DBUser: "dune_reader"
+      PassFileName: ".lpswd"
+      Port: 5438
+      ShouldConnect: false
+      TableName: "main_run"
+      ToughErrorTreatment: false
+   }
+   DetectorClocksService: {
+      ClockSpeedExternal: 3.125e1
+      ClockSpeedOptical: 6.25e1
+      ClockSpeedTPC: 2
+      ClockSpeedTrigger: 16
+      DefaultBeamTime: 0
+      DefaultTrigTime: 0
+      FramePeriod: 1600
+      G4RefTime: 0
+      InheritClockConfig: false
+      TrigModuleName: ""
+      TriggerOffsetTPC: 0
+      service_provider: "DetectorClocksServiceStandard"
+   }
+   DetectorPropertiesService: {
+      DriftVelFudgeFactor: 1
+      Efield: [
+         5e-1,
+         6.66e-1,
+         8e-1
+      ]
+      Electronlifetime: 10400
+      ElectronsToADC: 6.8906513e-3
+      IncludeInterPlanePitchInXTickOffsets: false
+      NumberTimeSamples: 4492
+      ReadOutWindowSize: 4492
+      SimpleBoundaryProcess: true
+      SternheimerA: 1.956e-1
+      SternheimerCbar: 5.2146
+      SternheimerK: 3
+      SternheimerX0: 2e-1
+      SternheimerX1: 3
+      Temperature: 87
+      TimeOffsetU: 0
+      TimeOffsetV: 0
+      TimeOffsetZ: 0
+      UseIcarusMicrobooneDriftModel: false
+      service_provider: "DetectorPropertiesServiceStandard"
+   }
+   FileCatalogMetadata: {
+      applicationFamily: "art"
+      applicationVersion: "development"
+      fileType: "mc"
+      group: "dune"
+      runType: "physics"
+   }
+   Geometry: {
+      GDML: "dune10kt_v6_refactored_1x2x6.gdml"
+      Name: "dune10kt_v6_1x2x6"
+      SortingParameters: {
+         tool_type: "GeoObjectSorterAPA"
+      }
+      SurfaceY: 147828
+   }
+   GeometryConfigurationWriter: {}
+   LArFFT: {
+      FFTOption: ""
+      FFTSize: 0
+      FitBins: 5
+   }
+   LArPropertiesService: {
+      AbsLengthEnergies: [
+         4,
+         5,
+         6,
+         7,
+         8,
+         9,
+         10,
+         11
+      ]
+      AbsLengthSpectrum: [
+         8000,
+         8000,
+         8000,
+         8000,
+         8000,
+         2000,
+         2000,
+         2000
+      ]
+      AlphaScintYield: 16800
+      AlphaScintYieldRatio: 5.6e-1
+      Argon39DecayRate: 0
+      AtomicMass: 3.9948e1
+      AtomicNumber: 18
+      ElectronScintYield: 20000
+      ElectronScintYieldRatio: 2.7e-1
+      EnableCerenkovLight: false
+      ExcitationEnergy: 188
+      FastScintEnergies: [
+         7.2,
+         7.9,
+         8.3,
+         8.6,
+         8.9,
+         9.1,
+         9.3,
+         9.6,
+         9.7,
+         9.8,
+         10,
+         1.02e1,
+         1.03e1,
+         1.06e1,
+         11,
+         1.16e1,
+         1.19e1
+      ]
+      FastScintSpectrum: [
+         0,
+         4e-2,
+         1.2e-1,
+         2.7e-1,
+         4.4e-1,
+         6.2e-1,
+         8e-1,
+         9.1e-1,
+         9.2e-1,
+         8.5e-1,
+         7e-1,
+         5e-1,
+         3.1e-1,
+         1.3e-1,
+         4e-2,
+         1e-2,
+         0
+      ]
+      KaonScintYield: 24000
+      KaonScintYieldRatio: 2.3e-1
+      LoadExtraMatProperties: true
+      MuonScintYield: 24000
+      MuonScintYieldRatio: 2.3e-1
+      PionScintYield: 24000
+      PionScintYieldRatio: 2.3e-1
+      ProtonScintYield: 19200
+      ProtonScintYieldRatio: 2.9e-1
+      RIndexEnergies: [
+         1.18626,
+         1.68626,
+         2.18626,
+         2.68626,
+         3.18626,
+         3.68626,
+         4.18626,
+         4.68626,
+         5.18626,
+         5.68626,
+         6.18626,
+         6.68626,
+         7.18626,
+         7.68626,
+         8.18626,
+         8.68626,
+         9.18626,
+         9.68626,
+         1.01863e1,
+         1.06863e1,
+         1.11863e1
+      ]
+      RIndexSpectrum: [
+         1.24664,
+         1.2205,
+         1.22694,
+         1.22932,
+         1.23124,
+         1.23322,
+         1.23545,
+         1.23806,
+         1.24116,
+         1.24489,
+         1.24942,
+         1.25499,
+         1.26197,
+         1.2709,
+         1.28263,
+         1.29865,
+         1.32169,
+         1.35747,
+         1.42039,
+         1.56011,
+         2.16626
+      ]
+      RadiationLength: 1.955e1
+      RayleighEnergies: [
+         1.18626,
+         1.68626,
+         2.18626,
+         2.68626,
+         3.18626,
+         3.68626,
+         4.18626,
+         4.68626,
+         5.18626,
+         5.68626,
+         6.18626,
+         6.68626,
+         7.18626,
+         7.68626,
+         8.18626,
+         8.68626,
+         9.18626,
+         9.68626,
+         1.01863e1,
+         1.06863e1,
+         1.11863e1
+      ]
+      RayleighSpectrum: [
+         1.2008e6,
+         390747,
+         128633,
+         5.49691e4,
+         2.71918e4,
+         1.48537e4,
+         8.7169e3,
+         5.39742e3,
+         3.48137e3,
+         2.31651e3,
+         1.57763e3,
+         1.09202e3,
+         7.63045e2,
+         5.34232e2,
+         3.71335e2,
+         2.52942e2,
+         1.6538e2,
+         9.99003e1,
+         5.12653e1,
+         1.7495e1,
+         9.64341e-1
+      ]
+      ReflectiveSurfaceDiffuseFractions: [
+         [
+            5e-1,
+            5e-1,
+            5e-1
+         ]
+      ]
+      ReflectiveSurfaceEnergies: [
+         7,
+         9,
+         10
+      ]
+      ReflectiveSurfaceNames: [
+         "STEEL_STAINLESS_Fe7Cr2Ni"
+      ]
+      ReflectiveSurfaceReflectances: [
+         [
+            2.5e-1,
+            2.5e-1,
+            2.5e-1
+         ]
+      ]
+      ScintBirksConstant: 6.9e-2
+      ScintByParticleType: false
+      ScintFastTimeConst: 6
+      ScintPreScale: 5e-2
+      ScintResolutionScale: 1
+      ScintSlowTimeConst: 1590
+      ScintYield: 24000
+      ScintYieldRatio: 2.3e-1
+      SlowScintEnergies: [
+         7.2,
+         7.9,
+         8.3,
+         8.6,
+         8.9,
+         9.1,
+         9.3,
+         9.6,
+         9.7,
+         9.8,
+         10,
+         1.02e1,
+         1.03e1,
+         1.06e1,
+         11,
+         1.16e1,
+         1.19e1
+      ]
+      SlowScintSpectrum: [
+         0,
+         4e-2,
+         1.2e-1,
+         2.7e-1,
+         4.4e-1,
+         6.2e-1,
+         8e-1,
+         9.1e-1,
+         9.2e-1,
+         8.5e-1,
+         7e-1,
+         5e-1,
+         3.1e-1,
+         1.3e-1,
+         4e-2,
+         1e-2,
+         0
+      ]
+      TpbAbsorptionEnergies: [
+         5e-2,
+         1.77,
+         2.0675,
+         7.42,
+         7.75,
+         8.16,
+         8.73,
+         9.78,
+         1.069e1,
+         5.039e1
+      ]
+      TpbAbsorptionSpectrum: [
+         100000,
+         100000,
+         100000,
+         1e-3,
+         1e-11,
+         1e-11,
+         1e-11,
+         1e-11,
+         1e-11,
+         1e-11
+      ]
+      TpbEmmisionEnergies: [
+         5e-2,
+         1,
+         1.5,
+         2.25,
+         2.481,
+         2.819,
+         2.952,
+         2.988,
+         3.024,
+         3.1,
+         3.14,
+         3.1807,
+         3.54,
+         5.5,
+         5.039e1
+      ]
+      TpbEmmisionSpectrum: [
+         0,
+         0,
+         0,
+         5.88e-2,
+         2.35e-1,
+         8.53e-1,
+         1,
+         1,
+         9.259e-1,
+         7.04e-1,
+         2.96e-2,
+         1.1e-2,
+         0,
+         0,
+         0
+      ]
+      TpbTimeConstant: 2.5
+      service_provider: "LArPropertiesServiceStandard"
+   }
+   MemoryTracker: {}
+   NuRandomService: {
+      endOfJobSummary: true
+      policy: "perEvent"
+   }
+   ParticleInventoryService: {
+      ParticleInventory: {
+         EveIdCalculator: "EmEveIdCalculator"
+         G4ModuleLabel: "largeant"
+      }
+   }
+   PhotonBackTrackerService: {
+      PhotonBackTracker: {
+         Delay: 260
+         G4ModuleLabels: [
+            "PDFastSim"
+         ]
+         MinimumHitEnergyFraction: 1e-1
+      }
+   }
+   RandomNumberGenerator: {}
+   RawDigitExtractService: {
+      DigitReadTool: "digitReader"
+      FlagStuckOff: false
+      FlagStuckOn: false
+      LogLevel: 1
+      PedestalOption: 1
+      service_provider: "StandardRawDigitExtractService"
+   }
+   RawDigitPrepService: {
+      DisplayTools: []
+      DoDeconvolution: true
+      DoEarlySignalFinding: false
+      DoIntermediateStates: false
+      DoMitigation: false
+      DoNoiseRemoval: false
+      DoPedestalAdjustment: false
+      DoROI: true
+      DoWires: true
+      LogLevel: 1
+      SkipBad: true
+      SkipNoisy: false
+      service_provider: "StandardRawDigitPrepService"
+   }
+   SignalShapingServiceDUNE: {
+      ADCPerPCAtLowestASICGain: 13160
+      ASICGainInMVPerFC: [
+         14,
+         14,
+         14
+      ]
+      CalibResponseTOffset: [
+         0,
+         0,
+         0
+      ]
+      Col3DCorrection: 2.5
+      ColFieldParams: [
+         8,
+         16,
+         7.5e-1
+      ]
+      ColFieldRespAmp: 1
+      ColFieldShape: "x^[2]/(1.0+(x/[0])^[1])"
+      ColFilter: "[0]*exp(-0.5*(((x-[1])/[2])^2)^[3])"
+      ColFilterParams: [
+         1.03,
+         8e-2,
+         1.5e-1,
+         2.17
+      ]
+      DebugFieldShape: false
+      DeconNorm: 200
+      FieldBins: 400
+      FieldResponseFname: "FieldResponse/dune35t_response_v1.0.root"
+      FieldResponseHistoName: "FieldResponse"
+      FieldResponseTOffset: [
+         -32500,
+         -32500,
+         -32500
+      ]
+      FilterFunctionFname: "uboone_filters_v0.1.root"
+      FilterHistoName: "noisefilter_%d"
+      GetFilterFromHisto: false
+      Ind3DCorrection: 1.5
+      IndUFieldParams: [
+         8.43e-3,
+         1.534e-1,
+         1.77,
+         0,
+         5e-1
+      ]
+      IndUFieldRespAmp: 1
+      IndUFieldShape: "[0]*(1.0+[3]*tanh(x-[4]))*([4]-x)*exp(-0.5*((x-[4])/[2])^2.0)"
+      IndUFilter: "gaus(0)*exp(-0.5*pow(x/[3],[4]))"
+      IndUFilterParams: [
+         1.73,
+         1.69,
+         1.55,
+         1.9e-1,
+         3.75
+      ]
+      IndVFieldParams: [
+         8.43e-3,
+         1.534e-1,
+         1.77,
+         0,
+         5e-1
+      ]
+      IndVFieldRespAmp: 1
+      IndVFieldShape: "[0]*(1.0+[3]*tanh(x-[4]))*([4]-x)*exp(-0.5*((x-[4])/[2])^2.0)"
+      IndVFilter: "gaus(0)*exp(-0.5*pow(x/[3],[4]))"
+      IndVFilterParams: [
+         1.73,
+         1.69,
+         1.55,
+         1.9e-1,
+         3.75
+      ]
+      InputFieldRespSamplingPeriod: 100
+      Nbit: 14
+      NoiseFactVec: [
+         [
+            1.12,
+            8.6e-1,
+            6e-1,
+            5.5e-1
+         ],
+         [
+            1.12,
+            8.6e-1,
+            6e-1,
+            5.5e-1
+         ],
+         [
+            8.9e-1,
+            6.6e-1,
+            4.8e-1,
+            4.3e-1
+         ]
+      ]
+      ShapeTimeConst: [
+         2,
+         2,
+         2
+      ]
+      UseFunctionFieldShape: false
+      UseHistogramFieldShape: true
+   }
+   SpaceCharge: {
+      CalibrationInputFilename: "SCEoffsets.root"
+      EnableCalEfieldSCE: false
+      EnableCalSpatialSCE: false
+      EnableCorrSCE: false
+      EnableSimEfieldSCE: false
+      EnableSimSpatialSCE: false
+      InputFilename: "SCEoffsets.root"
+      RepresentationType: "Parametric"
+      service_provider: "SpaceChargeServiceStandard"
+   }
+   TFileService: {
+      fileName: "supera_hist.root"
+   }
+   TimeTracker: {}
+   WireReadout: {
+      ChannelsPerOpDet: 1
+      service_provider: "DUNEWireReadout"
+   }
+   message: {
+      debugModules: [
+         "*"
+      ]
+      destinations: {
+         LogDebugFile: {
+            append: false
+            categories: {
+               default: {
+                  limit: 0
+               }
+            }
+            filename: "debugprod.log"
+            threshold: "DEBUG"
+            type: "file"
+         }
+         LogStandardError: {
+            categories: {
+               default: {}
+}
+            threshold: "ERROR"
+            type: "cerr"
+}
+         LogStandardOut: {
+            categories: {
+               ArtReport: {
+                  limit: -1
+               }
+               default: {
+                  limit: 0
+               }
+            }
+            threshold: "INFO"
+            type: "cout"
+         }
+      }
+   }
+}
+source: {
+   inputCommands: [
+      "keep *_*_*_*"
+   ]
+   maxEvents: 10
+   module_type: "RootInput"
+   saveMemoryObjectThreshold: 0
+}
+tools: {
+   adcChannelDumper: {
+      FileName: ""
+      MaxSample: 0
+      NewFile: false
+      Prefix: "ADC dump: "
+      tool_type: "AdcChannelDumper"
+   }
+   adcChannelNotSignalRmsPlotter: {
+      ChannelLineModulus: 0
+      ChannelLinePattern: []
+      ChannelLinePatternSolid: []
+      ChannelRanges: []
+      DataView: ""
+      HistName: "hchnsgrms_%0RUN%_%0EVENT%_%0CHAN1%_%0CHAN2%"
+      HistTitle: "ADC not-signal RMS for run %RUN% event %EVENT%"
+      LogLevel: 1
+      MetadataFlags: []
+      Metric: "nsgRms"
+      MetricBins: 0
+      MetricLabel: "RMS [ke]"
+      MetricMax: 11
+      MetricMin: 0
+      MetricSummaryView: ""
+      PedestalReference: ""
+      PlotFileName: "%TPMPRE%hchnsgrms_run%0RUN%_evt%0EVENT%_chans%0CHAN1%-%0CHAN2%%TPMSUF%"
+      PlotSizeX: 1400
+      PlotSizeY: 500
+      PlotUsesStatus: 0
+      RootFileName: ""
+      tool_type: "AdcChannelMetric"
+   }
+   adcChannelPedestalPlotter: {
+      ChannelLineModulus: 0
+      ChannelLinePattern: []
+      ChannelLinePatternSolid: []
+      ChannelRanges: []
+      DataView: ""
+      HistName: "hchped_%0RUN%_%0EVENT%_%0CHAN1%_%0CHAN2%"
+      HistTitle: "ADC pedestals for run %RUN% event %EVENT%"
+      LogLevel: 1
+      MetadataFlags: []
+      Metric: "pedestal"
+      MetricBins: 0
+      MetricLabel: "Pedestal"
+      MetricMax: 4096
+      MetricMin: 0
+      MetricSummaryView: ""
+      PedestalReference: ""
+      PlotFileName: "%TPMPRE%hchped_run%0RUN%_evt%0EVENT%_chans%0CHAN1%-%0CHAN2%%TPMSUF%"
+      PlotSizeX: 1400
+      PlotSizeY: 500
+      PlotUsesStatus: 0
+      RootFileName: ""
+      tool_type: "AdcChannelMetric"
+   }
+   adcChannelPedestalRmsPlotter: {
+      ChannelLineModulus: 0
+      ChannelLinePattern: []
+      ChannelLinePatternSolid: []
+      ChannelRanges: []
+      DataView: ""
+      HistName: "hchpedrms_%0RUN%_%0EVENT%_%0CHAN1%_%0CHAN2%"
+      HistTitle: "ADC pedestal RMS for run %RUN% event %EVENT%"
+      LogLevel: 1
+      MetadataFlags: []
+      Metric: "pedestalRms"
+      MetricBins: 0
+      MetricLabel: "RMS"
+      MetricMax: 11
+      MetricMin: 0
+      MetricSummaryView: ""
+      PedestalReference: ""
+      PlotFileName: "%TPMPRE%hchpedrms_run%0RUN%_evt%0EVENT%_chans%0CHAN1%-%0CHAN2%%TPMSUF%"
+      PlotSizeX: 1400
+      PlotSizeY: 500
+      PlotUsesStatus: 0
+      RootFileName: ""
+      tool_type: "AdcChannelMetric"
+   }
+   adcChannelSamplelRmsPlotter: {
+      ChannelLineModulus: 0
+      ChannelLinePattern: []
+      ChannelLinePatternSolid: []
+      ChannelRanges: []
+      DataView: ""
+      HistName: "hchsamrms_%0RUN%_%0EVENT%_%0CHAN1%_%0CHAN2%"
+      HistTitle: "ADC sample RMS for run %RUN% event %EVENT%"
+      LogLevel: 1
+      MetadataFlags: []
+      Metric: "samRms"
+      MetricBins: 0
+      MetricLabel: "RMS [ke]"
+      MetricMax: 11
+      MetricMin: 0
+      MetricSummaryView: ""
+      PedestalReference: ""
+      PlotFileName: "%TPMPRE%hchsamrms_run%0RUN%_evt%0EVENT%_chans%0CHAN1%-%0CHAN2%%TPMSUF%"
+      PlotSizeX: 1400
+      PlotSizeY: 500
+      PlotUsesStatus: 0
+      RootFileName: ""
+      tool_type: "AdcChannelMetric"
+   }
+   adcChannelSignalRmsPlotter: {
+      ChannelLineModulus: 0
+      ChannelLinePattern: []
+      ChannelLinePatternSolid: []
+      ChannelRanges: []
+      DataView: ""
+      HistName: "hchsigrms_%0RUN%_%0EVENT%_%0CHAN1%_%0CHAN2%"
+      HistTitle: "ADC signal RMS for run %RUN% event %EVENT%"
+      LogLevel: 1
+      MetadataFlags: []
+      Metric: "sigRms"
+      MetricBins: 0
+      MetricLabel: "RMS [ke]"
+      MetricMax: 11
+      MetricMin: 0
+      MetricSummaryView: ""
+      PedestalReference: ""
+      PlotFileName: "%TPMPRE%hchsigrms_run%0RUN%_evt%0EVENT%_chans%0CHAN1%-%0CHAN2%%TPMSUF%"
+      PlotSizeX: 1400
+      PlotSizeY: 500
+      PlotUsesStatus: 0
+      RootFileName: ""
+      tool_type: "AdcChannelMetric"
+   }
+   adcDPhase3x1x1LocalRoiBuilder: {
+      BinsToAverageForPedestal: 100
+      BinsToSkip: 2
+      LogLevel: 1
+      NConsecBinsAboveThreshold1: 9
+      NConsecBinsAboveThreshold2: 4
+      NSigmaEnd1: 0
+      NSigmaMax: 5
+      NSigmaStart1: 5e-1
+      NSigmaStart2: 1.8
+      PadHigh: 30
+      PadLow: 10
+      UseStandardDeviation: true
+      tool_type: "AdcDPhase3x1x1LocalRoiBuilder"
+   }
+   adcDPhase3x1x1RoiBuilder: {
+      BinsToAverageForRMS: 100
+      BinsToSkip: 0
+      LogLevel: 1
+      NConsecBinsAboveThreshold1: 30
+      NConsecBinsAboveThreshold2: 10
+      NSigmaEnd1: 0
+      NSigmaMax: 7
+      NSigmaStart1: 1
+      NSigmaStart2: 2
+      PadHigh: 50
+      PadLow: 20
+      UseStandardDeviation: false
+      tool_type: "AdcDPhase3x1x1RoiBuilder"
+   }
+   adcDumper: {
+      FileName: ""
+      LogLevel: 1
+      NewFile: false
+      Prefix: "ADC dump for "
+      ShowChannelCount: true
+      ShowFirst: 10
+      ShowFlags: false
+      ShowMax: 20
+      ShowOpt: 2
+      ShowPrepared: true
+      ShowRaw: false
+      ShowRebin: 5
+      ShowThreshold: 10
+      ShowTickCounts: false
+      tool_type: "AdcDataDumper"
+   }
+   adcDuneSignalFinder: {
+      LogLevel: 1
+      NSigmaEnd: 1
+      NSigmaStart: 3
+      NoiseSigma: 0
+      TicksAfter: 50
+      TicksBefore: 50
+      tool_type: "DuneAdcSignalFinder"
+   }
+   adcFFT: {
+      Action: 3
+      DataView: ""
+      FirstTick: 0
+      LogLevel: 1
+      NTick: 0
+      NormOpt: 1
+      ReturnOpt: 1
+      tool_type: "AdcChannelFFT"
+   }
+   adcFFTinv: {
+      Action: 13
+      DataView: ""
+      FirstTick: 0
+      LogLevel: 1
+      NTick: 0
+      NormOpt: 1
+      ReturnOpt: 10
+      tool_type: "AdcChannelFFT"
+   }
+   adcKeepAllSignalFinder: {
+      DataPath: ""
+      LogLevel: 1
+      tool_type: "AdcKeepAllSignalFinder"
+   }
+   adcNoiseSignalFinder: {
+      BinsAfter: 20
+      BinsBefore: 10
+      FlagNegative: true
+      FlagPositive: true
+      LogLevel: 1
+      MaxLoop: 20
+      SigFracMax: 8e-1
+      ThresholdMin: 20
+      ThresholdRatio: 4
+      ThresholdRatioTol: 1e-1
+      tool_type: "AdcNoiseSignalFinder"
+   }
+   adcPlotDftMag: {
+      ChannelSelection: ""
+      ChannelStatusFlag: 0
+      HistName: "hdftmags_run%0RUN%_evt%0EVENT%_ch%0CHAN%"
+      HistSummaryTitle: ""
+      HistTitle: "DFT amplitudes for run %RUN% event %EVENT% channel %CHAN%"
+      LogLevel: 1
+      PlotChannelGroups: []
+      PlotChannelRanges: []
+      PlotDataView: ""
+      PlotName: "%TPMPRE%dftmag_run%0RUN%_evt%0EVENT%_ch%0CHAN%%TPMSUF%"
+      PlotOverlayGroups: 1
+      PlotSizeX: 1400
+      PlotSizeY: 1000
+      PlotSplitX: 4
+      PlotSplitY: 4
+      PlotSummaryNames: []
+      SampleFreq: 2000
+      Variable: "magnitude"
+      XMax: 0
+      XMin: 0
+      YMax: 50
+      YMinLog: 0
+      tool_type: "AdcChannelDftPlotter"
+   }
+   adcPlotDftPhase: {
+      ChannelSelection: ""
+      ChannelStatusFlag: 0
+      HistName: "hdftphas_run%0RUN%_evt%0EVENT%_ch%0CHAN%"
+      HistSummaryTitle: ""
+      HistTitle: "DFT phases for run %RUN% event %EVENT% channel %CHAN%"
+      LogLevel: 1
+      PlotChannelGroups: []
+      PlotChannelRanges: []
+      PlotDataView: ""
+      PlotName: "%TPMPRE%dftpha_run%0RUN%_evt%0EVENT%_ch%0CHAN%%TPMSUF%"
+      PlotOverlayGroups: 1
+      PlotSizeX: 1400
+      PlotSizeY: 1000
+      PlotSplitX: 4
+      PlotSplitY: 4
+      PlotSummaryNames: []
+      SampleFreq: 2000
+      Variable: "phase"
+      XMax: 0
+      XMin: 0
+      YMinLog: 0
+      tool_type: "AdcChannelDftPlotter"
+   }
+   adcPlotDftPower: {
+      ChannelSelection: ""
+      ChannelStatusFlag: 0
+      HistName: "hdftpower_run%0RUN%_evt%0EVENT%_ch%0CHAN%"
+      HistSummaryTitle: ""
+      HistSummaryTitles: [
+         "DFT power for run %RUN%",
+         "DFT power for run %RUN% event %EVENT%"
+      ]
+      HistTitle: "DFT power for run %RUN% event %EVENT% channel %CHAN%"
+      LogLevel: 1
+      NBinX: 50
+      PlotChannelGroups: []
+      PlotChannelRanges: []
+      PlotDataView: ""
+      PlotName: "%TPMPRE%dftpower_run%0RUN%_evt%0EVENT%_ch%0CHAN%%TPMSUF%"
+      PlotOverlayGroups: 1
+      PlotSizeX: 1400
+      PlotSizeY: 1000
+      PlotSplitX: 4
+      PlotSplitY: 4
+      PlotSummaryNames: []
+      SampleFreq: 2000
+      Variable: "power"
+      XMax: 0
+      XMin: 0
+      YMax: 10000
+      YMinLog: 0
+      tool_type: "AdcChannelDftPlotter"
+   }
+   adcPlotDftTickPower: {
+      ChannelSelection: ""
+      ChannelStatusFlag: 0
+      HistName: "hdftpowt_run%0RUN%_evt%0EVENT%_ch%0CHAN%"
+      HistSummaryTitle: ""
+      HistSummaryTitles: [
+         "DFT power for run %RUN%",
+         "DFT power for run %RUN% event %EVENT%"
+      ]
+      HistTitle: "DFT power for run %RUN% event %EVENT% channel %CHAN%"
+      LogLevel: 1
+      NBinX: 50
+      PlotChannelGroups: []
+      PlotChannelRanges: []
+      PlotDataView: ""
+      PlotName: "%TPMPRE%dftpowt_run%0RUN%_evt%0EVENT%_ch%0CHAN%%TPMSUF%"
+      PlotOverlayGroups: 1
+      PlotSizeX: 1400
+      PlotSizeY: 1000
+      PlotSplitX: 4
+      PlotSplitY: 4
+      PlotSummaryNames: [
+         "%TPMPRE%dftpowtlog_run%0RUN%%TPMSUF",
+         ""
+      ]
+      SampleFreq: 2000
+      Variable: "power/tick"
+      XMax: 0
+      XMin: 0
+      YMax: -2
+      YMinLog: 0
+      tool_type: "AdcChannelDftPlotter"
+   }
+   adcPlotDftTickPowerLog: {
+      ChannelSelection: ""
+      ChannelStatusFlag: 0
+      HistName: "hdftpowtlog_run%0RUN%_evt%0EVENT%_ch%0CHAN%"
+      HistSummaryTitle: ""
+      HistSummaryTitles: [
+         "DFT power for run %RUN%",
+         "DFT power for run %RUN% event %EVENT%"
+      ]
+      HistTitle: "DFT power for run %RUN% event %EVENT% channel %CHAN%"
+      LogLevel: 1
+      NBinX: 50
+      PlotChannelGroups: []
+      PlotChannelRanges: []
+      PlotDataView: ""
+      PlotName: "%TPMPRE%dftpowtlog_run%0RUN%_evt%0EVENT%_ch%0CHAN%%TPMSUF%"
+      PlotOverlayGroups: 1
+      PlotSizeX: 1400
+      PlotSizeY: 1000
+      PlotSplitX: 4
+      PlotSplitY: 4
+      PlotSummaryNames: [
+         "%TPMPRE%dftpowtlog_run%0RUN%%TPMSUF",
+         ""
+      ]
+      SampleFreq: 2000
+      Variable: "power/tick"
+      XMax: 0
+      XMin: 0
+      YMax: 100
+      YMinLog: 1e-2
+      tool_type: "AdcChannelDftPlotter"
+   }
+   adcPlotPrepared: {
+      ColorBad: 633
+      ColorNoisy: 636
+      HistName: "adc_%TYPE%_ev%EVENT%_ch%CHAN%"
+      HistTitle: "ADC %TYPE% run %RUN% event %EVENT% channel %CHAN%"
+      HistTypes: [
+         "prepared"
+      ]
+      LabelSize: 1e-2
+      LogLevel: 1
+      PlotDistMax: 0
+      PlotDistMin: 0
+      PlotFileName: ""
+      PlotSamMax: 1000
+      PlotSamMin: 0
+      PlotSigMax: 0
+      PlotSigMin: 0
+      PlotSigOpt: "full"
+      RootFileName: ""
+      SkipFlags: []
+      tool_type: "AdcChannelPlotter"
+   }
+   adcPlotRaw: {
+      ColorBad: 633
+      ColorNoisy: 636
+      HistName: "adc_%TYPE%_ev%EVENT%_ch%CHAN%"
+      HistTitle: "ADC %TYPE% run %RUN% event %EVENT% channel %CHAN%"
+      HistTypes: [
+         "raw"
+      ]
+      LabelSize: 1e-2
+      LogLevel: 1
+      PlotDistMax: 0
+      PlotDistMin: 0
+      PlotFileName: ""
+      PlotSamMax: 1000
+      PlotSamMin: 0
+      PlotSigMax: 0
+      PlotSigMin: 100
+      PlotSigOpt: "pedestal"
+      RootFileName: ""
+      SkipFlags: []
+      tool_type: "AdcChannelPlotter"
+   }
+   adcPlotRawDist: {
+      ColorBad: 633
+      ColorNoisy: 636
+      HistName: "adc_%TYPE%_ev%EVENT%_ch%CHAN%"
+      HistTitle: "ADC %TYPE% run %RUN% event %EVENT% channel %CHAN%"
+      HistTypes: [
+         "rawdist"
+      ]
+      LabelSize: 1e-2
+      LogLevel: 1
+      PlotDistMax: 0
+      PlotDistMin: 0
+      PlotFileName: ""
+      PlotSamMax: 1000
+      PlotSamMin: 0
+      PlotSigMax: 0
+      PlotSigMin: 0
+      PlotSigOpt: "full"
+      RootFileName: ""
+      SkipFlags: []
+      tool_type: "AdcChannelPlotter"
+   }
+   adcRawDumper: {
+      FileName: ""
+      LogLevel: 1
+      NewFile: false
+      Prefix: "ADC raw dump for "
+      ShowChannelCount: true
+      ShowFirst: 0
+      ShowFlags: false
+      ShowMax: 20
+      ShowOpt: 1
+      ShowPrepared: false
+      ShowRaw: true
+      ShowRebin: 0
+      ShowThreshold: 10
+      ShowTickCounts: false
+      tool_type: "AdcDataDumper"
+   }
+   adcRoiFitter: {
+      ChanSumHists: []
+      ChanSumRootFileName: ""
+      ChannelLineModulus: 0
+      ChannelLinePattern: []
+      ChannelLinePatternSolid: []
+      ChannelRanges: []
+      FitOpt: 1
+      LogLevel: 1
+      MaxRoiPlots: 1000
+      PlotLabels: []
+      PulserChargeUnit: ""
+      PulserDacOffset: 0
+      PulserStepCharge: 0
+      RoiHistOpt: 1
+      RoiPlotOpt: 2
+      RoiPlotPadX: 4
+      RoiPlotPadY: 4
+      RoiRootFileName: ""
+      RunDataTool: ""
+      SigThresh: 0
+      StartTime: 0
+      SumHists: []
+      SumNegate: false
+      SumPlotPadX: 4
+      SumPlotPadY: 4
+      SumRootFileName: ""
+      TickBorder: 0
+      TickOffsetTool: ""
+      tool_type: "AdcRoiViewer"
+   }
+   adcRoiTreeMaker: {
+      LogLevel: 1
+      MetadataFields: []
+      OutFile: "adcrois.root"
+      tool_type: "AdcRoiToTree"
+   }
+   adcRoiViewer: {
+      ChanSumHists: []
+      ChanSumRootFileName: ""
+      ChannelLineModulus: 0
+      ChannelLinePattern: []
+      ChannelLinePatternSolid: []
+      ChannelRanges: []
+      FitOpt: 0
+      LogLevel: 1
+      MaxRoiPlots: 1000
+      PlotLabels: []
+      PulserChargeUnit: ""
+      PulserDacOffset: 0
+      PulserStepCharge: 0
+      RoiHistOpt: 1
+      RoiPlotOpt: 2
+      RoiPlotPadX: 4
+      RoiPlotPadY: 4
+      RoiRootFileName: ""
+      RunDataTool: ""
+      SigThresh: 0
+      StartTime: 0
+      SumHists: []
+      SumNegate: false
+      SumPlotPadX: 4
+      SumPlotPadY: 4
+      SumRootFileName: ""
+      TickBorder: 0
+      TickOffsetTool: ""
+      tool_type: "AdcRoiViewer"
+   }
+   adcSampleCalibration: {
+      AdcOverflowDefault: 4095
+      AdcUnderflowDefault: 0
+      GainDefault: 0
+      GainTool: "areaGain_calib20191213_dec18ext"
+      LogLevel: 1
+      ScaleFactor: 1
+      Unit: "ke/tick"
+      tool_type: "FloatArrayGainCalibration"
+   }
+   adcSampleFiller: {
+      AdcOverflow: 4095
+      AdcUnderflow: 0
+      LogLevel: 1
+      tool_type: "AdcSampleFiller"
+   }
+   adcScaleAdcToKe: {
+      InputUnit: "ADC count"
+      LogLevel: 1
+      OutputUnit: "ke/tick"
+      ScaleFactor: 2.5e-2
+      tool_type: "AdcSampleScaler"
+   }
+   adcScaleKeToAdc: {
+      InputUnit: "ke/tick"
+      LogLevel: 1
+      OutputUnit: "ADC count"
+      ScaleFactor: 40
+      tool_type: "AdcSampleScaler"
+   }
+   adcSliceNotRoi: {
+      CopyRaw: false
+      LogLevel: 1
+      OutViewName: "notrois"
+      SliceOpt: 2
+      tool_type: "AdcRoiSlicer"
+   }
+   adcSliceRoi: {
+      CopyRaw: false
+      LogLevel: 1
+      OutViewName: "rois"
+      SliceOpt: 1
+      tool_type: "AdcRoiSlicer"
+   }
+   adcStringBuilder: {
+      ChannelWidth: 5
+      CountWidth: 4
+      EventWidth: 6
+      FembWidth: 3
+      LogLevel: 1
+      RunWidth: 6
+      SubRunWidth: 4
+      TpmPrefix: ""
+      TpmSuffix: ".png"
+      TrigNames: [
+         "flag 0",
+         "flag 1",
+         "flag 2",
+         "flag 3",
+         "flag 4",
+         "flag 5",
+         "flag 6",
+         "flag 7",
+         "random",
+         "flag 9",
+         "flag 10",
+         "flag 11",
+         "beam",
+         "CRT",
+         "NGT"
+      ]
+      TriggerWidth: 2
+      tool_type: "StandardAdcChannelStringTool"
+   }
+   adcSubtractBaseline: {
+      BaseSampleBins: 32
+      BaseVarCut: 5
+      LogLevel: 1
+      tool_type: "SubtractBaseline"
+   }
+   adcThresholdSignalFinder: {
+      BinsAfter: 20
+      BinsBefore: 10
+      FlagNegative: true
+      FlagPositive: true
+      LogLevel: 1
+      Threshold: "3.0"
+      tool_type: "AdcThresholdSignalFinder"
+   }
+   adcVintageDeconvoluter: {
+      LogLevel: 1
+      tool_type: "VintageDeconvoluter"
+   }
+   adcsim_ideal: {
+      Nbit: 12
+      Vsen: 1
+      tool_type: "IdealAdcSimulator"
+   }
+   adcsim_noisy: {
+      Nbit: 12
+      Noise: 5
+      Vsen: 1
+      tool_type: "NoisyAdcSimulator"
+   }
+   apa_evtviewNfemb: {
+      ChannelRangeLabel: ""
+      ChannelRanges: []
+      ClockRate: 5e7
+      ClockUnit: "Mtick"
+      EventGraphs: [
+         "event:events:1:nfemb:0:21"
+      ]
+      EventHists: [
+         "hnfemb:21:0:21"
+      ]
+      LogLevel: 2
+      tool_type: "AdcEventViewer"
+   }
+   calibNoiseSignalFinder: {
+      BinsAfter: 20
+      BinsBefore: 10
+      FlagNegative: true
+      FlagPositive: true
+      LogLevel: 1
+      MaxLoop: 20
+      SigFracMax: 8e-1
+      ThresholdMin: 2e-1
+      ThresholdRatio: 4
+      ThresholdRatioTol: 1e-1
+      tool_type: "AdcNoiseSignalFinder"
+   }
+   calibThresholdSignalFinder: {
+      BinsAfter: 20
+      BinsBefore: 10
+      FlagNegative: true
+      FlagPositive: true
+      LogLevel: 1
+      Threshold: 5e-1
+      tool_type: "AdcThresholdSignalFinder"
+   }
+   channelStatus: {
+      LogLevel: 1
+      tool_type: "ChannelStatusServiceTool"
+   }
+   channelStatusFromService: {
+      LogLevel: 1
+      tool_type: "ChannelStatusServiceTool"
+   }
+   def_adcPedestalFit: {
+      AdcFitRange: 100
+      AdcRange: 4096
+      FitOpt: 0
+      FitPrecision: 1
+      FitRmsMax: 20
+      FitRmsMin: 1
+      HistManager: ""
+      HistName: "adcped_ev%0EVENT%_ch%0CHAN%"
+      HistTitle: "ADC pedestal fit for run %RUN% event %EVENT% channel %CHAN%"
+      LogLevel: 1
+      PlotFileName: ""
+      PlotShowFit: 1
+      PlotSizeX: 1400
+      PlotSizeY: 1000
+      PlotSplitX: 4
+      PlotSplitY: 4
+      RemoveStickyCode: false
+      RootFileName: ""
+      SkipFlags: []
+      tool_type: "AdcPedestalFitter"
+   }
+   digitReader: {
+      LogLevel: 1
+      tool_type: "AcdDigitReader"
+   }
+   hdcbRunDataTool: {
+      FileNames: [
+         "rundata/hdcb/rundata.fcl",
+         "rundata/hdcb/rundata%RUN%.fcl"
+      ]
+      LogLevel: 1
+      tool_type: "FclRunDataTool"
+   }
+   histMgr: {
+      LogLevel: 1
+      tool_type: "SimpleHistogramManager"
+   }
+   jobRanges: {
+      LogLevel: 1
+      events: {
+         begin: 0
+         end: 0
+         labels: []
+      }
+      tool_type: "FclIndexRangeTool"
+   }
+   lemEfficiency: {
+      DefaultValue: 0
+      FileNames: [
+         "crp/protodunedp/lem_efficiency_v29102019.fcl"
+      ]
+      Label: "lem_eff_29102019"
+      LogLevel: 1
+      tool_type: "FclFileFloatArray"
+   }
+   preparedAdcPlotter: {
+      ChannelLineModulus: 2560
+      ChannelLinePattern: [
+         0,
+         800,
+         1600,
+         2080
+      ]
+      ChannelLinePatternSolid: []
+      ChannelRanges: []
+      ClockFactor: 0
+      ClockOffset: 0
+      DataType: 0
+      DataView: ""
+      EmptyColor: 18
+      FembTickOffsets: []
+      HistName: "hadcprp_evt%EVENT%_ch_%CHAN1%"
+      HistTitle: "Prepared ADC for run %RUN% event %EVENT%"
+      LogLevel: 1
+      MaxSignal: 200
+      Palette: 2020
+      PlotFileName: "%TPMPRE%adcprep_evt%EVENT%_ch%CHAN1%-%CHAN2%%TPMSUF%"
+      PlotSizeX: 1400
+      PlotSizeY: 1000
+      PlotTitle: ""
+      RootFileName: ""
+      SkipChannelStatus: []
+      TickRange: "plotTicks"
+      TickRebin: 1
+      tool_type: "AdcDataPlotter"
+   }
+   protoduneRunDataTool: {
+      FileNames: [
+         "rundata/protodune/rundata.fcl",
+         "rundata/protodune/rundata%RUN%.fcl"
+      ]
+      LogLevel: 1
+      tool_type: "FclRunDataTool"
+   }
+   rawAdcPlotter: {
+      ChannelLineModulus: 2560
+      ChannelLinePattern: [
+         0,
+         800,
+         1600,
+         2080
+      ]
+      ChannelLinePatternSolid: []
+      ChannelRanges: []
+      ClockFactor: 0
+      ClockOffset: 0
+      DataType: 1
+      DataView: ""
+      EmptyColor: 18
+      FembTickOffsets: []
+      HistName: "hadcraw_evt%EVENT%_ch_%CHAN1%"
+      HistTitle: "Raw ADC for run %RUN% event %EVENT%"
+      LogLevel: 1
+      MaxSignal: 200
+      Palette: 2020
+      PlotFileName: "%TPMPRE%adcrawRun%0RUN%Event%0EVENT%Chan%CHAN1%-%CHAN2%%TPMSUF%"
+      PlotSizeX: 1400
+      PlotSizeY: 1000
+      PlotTitle: ""
+      RootFileName: ""
+      SkipChannelStatus: []
+      TickRange: "plotTicks"
+      TickRebin: 1
+      tool_type: "AdcDataPlotter"
+   }
+   signalAdcPlotter: {
+      ChannelLineModulus: 2560
+      ChannelLinePattern: [
+         0,
+         800,
+         1600,
+         2080
+      ]
+      ChannelLinePatternSolid: []
+      ChannelRanges: []
+      ClockFactor: 0
+      ClockOffset: 0
+      DataType: 2
+      DataView: ""
+      EmptyColor: 18
+      FembTickOffsets: []
+      HistName: "hadcsig_evt%EVENT%_ch_%CHAN1%"
+      HistTitle: "Signal ADC for run %RUN% event %EVENT%"
+      LogLevel: 1
+      MaxSignal: 200
+      Palette: 2020
+      PlotFileName: "%TPMPRE%adcsig_evt%EVENT%_ch%CHAN1%-%CHAN2%%TPMSUF%"
+      PlotSizeX: 1400
+      PlotSizeY: 1000
+      PlotTitle: ""
+      RootFileName: ""
+      SkipChannelStatus: []
+      TickRange: "plotTicks"
+      TickRebin: 1
+      tool_type: "AdcDataPlotter"
+   }
+   tickRanges: {
+      LogLevel: 1
+      allTicks: {
+         begin: 0
+         end: 0
+         labels: [
+            "All ticks"
+         ]
+      }
+      plotAllTicks: {
+         begin: 0
+         end: 0
+         labels: [
+            "All ticks"
+         ]
+      }
+      plotTicks: {
+         begin: 3000
+         end: 4000
+         labels: [
+            "Plot ticks"
+         ]
+      }
+      tool_type: "FclIndexRangeTool"
+   }
+}

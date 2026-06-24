@@ -1,0 +1,77 @@
+# standard_reco_dune10kt.fcl
+#
+# Dom Brailsford
+# March 2022
+#
+# Runs the low level reconstruction for DUNE FD
+
+#include "mcreco.fcl"
+
+#include "standard_reco_dunevd10kt.fcl"
+
+#
+process_name: Supera
+
+services: {
+    @table::services
+    @table::dunefdvd_1x8x6_3view_30deg_reco_services
+}
+
+physics.producers:
+{
+    @table::physics.producers
+
+    ### mc producers
+    mcreco:  @local::standard_mcreco
+}
+
+physics.analyzers:
+{ 
+  superaMC: 
+          {
+            module_type:       "LArSoftSuperaDriver"
+            supera_params:     "supera_dunefdvd_mc_vd_1x8x6_30deg_updated.fcl"
+            out_filename:      "larcv.root"
+            unique_filename:   false
+            stream:            "mc"
+            StrictDataLoading: false
+            Verbosity:         3
+          }
+}
+
+services.TFileService.fileName: "supera_hist.root"
+
+source.inputCommands: ["keep *_*_*_*" ]
+
+physics.reco: [ @sequence::dunefd_vertdrift_reco1,
+                @sequence::dunefd_vertdrift_1x8x6_reco2,
+                mcreco ]
+
+physics.outana: [ superaMC]
+
+physics.end_paths: [outana, stream1]
+
+outputs.out1.fileName: "%ifb_supera.root"
+outputs.out1.dataTier: "supera"
+
+# reset the gaushit long hits
+physics.producers.gaushit.LongMaxHits:    [25,25,25]
+physics.producers.gaushit.LongPulseWidth: [10,10,10]
+physics.producers.gaushit.MaxMultiHit:    8
+physics.producers.gaushit.Chi2NDF:        5000
+
+# Configure mcreco to read SEDLite instead of SED and MCParticleLite in addition to MCParticle
+physics.producers.mcreco.G4ModName: @erase
+physics.producers.mcreco.SimChannelLabel: "tpcrawdecoder:simpleSC"
+physics.producers.mcreco.MCParticleLabel: "largeant"
+physics.producers.mcreco.UseSimEnergyDepositLite: false
+physics.producers.mcreco.UseSimEnergyDeposit: false
+physics.producers.mcreco.IncludeDroppedParticles: true #this is now true with larsoft v09_89 and newer
+physics.producers.mcreco.MCParticleDroppedLabel: "largeant:droppedMCParticles"
+physics.producers.mcreco.MCRecoPart.SavePathPDGList: [13,-13,211,-211,111,311,310,130,321,-321,2212,2112,2224,2214,2114,1114,3122,1000010020,1000010030,1000020030,1000020040]
+physics.producers.mcreco.MCRecoPart.TrackIDOffsets: [0,10000000,20000000] #Account for track ID offsets in labeling primaries
+
+physics.producers.energyrecnumu:     @local::dunefdvd_30deg_nuenergyreco_pandora_numu
+physics.producers.energyrecnue:      @local::dunefdvd_30deg_nuenergyreco_pandora_nue
+physics.producers.energyrecnc:       @local::dunefdvd_30deg_nuenergyreco_pandora_nc
+

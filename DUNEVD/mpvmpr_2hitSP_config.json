@@ -1,0 +1,69 @@
+{
+  "workflow": {
+    "description": "mpvmpr gen->reco 2 hit",
+    "monte_carlo": 10
+  },
+
+  "defaults": {
+    "repo": "SFBayLaser/dune-justin",
+    "ref": "main",
+    "lifetime_days": 4,
+    "max_distance": 60,
+    "dunesw_version": "v10_20_09d02",
+    "limit_sites": false,
+    "fhicl_files": "https://raw.githubusercontent.com/SFBayLaser/dune-justin/main/bundles/fhicl_vd_bundle.tgz"
+  },
+
+  "stages": [
+    {
+      "id": 1,
+      "jobscript": "MCJobSubmission/gen.jobscript",
+      "wall_seconds": 14400,
+      "rss_mib": 4000,
+      "env": {
+        "NEVENTS": "200",
+        "RUN_BASE": "010000",
+        "JOB_FHICL_FILE": "mpvmpr_gen_vd_1x8x6.fcl"
+      },
+      "output_pattern_next_stage": "*_gen.root"
+    },
+
+    {
+      "id": 2,
+      "jobscript": "MCJobSubmission/g4.jobscript",
+      "wall_seconds": 28800,
+      "rss_mib": 4000,
+      "env": {
+        "JOB_FHICL_FILE": "standard_g4_dunevd10kt_1x8x6_3view_30deg.fcl"
+      },
+      "output_pattern_next_stage": "*_g4.root"
+    },
+
+    {
+      "id": 3,
+      "jobscript": "MCJobSubmission/detsim.jobscript",
+      "wall_seconds": 28800,
+      "rss_mib": 4000,
+      "env": {
+        "JOB_FHICL_FILE": "standard_detsim_dunevd10kt_1x8x6_3view_30deg.fcl"
+      },
+      "output_pattern_next_stage": "*_detsim.root"
+    },
+
+    {
+      "id": 4,
+      "jobscript": "MCJobSubmission/reco.jobscript",
+      "wall_seconds": 28800,
+      "rss_mib": 4000,
+      "env": {
+        "JOB_FHICL_FILE": "standard_supera_dunevd10kt_1x8x6_3view_30deg.fcl"
+      },
+      "output_patterns": [
+        "*_reco.root",
+        "*_larcv.root"
+      ],
+      "output_rse_expression": "DUNE_US_FNAL_DISK_STAGE",
+      "lifetime_days": 90
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+#include "mpvmpr_gen_common_vd.fcl"
+
+process_name: GenMPVMPR
+
+services:
+{
+    @table::services
+    @table::dunefdvd_1x8x6_3view_30deg_simulation_services
+}
+
+source.firstRun: 10000000
+
+#
+# Multi-Particle Vertex generator (MPV)
+#
+physics.producers.generator.DebugMode    : 1
+# Based on based on NUMI spill 10000ns
+physics.producers.generator.DebugMode:       1
+physics.producers.generator.G4Time       :   5000.  # [ns]  
+physics.producers.generator.G4TimeJitter :   10000. # [ns]
+physics.producers.generator.XRange       :   [30,30]
+physics.producers.generator.YRange       :   [30,30]
+physics.producers.generator.ZRange       :   [30,30]
+physics.producers.generator.TPCRange     :   [[0,0],[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[0,8],[0,9],[0,10],[0,11],[0,12],
+                                             [0,13],[0,14],[0,15],[0,16],[0,17],[0,18],[0,19],[0,20],[0,21],[0,22],[0,23],
+                                             [0,24],[0,25],[0,26],[0,27],[0,28],[0,29],[0,30],[0,31],[0,32],[0,33],[0,34],[0,35],[0,36],
+                                             [0,37],[0,38],[0,39],[0,40],[0,41],[0,42],[0,43],[0,44],[0,45],[0,46],[0,47]]
+physics.producers.generator.MultiMin     :   1
+physics.producers.generator.MultiMax     :   10
+physics.producers.generator.GammaBetaRange : [0.0, 3.0] # [0.0,20.0] # Boost, GammaBeta = Gamma * Beta but unused here
+physics.producers.generator.Revert:          false 
+physics.producers.generator.UseBoost :       false
+
+physics.producers.generator.ParticleParameter.PDGCode      : [[-11,11,-13,13],      [22,111],     [211,-211],          [2212],         [2112],  [130, 321, -321, 310],    [3122] ]
+physics.producers.generator.ParticleParameter.MinMulti     : [              1,             0,             0,               0,               0,                      0,         0 ]
+physics.producers.generator.ParticleParameter.MaxMulti     : [              1,             2,             2,               5,               3,                      1,         1 ]
+physics.producers.generator.ParticleParameter.ProbWeight   : [              1,             1,             1,               1,               1,                   0.25,      0.25 ]   
+physics.producers.generator.ParticleParameter.KERange      : [    [0.01,15.0],     [0.01,2.5],    [0.01,2.5],       [0.02,1.],      [0.02,1.],              [0.01,5.], [0.01,3.] ]
+physics.producers.generator.ParticleParameter.MomRange     : []
+
+#
+# Multi-Particle Rain generator (MPR)
+#
+physics.producers.rain.DebugMode    : 1
+# Based on TPC readout window starting at -340us and readout window size is 1638.4us
+physics.producers.rain.G4Time       : 5000. # [us]
+physics.producers.rain.G4TimeJitter : 10000. # [us]
+physics.producers.rain.XRange       : [20,20]
+physics.producers.rain.YRange       : [20,20]
+physics.producers.rain.ZRange       : [20,20]
+physics.producers.rain.DirectInward : true
+physics.producers.rain.TPCRange     :   [[0,0],[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[0,8],[0,9],[0,10],[0,11],[0,12],
+                                         [0,13],[0,14],[0,15],[0,16],[0,17],[0,18],[0,19],[0,20],[0,21],[0,22],[0,23],
+                                         [0,24],[0,25],[0,26],[0,27],[0,28],[0,29],[0,30],[0,31],[0,32],[0,33],[0,34],[0,35],[0,36],
+                                         [0,37],[0,38],[0,39],[0,40],[0,41],[0,42],[0,43],[0,44],[0,45],[0,46],[0,47]]
+physics.producers.rain.MultiMax     : 3
+physics.producers.rain.MultiMin     : 1
+physics.producers.rain.CosmicDistribution : false
+physics.producers.rain.ParticleParameter.PDGCode      : [   [-13,13],     [11,-11],       [22],     [2212]]
+physics.producers.rain.ParticleParameter.MinMulti     : [          0,            0,          0,          0]
+physics.producers.rain.ParticleParameter.MaxMulti     : [          3,            1,          1,          1]
+physics.producers.rain.ParticleParameter.ProbWeight   : [          3,            1,          1,          1]
+physics.producers.rain.ParticleParameter.KERange      : [ [0.01,15.0], [0.05,15.0], [0.01,2.5],  [0.02,1.]]
+physics.producers.rain.ParticleParameter.MomRange     : []
