@@ -12,7 +12,7 @@
     "dunesw_version": "v10_21_00d00",
     "limit_sites": false,
     "fhicl_files": "https://raw.githubusercontent.com/SFBayLaser/dune-justin/main/bundles/fhicl_vd_bundle.tgz",
-    "tarfile_dir": "/cvmfs/fifeuser3.opensciencegrid.org/sw/dune/ad2c85645bc5c1f2de72b5b91da6eebd67109cdb"
+    "tarfile_dir": "/cvmfs/fifeuser3.opensciencegrid.org/sw/dune/e52f976412d6c02ede77ab8af788e3e090f3bab2"
   },
 
   "stages": [
