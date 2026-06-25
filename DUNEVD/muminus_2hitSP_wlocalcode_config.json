@@ -9,10 +9,10 @@
     "ref": "main",
     "lifetime_days": 4,
     "max_distance": 60,
-    "dunesw_version": "v10_20_09d02",
+    "dunesw_version": "v10_21_00d00",
     "limit_sites": false,
     "fhicl_files": "https://raw.githubusercontent.com/SFBayLaser/dune-justin/main/bundles/fhicl_vd_bundle.tgz",
-    "tarfile_dir": "/cvmfs/fifeuser4.opensciencegrid.org/sw/dune/c7417811226b0404b85e17a9ad7dbd81c64479bf"
+    "tarfile_dir": "/cvmfs/fifeuser3.opensciencegrid.org/sw/dune/ad2c85645bc5c1f2de72b5b91da6eebd67109cdb"
   },
 
   "stages": [
@@ -20,7 +20,7 @@
       "id": 1,
       "jobscript": "MCJobSubmission/gen.jobscript",
       "wall_seconds": 14400,
-      "rss_mib": 4000,
+      "rss_mib": 8000,
       "env": {
         "NEVENTS": "400",
         "RUN_BASE": "010000",
@@ -33,7 +33,7 @@
       "id": 2,
       "jobscript": "MCJobSubmission/g4.jobscript",
       "wall_seconds": 28800,
-      "rss_mib": 4000,
+      "rss_mib": 8000,
       "env": {
         "JOB_FHICL_FILE": "standard_g4_dunevd10kt_1x8x6_3view_30deg.fcl"
       },
@@ -44,7 +44,7 @@
       "id": 3,
       "jobscript": "MCJobSubmission/detsim.jobscript",
       "wall_seconds": 28800,
-      "rss_mib": 4000,
+      "rss_mib": 8000,
       "env": {
         "JOB_FHICL_FILE": "standard_detsim_dunevd10kt_1x8x6_3view_30deg.fcl"
       },
@@ -55,7 +55,7 @@
       "id": 4,
       "jobscript": "MCJobSubmission/reco.jobscript",
       "wall_seconds": 28800,
-      "rss_mib": 4000,
+      "rss_mib": 8000,
       "env": {
         "JOB_FHICL_FILE": "standard_supera_dunevd10kt_1x8x6_3view_30deg.fcl"
       },
