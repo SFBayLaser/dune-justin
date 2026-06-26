@@ -1,6 +1,6 @@
 {
   "workflow": {
-    "description": "mpvmpr gen->reco 2 hit",
+    "description": "mu- gen->reco 2 hit",
     "monte_carlo": 50
   },
 
