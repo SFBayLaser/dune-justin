@@ -1,7 +1,7 @@
 {
   "workflow": {
     "description": "mpvmpr gen->reco 2 hit",
-    "monte_carlo": 20
+    "monte_carlo": 50
   },
 
   "defaults": {
@@ -22,7 +22,7 @@
       "wall_seconds": 14400,
       "rss_mib": 8000,
       "env": {
-        "NEVENTS": "400",
+        "NEVENTS": "20",
         "RUN_BASE": "010000",
         "JOB_FHICL_FILE": "prod_muminus_0.1-5.0GeV_isotropic_dunevd10kt_1x8x6_3view.fcl"
       },
