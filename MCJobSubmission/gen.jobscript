@@ -54,7 +54,7 @@ fi
 setup dunesw ${DUNESW_VERSION} -q e26:prof
 
 # diagnostics when this doesn't work...
-ups active
+ups active | grep dune
 lar --version
 ups list dunesw
 
