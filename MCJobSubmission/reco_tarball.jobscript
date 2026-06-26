@@ -52,7 +52,7 @@ source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
 # ----------------------------------------------------------------------
 # Set up the local versions of code that we need 
 # ----------------------------------------------------------------------
-export PRODUCTS=$INPUT_TAR_DIR_LOCAL/v10_17_01d00/localProducts_larsoft_v10_17_01_e26_prof:${PRODUCTS}
+export PRODUCTS=$INPUT_TAR_DIR_LOCAL/localProducts:${PRODUCTS}
 
 setup dunesw ${DUNESW_VERSION} -q e26:prof
 
