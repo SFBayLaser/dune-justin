@@ -58,6 +58,10 @@ physics.end_paths: [outana, stream1]
 outputs.out1.fileName: "%ifb_supera.root"
 outputs.out1.dataTier: "supera"
 
+# Default is the "fast" version
+physics.producers.cluster3d.Hit3DBuilderAlg: @local::standard_snippethit3dbuilderDUNE
+#physics.producers.cluster3d.Hit3DBuilderAlg.SaveBadChannelPairs: false
+
 # reset the gaushit long hits
 physics.producers.gaushit.LongMaxHits:    [25,25,25]
 physics.producers.gaushit.LongPulseWidth: [10,10,10]

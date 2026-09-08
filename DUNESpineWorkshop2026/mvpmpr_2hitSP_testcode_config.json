@@ -9,9 +9,9 @@
     "ref": "main",
     "lifetime_days": 1,
     "max_distance": 60,
-    "dunesw_version": "v10_17_01d00",
+    "dunesw_version": "v10_24_00d00",
     "fhicl_files": "https://raw.githubusercontent.com/SFBayLaser/dune-justin/main/bundles/fhicl_bundle.tgz",
-    "tarfile_dir": "/cvmfs/fifeuser4.opensciencegrid.org/sw/dune/38c24aeb126af2bfd5e5707bf2b20c752563f823"
+    "tarfile_dir": "/cvmfs/fifeuser2.opensciencegrid.org/sw/dune/df7c61a5c0d489da32c6c8418114a36936f89177"
   },
 
   "stages": [
