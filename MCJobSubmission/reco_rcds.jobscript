@@ -42,34 +42,50 @@ echo "fhicl file: ${JOB_FHICL_FILE}"
 cd $PWD
 
 # ----------------------------------------------------------------------
-# Environment setup
+# Set up DUNE and packaged test release
 # ----------------------------------------------------------------------
 echo "Sourcing DUNE setup..."
-#set +u
 source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
-#set -u
 
-# ----------------------------------------------------------------------
-# Grab the tarball that has our local software versions
-# ----------------------------------------------------------------------
-if [ -n "${INPUT_TAR_DIR_LOCAL:-}" ]; then
-  export LOCAL_DIR=$PWD
-  cd $INPUT_TAR_DIR_LOCAL
-  source ./setup
-  cd $LOCAL_DIR
+if [[ -z "${INPUT_TAR_DIR_LOCAL:-}" ]]; then
+    echo "ERROR: INPUT_TAR_DIR_LOCAL is not set"
+    exit 4
 fi
 
-# ----------------------------------------------------------------------
-# Grab the tarball that has our local software versions
-# ----------------------------------------------------------------------
-if [ -n "${INPUT_TAR_DIR_LOCAL:-}" ]; then
-  export PRODUCTS=$INPUT_TAR_DIR_LOCAL:$PRODUCTS
+if [[ ! -d "${INPUT_TAR_DIR_LOCAL}" ]]; then
+    echo "ERROR: packaged products directory does not exist:"
+    echo "  ${INPUT_TAR_DIR_LOCAL}"
+    exit 4
 fi
 
-setup dunesw ${DUNESW_VERSION} -q e26:prof
+echo "Using packaged products from:"
+echo "  ${INPUT_TAR_DIR_LOCAL}"
 
-ups active
-lar --version
+# The generated MRB setup file is non-relocatable, so do not source it.
+export MRB_INSTALL="${INPUT_TAR_DIR_LOCAL}"
+export CETPKG_INSTALL="${INPUT_TAR_DIR_LOCAL}"
+export PRODUCTS="${INPUT_TAR_DIR_LOCAL}:${PRODUCTS}"
+
+echo "PRODUCTS=${PRODUCTS}"
+
+echo "Available local dunesw products:"
+ups list -aK+ dunesw -z "${INPUT_TAR_DIR_LOCAL}" 2>&1 || true
+
+echo "Available local dunereco products:"
+ups list -aK+ dunereco -z "${INPUT_TAR_DIR_LOCAL}" 2>&1 || true
+
+echo "Setting up dunesw ${DUNESW_VERSION}..."
+setup dunesw "${DUNESW_VERSION}" -q e26:prof
+
+echo "Active dunesw:"
+ups active | grep -E '^dunesw[[:space:]]' || true
+
+echo "Active dunereco:"
+ups active | grep -E '^dunereco[[:space:]]' || true
+
+echo "DUNESW_DIR=${DUNESW_DIR:-unset}"
+echo "DUNERECO_DIR=${DUNERECO_DIR:-unset}"
+echo "FHICL_FILE_PATH=${FHICL_FILE_PATH:-unset}"
 
 # ----------------------------------------------------------------------
 # Grab the tarball that has our fhicl files we'll need
