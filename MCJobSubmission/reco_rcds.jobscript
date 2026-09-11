@@ -61,18 +61,16 @@ fi
 echo "Using packaged products from:"
 echo "  ${INPUT_TAR_DIR_LOCAL}"
 
-# The generated MRB setup file is non-relocatable, so do not source it.
-export MRB_INSTALL="${INPUT_TAR_DIR_LOCAL}"
-export CETPKG_INSTALL="${INPUT_TAR_DIR_LOCAL}"
-export PRODUCTS="${INPUT_TAR_DIR_LOCAL}:${PRODUCTS}"
+# Add the local products folder to PRODUCTS
+export PRODUCTS="${INPUT_TAR_DIR_LOCAL}/localProducts:${PRODUCTS}"
 
 echo "PRODUCTS=${PRODUCTS}"
 
 echo "Available local dunesw products:"
-ups list -aK+ dunesw -z "${INPUT_TAR_DIR_LOCAL}" 2>&1 || true
+ups list -aK+ dunesw -z "${INPUT_TAR_DIR_LOCAL}/localProducts" 2>&1 || true
 
 echo "Available local dunereco products:"
-ups list -aK+ dunereco -z "${INPUT_TAR_DIR_LOCAL}" 2>&1 || true
+ups list -aK+ dunereco -z "${INPUT_TAR_DIR_LOCAL}/localProducts" 2>&1 || true
 
 echo "Setting up dunesw ${DUNESW_VERSION}..."
 setup dunesw "${DUNESW_VERSION}" -q e26:prof
