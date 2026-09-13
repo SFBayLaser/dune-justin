@@ -1,0 +1,266 @@
+# workflow_reco_dunevd10kt.fcl
+
+# Dom Brailsford
+# Modifications by Laura Paulucci
+
+#Configuration fcl for the reconstruction workflows
+#include "pandoramodules_dune.fcl"
+#include "wirecell_dune.fcl"
+#include "hitfindermodules_dune.fcl"
+#include "calorimetry_dune10kt.fcl"
+#include "pid_dune10kt.fcl"
+#include "cvn_dune.fcl"
+#include "energyreco.fcl"
+#include "opticaldetectormodules_dune.fcl"
+#include "trackfindermodules_dune.fcl"
+#include "clusterfinder_dune.fcl"
+#include "PerPlaneCluster.fcl"
+#include "SolarCluster.fcl"
+#include "SolarOpFlash.fcl"
+#include "OpFlashFinderVerticalDrift.fcl"
+#include "angularreco.fcl"
+#include "imagepatternalgs.fcl"
+#include "SolarEvent.fcl"
+#include "cluster3Dmodule_dune.fcl"
+#include "cluster3dalgorithms_dune.fcl"
+#include "supera_modules.fcl"
+
+BEGIN_PROLOG
+
+dunefd_vertdrift_producers:
+{
+   rns:            { module_type: "RandomNumberSaver" }
+   wclsdatanfsp:       @local::dune10kt_dunefd_vertdrift_data_nfsp
+   # Actual hit finder
+   gaushit:            @local::dunevdfd_gaushitfinder
+   # Spacepoints from hit finder
+   cluster3d:          @local::standard_spacepointbuilderdune
+   # Pattern recognition
+   pandora:            @local::dunefdvd_pandora_neutrino
+   # Characterisation
+   pandoraTrack:       @local::dunefdvd_pandoraTrackCreation
+   pandoraShower:      @local::dunefdvd_pandoraModularShowerCreation
+   # PID
+   pandoracalo:        @local::dunevd10kt_calomc_pandora
+   pandorapid:         @local::dunevd10kt_pid_pandora
+   cvnmap:             @local::dunevd_8x6_cvnmapper
+   cvneva:            @local::dunevd_8x6_FHC_cvnevaluator
+   # Neutrino energy
+   energyrecnumu:         @local::dunefdvd_nuenergyreco_pandora_numu
+   energyrecnumurange:   @local::dunefdvd_nuenergyreco_pandora_numu_range
+   energyrecnumumcs:     @local::dunefdvd_nuenergyreco_pandora_numu_mcs
+   energyrecnumumcsllhd: @local::dunefdvd_nuenergyreco_pandora_numu_mcs_llhd
+   energyrecnue:          @local::dunefdvd_nuenergyreco_pandora_nue
+   energyrecnc:           @local::dunefdvd_nuenergyreco_pandora_nc
+   # Angle reco configuration
+   anglereconue:  @local::dunefdvd_30deg_nuangularreco_pandora_nue
+   anglereconumu: @local::dunefdvd_30deg_nuangularreco_pandora_numu
+   anglereconuepfps: @local::dunefdvd_30deg_nuangularreco_pandora_nue_allpfps
+   anglereconumupfps: @local::dunefdvd_30deg_nuangularreco_pandora_numu_allpfps
+   anglerecohits: @local::dunefdvd_30deg_nuangularreco_pandora_hits
+   # PDS reconstruction
+   ophitArOnly:     @local::dunefdvd_ophit
+   ophitXeOnly:     @local::dunefdvd_ophit
+   ophit10ppm:      @local::dunefdvd_ophit
+   opflashArOnly:   @local::dunefdvd_opflash
+   opflashXeOnly:   @local::dunefdvd_opflash
+   opflash10ppm:    @local::dunefdvd_opflash
+   
+   # LE Reco
+   # Clusters for LE events
+   planecluster:       @local::lowe_cluster_dunevd10kt_1x8x14_3view_30deg
+   solarcluster:       @local::solar_cluster_dunevd10kt_1x8x14_3view_30deg
+   # PMTRACKTC for LE events
+   linecluster:        @local::dunefdvd_linecluster
+   trajcluster:        @local::dunefdvd_trajcluster
+   pmtracktc:          @local::dunefdvd_pmalgtrackmaker    #PMA using trajcluster clusters
+#   pmtracktccalo:      @local::dunevd10kt_calomc
+#   pmtracktcpid:       @local::standard_chi2pid
+   emtrkmichelid:      @local::standard_emtrackmichelid
+   solarflash:         @local::solar_opflash_dunevd10kt_1x8x14_3view_30deg
+   soalrevent:         @local::solar_event_dunevd10kt_1x8x14_3view_30deg
+}
+
+dunefd_vertdrift_pds_reco1:
+[
+    ophit10ppm
+]
+
+dunefd_vertdrift_pds_reco2:
+[
+    opflash10ppm
+]
+
+dunefd_vertdrift_pds:
+[
+    @sequence::dunefd_vertdrift_pds_reco1,
+    @sequence::dunefd_vertdrift_pds_reco2
+]
+
+dunefd_vertdrift_tpc_reco1:
+[
+    gaushit,
+    cluster3d
+]
+
+dunefd_vertdrift_reco1:
+[
+    @sequence::dunefd_vertdrift_tpc_reco1,
+    @sequence::dunefd_vertdrift_pds_reco1
+]
+
+dunefd_vertdrift_tpc_reco2:
+[
+    pandora,
+    pandoraTrack,
+    pandoraShower,
+    pandoracalo,
+    pandorapid,
+    cvnmap,
+    cvneva,
+    energyrecnumu,
+    energyrecnumurange,
+    energyrecnumumcs,
+    energyrecnumumcsllhd,
+    energyrecnue,
+    energyrecnc
+]
+
+dunefd_vertdrift_reco2:
+[
+    @sequence::dunefd_vertdrift_tpc_reco2,
+    @sequence::dunefd_vertdrift_pds_reco2
+]
+
+dunefd_vertdrift_1x8x6_reco2:
+[
+    @sequence::dunefd_vertdrift_tpc_reco2
+]
+
+dunefd_vertdrift_tpc:
+[
+    @sequence::dunefd_vertdrift_tpc_reco1,
+    @sequence::dunefd_vertdrift_tpc_reco2
+]
+
+dunefd_vertdrift_tpc_le_reco1:
+[
+    gaushit,
+    planecluster,
+    solarcluster
+]
+
+dunefd_vertdrift_tpc_le_reco2:
+[
+    pandora,
+    pandoraTrack,
+    pandoraShower,
+    pandoracalo,
+    pandorapid,
+    linecluster, 
+    trajcluster, 
+    pmtracktc,
+    emtrkmichelid
+]
+
+dunefd_vertdrift_pds_le_reco2:
+[
+    solarflash
+]
+
+dunefd_vertdrift_tpc_le:
+[
+    @sequence::dunefd_vertdrift_tpc_le_reco1,
+    @sequence::dunefd_vertdrift_tpc_le_reco2
+]
+
+dunefd_vertdrift_le_reco1:
+[
+    @sequence::dunefd_vertdrift_tpc_le_reco1,
+    @sequence::dunefd_vertdrift_pds_reco1
+]
+
+dunefd_vertdrift_le_reco2:
+[
+    @sequence::dunefd_vertdrift_tpc_le_reco2,
+    @sequence::dunefd_vertdrift_pds_le_reco2
+]
+
+
+dunefd_vertdrift_reco_tpc_only:
+[
+    @sequence::dunefd_vertdrift_tpc,
+    rns
+]
+
+dunefd_vertdrift_reco_pds_only:
+[
+    @sequence::dunefd_vertdrift_pds,
+    rns
+]
+
+dunefd_vertdrift_reco_all_systems:
+[
+    @sequence::dunefd_vertdrift_tpc,
+    @sequence::dunefd_vertdrift_pds,
+    rns
+]
+
+dunefd_vertdrift_reco_le:
+[
+    @sequence::dunefd_vertdrift_tpc_le,
+    @sequence::dunefd_vertdrift_pds,
+    rns
+]
+
+dunefd_vertdrift_reco1_solar: 
+[ 
+    @sequence::dunefd_vertdrift_reco1,
+    rns
+]
+
+dunefd_vertdrift_reco2_solar: 
+[ 
+    solarflash,
+    soalrevent
+]
+
+dunefd_vertdrift_solar:
+[
+    @sequence::dunefd_vertdrift_reco1_solar,
+    @sequence::dunefd_vertdrift_reco2_solar
+]
+
+dunefd_vertdrift_nuanglereco:
+[
+    anglereconue,
+    anglereconumu,
+    anglereconuepfps,
+    anglereconumupfps,
+    anglerecohits
+]
+
+dunefd_vertdrift_atmos_reco2:
+[
+    @sequence::dunefd_vertdrift_tpc_reco2,
+    @sequence::dunefd_vertdrift_nuanglereco
+]
+
+#dunefd_horizdrift_producers.cluster3d.HitFinderModuleLabel:               ["gaushit"]
+#dunefd_horizdrift_producers.cluster3d.Hit3DBuilderAlg:                    @local::standard_snippethit3dbuilderDUNE   
+#dunefd_horizdrift_producers.cluster3d.Hit3DBuilderAlg.MaxHitChiSquare:    10.
+#dunefd_horizdrift_producers.cluster3d.MakeSpacePointsOnly:                true
+
+dunefd_vertdrift_producers.ophitArOnly.InputModule:      opdigiArOnly
+dunefd_vertdrift_producers.ophitXeOnly.InputModule:      opdigiXeOnly
+dunefd_vertdrift_producers.opflashArOnly.InputModule:    ophitArOnly
+dunefd_vertdrift_producers.opflashXeOnly.InputModule:    ophitXeOnly
+dunefd_vertdrift_producers.emtrkmichelid.PointIdAlg.NNetModelFile:     "CnnModels/cnn_ndkemtrk_pitch_5_wire_44_drift_48_down_6_mean_notes_AtmAndNdk.nnet"
+dunefd_vertdrift_producers.emtrkmichelid.WireLabel:                    "tpcrawdecoder:gauss"
+dunefd_vertdrift_producers.emtrkmichelid.PointIdAlg.NNetOutputs:       ["track", "em", "michel", "none"]
+dunefd_vertdrift_producers.emtrkmichelid.PointIdAlg.PatchSizeW:        44
+dunefd_vertdrift_producers.emtrkmichelid.PointIdAlg.PatchSizeD:        48
+dunefd_vertdrift_producers.emtrkmichelid.PointIdAlg.DownscaleFullView: false
+
+END_PROLOG
+
