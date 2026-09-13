@@ -28,15 +28,44 @@ physics.producers.generator.TPCRange     :   [[0,0],[0,1],[0,2],[0,3],[0,4],[0,5
 physics.producers.generator.MultiMin     :   1
 physics.producers.generator.MultiMax     :   10
 physics.producers.generator.GammaBetaRange : [0.0, 3.0] # [0.0,20.0] # Boost, GammaBeta = Gamma * Beta but unused here
-physics.producers.generator.Revert:          false 
-physics.producers.generator.UseBoost :       false
-
-physics.producers.generator.ParticleParameter.PDGCode      : [[-11,11,-13,13],      [22,111],     [211,-211],          [2212],         [2112],  [130, 321, -321, 310],    [3122] ]
-physics.producers.generator.ParticleParameter.MinMulti     : [              1,             0,             0,               0,               0,                      0,         0 ]
-physics.producers.generator.ParticleParameter.MaxMulti     : [              1,             2,             2,               5,               3,                      1,         1 ]
-physics.producers.generator.ParticleParameter.ProbWeight   : [              1,             1,             1,               1,               1,                   0.25,      0.25 ]   
-physics.producers.generator.ParticleParameter.KERange      : [    [0.01,15.0],     [0.01,2.5],    [0.01,2.5],       [0.02,1.],      [0.02,1.],              [0.01,5.], [0.01,3.] ]
-physics.producers.generator.ParticleParameter.MomRange     : []
+physics.producers.generator.Revert       : false
+physics.producers.generator.UseBoost     : false
+physics.producers.generator.InteractionProfiles: [
+    {
+        Name: "cc_with_lepton"
+        ProbabilityWeight: 0.5
+        MultiMin: 1
+        MultiMax: 10
+        IncomingNuPDG: 14
+        InteractionMode: 0
+        RequiredParticlePool: {
+            PDGCode: [-11, 11, -13, 13]
+            KERange: [0.01, 15.0]
+        }
+        ParticlePool: {
+            PDGCode: [[22, 111], [211, -211], [2212], [2112], [130, 321, -321, 310], [3122]]
+            MinMulti: [0, 0, 0, 0, 0, 0]
+            MaxMulti: [2, 2, 5, 3, 1, 1]
+            ProbWeight: [1, 1, 1, 1, 0.25, 0.25]
+            KERange: [[0.01, 2.5], [0.01, 2.5], [0.02, 1.0], [0.02, 1.0], [0.01, 5.0], [0.01, 3.0]]
+        }
+    },
+    {
+        Name: "nc_without_lepton"
+        ProbabilityWeight: 0.5
+        MultiMin: 1
+        MultiMax: 10
+        IncomingNuPDG: 14
+        InteractionMode: 1
+        ParticlePool: {
+            PDGCode: [[22, 111], [211, -211], [2212], [2112], [130, 321, -321, 310], [3122]]
+            MinMulti: [0, 0, 0, 0, 0, 0]
+            MaxMulti: [2, 2, 5, 3, 1, 1]
+            ProbWeight: [1, 1, 1, 1, 0.25, 0.25]
+            KERange: [[0.01, 2.5], [0.01, 2.5], [0.02, 1.0], [0.02, 1.0], [0.01, 5.0], [0.01, 3.0]]
+        }
+    }
+]
 
 #
 # Multi-Particle Rain generator (MPR)
