@@ -11,7 +11,7 @@
     "max_distance": 60,
     "dunesw_version": "v10_24_00d00",
     "limit_sites": false,
-    "fhicl_files": "https://raw.githubusercontent.com/SFBayLaser/dune-justin/main/bundles/fhicl_vd_bundle.tgz"
+    "fhicl_files": "https://raw.githubusercontent.com/SFBayLaser/dune-justin/main/bundles/fhicl_vd_bundle.tgz",
     "tarfile_dir": "/cvmfs/fifeuser1.opensciencegrid.org/sw/dune/4de2fb4d19f920807e0a8e8b5b93dbea2c08229c"
   },
 
