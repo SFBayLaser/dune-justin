@@ -172,7 +172,7 @@ def main():
         if "rss_mib" in st_merged:
             cmd += ["--rss-mib", as_str(st_merged["rss_mib"])]
         if "disk_space" in st_merged:
-            cmd += ["--classad", as_str("RequestDisk="+st_merged["disk_space"])]
+            cmd += ["--classad", "RequestDisk="+as_str(st_merged["disk_space"])]
         if "processors" in st_merged:
             cmd += ["--processors", as_str(st_merged["processors"])]
         if st_merged.get("gpu", False):
