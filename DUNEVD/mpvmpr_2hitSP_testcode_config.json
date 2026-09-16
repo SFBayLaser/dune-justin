@@ -22,7 +22,7 @@
       "wall_seconds": 14400,
       "rss_mib": 4000,
       "env": {
-        "NEVENTS": "200",
+        "NEVENTS": "100",
         "RUN_BASE": "010000",
         "JOB_FHICL_FILE": "mpvmpr_gen_vd_1x8x6.fcl"
       },
@@ -43,8 +43,9 @@
     {
       "id": 3,
       "jobscript": "MCJobSubmission/detsim.jobscript",
-      "wall_seconds": 28800,
+      "wall_seconds": 43200,
       "rss_mib": 4000,
+      "disk_space": 10000000,
       "env": {
         "JOB_FHICL_FILE": "standard_detsim_dunevd10kt_1x8x6_3view_30deg.fcl"
       },
