@@ -45,7 +45,6 @@
       "jobscript": "MCJobSubmission/detsim.jobscript",
       "wall_seconds": 43200,
       "rss_mib": 4000,
-      "disk_space": 10000000,
       "env": {
         "JOB_FHICL_FILE": "standard_detsim_dunevd10kt_1x8x6_3view_30deg.fcl"
       },
