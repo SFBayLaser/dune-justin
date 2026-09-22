@@ -62,7 +62,7 @@ physics.producers.gaushit.MaxMultiHit:    8
 physics.producers.gaushit.Chi2NDF:        5000
 
 # Default is the "fast" version
-physics.producers.cluster3d.Hit3DBuilderAlg: @local::standard_snippethit3dbuilderDUNE
+#physics.producers.cluster3d.Hit3DBuilderAlg: @local::standard_snippethit3dbuilderDUNE
 #physics.producers.cluster3d.Hit3DBuilderAlg.SaveBadChannelPairs: false
 
 # Configure mcreco to read SEDLite instead of SED and MCParticleLite in addition to MCParticle
