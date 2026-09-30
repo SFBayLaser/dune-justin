@@ -27,6 +27,11 @@ fi
 
 # Get input from justIN
 alloc="$("$JUSTIN_PATH/justin-get-file")"
+if [[ -z "$alloc" ]]; then
+  echo "No input file allocated by justIN"
+  exit 0
+fi
+
 did="$(echo "$alloc" | awk '{print $1}')"
 pfn="$(echo "$alloc" | awk '{print $2}')"
 rse="$(echo "$alloc" | awk '{print $3}')"
