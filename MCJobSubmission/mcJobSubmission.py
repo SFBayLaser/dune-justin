@@ -116,7 +116,12 @@ def main():
 
     require(isinstance(stages, list) and len(stages) > 0, "Config must contain a non-empty 'stages:' list.")
     require("description" in workflow, "workflow.description is required")
-    require("monte_carlo" in workflow, "workflow.monte_carlo is required")
+    has_monte_carlo = "monte_carlo" in workflow and workflow["monte_carlo"] is not None
+    has_mql = "mql" in workflow and bool(as_str(workflow["mql"]).strip())
+    require(
+        has_monte_carlo != has_mql,
+        "workflow must specify exactly one of workflow.monte_carlo or workflow.mql",
+    )
 
     # Global justin flags (optional)
     justin_global = ["justin"]
@@ -131,8 +136,11 @@ def main():
     create_wf = justin_global + [
         "create-workflow",
         "--description", as_str(workflow["description"]),
-        "--monte-carlo", as_str(workflow["monte_carlo"]),
     ]
+    if has_monte_carlo:
+        create_wf += ["--monte-carlo", as_str(workflow["monte_carlo"])]
+    else:
+        create_wf += ["--mql", as_str(workflow["mql"])]
     cp = run_cmd(create_wf, dry_run=args.dry_run, with_dune_setup=args.with_dune_setup, capture=True)
     if getattr(cp, "returncode", 1) != 0:
         print("ERROR: create-workflow failed.", file=sys.stderr)
@@ -177,6 +185,8 @@ def main():
             cmd += ["--processors", as_str(st_merged["processors"])]
         if st_merged.get("gpu", False):
             cmd += ["--gpu"]
+        if st_merged.get("image"):
+            cmd += ["--image", as_str(st_merged["image"])]
 
         # Env vars (repeatable)
         env = st_merged.get("env", {}) or {}
@@ -191,8 +201,6 @@ def main():
         # code version to run (optional; can override defaults)
         if "dunesw_version" in st_merged and st_merged["dunesw_version"] is not None:
             cmd += ["--env", "DUNESW_VERSION="+as_str(st_merged["dunesw_version"])]
-        else:
-            cmd += "--env DUNESW_VERSION=v10_17_01d00"
 
         # Path to FHICL files to pull over
         if "fhicl_files" in st_merged and st_merged["fhicl_files"] is not None:
