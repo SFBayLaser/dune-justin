@@ -1,7 +1,11 @@
 {
   "workflow": {
-    "description": "TMS MiniProdN5p3 FHC spill test",
+    "description": "TMS MiniProdN5p3 FHC spill Processing",
     "mql": "files from neardet-lar-tms-sand:MiniProdN5p3_NDComplex_FHC_spill_full_sanddrift"
+  },
+  "env": {
+    ...
+    "TMS_PRODUCTION_TAG": "TMSReco_Cluster3D_v01"
   },
   "defaults": {
     "repo": "SFBayLaser/dune-justin",

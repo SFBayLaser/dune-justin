@@ -93,11 +93,19 @@ command -v ConvertToTMSTree || { echo "ERROR: ConvertToTMSTree not on PATH" >&2;
 # Configure and run ConvertToTMSTree
 # ----------------------------------------------------------------------
 base=$(basename "${did#*:}" .root)
-export TMS_TOML="$TMS_DIR/config/justin/TMS_Config_Cluster3D.toml"
-export ND_PRODUCTION_TMSRECO_OUTFILE="$workdir/${base}_RecoCandidates.root"
-export ND_PRODUCTION_TMSRECOREADOUT_OUTFILE="$workdir/${base}_Readout.root"
-logfile="$workdir/${base}_convert.log"
+if [[ -z "${TMS_PRODUCTION_TAG:-}" ]]; then
+    echo "ERROR: TMS_PRODUCTION_TAG is not set" >&2
+    exit 1
+fi
 
+outbase="${base}_${TMS_PRODUCTION_TAG}"
+
+export ND_PRODUCTION_TMSRECO_OUTFILE="${workdir}/${outbase}_RecoCandidates.root"
+export ND_PRODUCTION_TMSRECOREADOUT_OUTFILE="${workdir}/${outbase}_Readout.root"
+
+convert_log="${workdir}/${outbase}_convert.log"
+
+export TMS_TOML="$TMS_DIR/config/justin/TMS_Config_Cluster3D.toml"
 if [[ ! -f "$TMS_TOML" ]]; then
   echo "ERROR: TMS configuration not found: $TMS_TOML" >&2
   exit 6
@@ -108,36 +116,38 @@ echo "Reco output:    $ND_PRODUCTION_TMSRECO_OUTFILE"
 echo "Readout output: $ND_PRODUCTION_TMSRECOREADOUT_OUTFILE"
 
 start=$(date +%s)
-ConvertToTMSTree "$local_input" > "$logfile" 2>&1
+ConvertToTMSTree "$local_input" > "$convert_log" 2>&1
 rc=$?
 elapsed=$(( $(date +%s) - start ))
 echo "ConvertToTMSTree exit $rc after $elapsed s"
-tail -20 "$logfile" || true
+tail -20 "$convert_log" || true
 
 if [[ $rc -ne 0 ]]; then
   echo "ERROR: ConvertToTMSTree failed with status $rc" >&2
   exit $rc
 fi
+
 if [[ ! -s "$ND_PRODUCTION_TMSRECO_OUTFILE" ]]; then
   echo "ERROR: RecoCandidates output was not produced or is empty" >&2
   exit 7
 fi
+
 if [[ ! -s "$ND_PRODUCTION_TMSRECOREADOUT_OUTFILE" ]]; then
   echo "ERROR: Readout output was not produced or is empty" >&2
   exit 8
 fi
 
 echo "TMS outputs:"
-ls -lh "$ND_PRODUCTION_TMSRECO_OUTFILE" "$ND_PRODUCTION_TMSRECOREADOUT_OUTFILE" "$logfile"
+ls -lh "$ND_PRODUCTION_TMSRECO_OUTFILE" "$ND_PRODUCTION_TMSRECOREADOUT_OUTFILE" "$convert_log"
+
+# Cleanup
+rm -f "$local_input"
 
 # Tell justIN that the allocated input was successfully processed.
 # justIN accepts either the DID in justin-processed-dids.txt or the PFN in
 # justin-processed-pfns.txt; use the DID convention used elsewhere in this repo.
 echo "$did" >> "$workdir/justin-processed-dids.txt"
 echo "Wrote processed DID: $did"
-
-# Cleanup
-rm -f "$local_input"
 
 echo "=== TMS ConvertToTMSTree job completed successfully ==="
 exit 0
