@@ -1,0 +1,28 @@
+{
+  "workflow": {
+    "description": "TMS MiniProdN5p3 FHC spill test",
+    "mql": "files from neardet-lar-tms-sand:MiniProdN5p3_NDComplex_FHC_spill_full_sanddrift limit 1"
+  },
+  "defaults": {
+    "repo": "SFBayLaser/dune-justin",
+    "ref": "main",
+    "lifetime_days": 4,
+    "max_distance": 60,
+    "limit_sites": false,
+    "tarfile_dir": "REPLACE_WITH_PUBLISHED_DUNE_TMS_BUILD_DIRECTORY"
+  },
+  "stages": [
+    {
+      "id": 1,
+      "jobscript": "TMS/tms.jobscript",
+      "wall_seconds": 28800,
+      "rss_mib": 4000,
+      "lifetime_days": 4,
+      "output_patterns": [
+        "*_RecoCandidates.root",
+        "*_Readout.root",
+        "*_convert.log"
+      ]
+    }
+  ]
+}

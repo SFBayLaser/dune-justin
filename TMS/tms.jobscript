@@ -1,0 +1,119 @@
+#!/bin/bash
+# justIN jobscript: run dune-tms ConvertToTMSTree on one MiniProdN5p3 spill file.
+#
+# The dune-tms development build is supplied with justin-cvmfs-upload.  The
+# directory passed as INPUT_TAR_DIR_LOCAL is expected to contain dune-tms/,
+# with setup.sh, linux/bin, linux/lib and config beneath it.
+#
+# Outputs are written in the justIN workspace so the wrapper can upload them:
+#   <base>_RecoCandidates.root
+#   <base>_Readout.root
+#   <base>_convert.log
+
+echo "=== TMS ConvertToTMSTree job starting ==="
+echo "Host: $(hostname)"
+echo "PWD:  $(pwd -P)"
+echo "JUSTIN_PATH=${JUSTIN_PATH:-unset}"
+
+workdir="$(pwd -P)"
+
+# ----------------------------------------------------------------------
+# Allocate one EDepSim spill input
+# ----------------------------------------------------------------------
+if [[ -z "${JUSTIN_PATH:-}" ]]; then
+  echo "ERROR: JUSTIN_PATH is not set (not running under justIN wrapper?)" >&2
+  exit 2
+fi
+
+did_pfn_rse="$($JUSTIN_PATH/justin-get-file)"
+if [[ -z "$did_pfn_rse" ]]; then
+  echo "No file to process"
+  exit 0
+fi
+
+did=$(echo "$did_pfn_rse" | cut -f1 -d' ')
+pfn=$(echo "$did_pfn_rse" | cut -f2 -d' ')
+rse=$(echo "$did_pfn_rse" | cut -f3 -d' ')
+echo "Input: did=$did pfn=$pfn rse=$rse"
+
+# ----------------------------------------------------------------------
+# dune-tms currently requires Scientific Linux 7
+# ----------------------------------------------------------------------
+if ! grep -q "Scientific Linux" /etc/redhat-release 2>/dev/null; then
+  echo "ERROR: not an SL7 environment ($(cat /etc/redhat-release 2>/dev/null))" >&2
+  echo "dune-tms setup.sh requires Scientific Linux 7" >&2
+  exit 3
+fi
+
+# ----------------------------------------------------------------------
+# Set up packaged dune-tms development build
+# ----------------------------------------------------------------------
+TMS_BUILD="${INPUT_TAR_DIR_LOCAL:-}/dune-tms"
+if [[ -z "${INPUT_TAR_DIR_LOCAL:-}" || ! -f "$TMS_BUILD/setup.sh" ]]; then
+  echo "ERROR: INPUT_TAR_DIR_LOCAL (${INPUT_TAR_DIR_LOCAL:-unset}) does not contain dune-tms/setup.sh" >&2
+  exit 4
+fi
+
+echo "Using packaged dune-tms build: $TMS_BUILD"
+cd "$TMS_BUILD" || exit 4
+# setup.sh intentionally sets TMS_DIR from PWD.
+source setup.sh
+setup_rc=$?
+cd "$workdir" || exit 4
+if [[ $setup_rc -ne 0 ]]; then
+  echo "ERROR: dune-tms setup.sh failed with status $setup_rc" >&2
+  exit $setup_rc
+fi
+
+echo "TMS_DIR=${TMS_DIR:-unset}"
+command -v ConvertToTMSTree || { echo "ERROR: ConvertToTMSTree not on PATH" >&2; exit 5; }
+
+# ----------------------------------------------------------------------
+# Configure and run ConvertToTMSTree
+# ----------------------------------------------------------------------
+base=$(basename "${did#*:}" .root)
+export TMS_TOML="$TMS_DIR/config/justin/TMS_Config_Cluster3D.toml"
+export ND_PRODUCTION_TMSRECO_OUTFILE="$workdir/${base}_RecoCandidates.root"
+export ND_PRODUCTION_TMSRECOREADOUT_OUTFILE="$workdir/${base}_Readout.root"
+logfile="$workdir/${base}_convert.log"
+
+if [[ ! -f "$TMS_TOML" ]]; then
+  echo "ERROR: TMS configuration not found: $TMS_TOML" >&2
+  exit 6
+fi
+
+echo "TMS_TOML=$TMS_TOML"
+echo "Reco output:    $ND_PRODUCTION_TMSRECO_OUTFILE"
+echo "Readout output: $ND_PRODUCTION_TMSRECOREADOUT_OUTFILE"
+
+start=$(date +%s)
+ConvertToTMSTree "$pfn" > "$logfile" 2>&1
+rc=$?
+elapsed=$(( $(date +%s) - start ))
+echo "ConvertToTMSTree exit $rc after $elapsed s"
+tail -20 "$logfile" || true
+
+if [[ $rc -ne 0 ]]; then
+  echo "ERROR: ConvertToTMSTree failed with status $rc" >&2
+  exit $rc
+fi
+if [[ ! -s "$ND_PRODUCTION_TMSRECO_OUTFILE" ]]; then
+  echo "ERROR: RecoCandidates output was not produced or is empty" >&2
+  exit 7
+fi
+if [[ ! -s "$ND_PRODUCTION_TMSRECOREADOUT_OUTFILE" ]]; then
+  echo "ERROR: Readout output was not produced or is empty" >&2
+  exit 8
+fi
+
+echo "TMS outputs:"
+ls -lh "$ND_PRODUCTION_TMSRECO_OUTFILE" "$ND_PRODUCTION_TMSRECOREADOUT_OUTFILE" "$logfile"
+
+# Tell justIN that the allocated input was successfully processed.
+# justIN accepts either the DID in justin-processed-dids.txt or the PFN in
+# justin-processed-pfns.txt; use the DID convention used elsewhere in this repo.
+echo "$did" >> "$workdir/justin-processed-dids.txt"
+echo "Wrote processed DID: $did"
+
+echo "=== TMS ConvertToTMSTree job completed successfully ==="
+exit 0
