@@ -136,5 +136,8 @@ ls -lh "$ND_PRODUCTION_TMSRECO_OUTFILE" "$ND_PRODUCTION_TMSRECOREADOUT_OUTFILE" 
 echo "$did" >> "$workdir/justin-processed-dids.txt"
 echo "Wrote processed DID: $did"
 
+# Cleanup
+rm -f "$local_input"
+
 echo "=== TMS ConvertToTMSTree job completed successfully ==="
 exit 0
