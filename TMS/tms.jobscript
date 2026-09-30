@@ -25,16 +25,32 @@ if [[ -z "${JUSTIN_PATH:-}" ]]; then
   exit 2
 fi
 
-did_pfn_rse="$($JUSTIN_PATH/justin-get-file)"
-if [[ -z "$did_pfn_rse" ]]; then
-  echo "No file to process"
-  exit 0
+# Get input from justIN
+alloc="$("$JUSTIN_PATH/justin-get-file")"
+did="$(echo "$alloc" | awk '{print $1}')"
+pfn="$(echo "$alloc" | awk '{print $2}')"
+rse="$(echo "$alloc" | awk '{print $3}')"
+
+echo "Input: did=$did pfn=$pfn rse=$rse"
+
+# Copy the remote input to the local worker scratch area
+input_name=$(basename "${did#*:}")
+local_input="${workdir}/${input_name}"
+
+echo "Copying input locally:"
+echo "  $pfn"
+echo "  -> $local_input"
+
+xrdcp -f "$pfn" "$local_input"
+xrd_status=$?
+
+if [ $xrd_status -ne 0 ] || [ ! -s "$local_input" ]; then
+    echo "ERROR: Failed to copy input file locally"
+    exit 1
 fi
 
-did=$(echo "$did_pfn_rse" | cut -f1 -d' ')
-pfn=$(echo "$did_pfn_rse" | cut -f2 -d' ')
-rse=$(echo "$did_pfn_rse" | cut -f3 -d' ')
-echo "Input: did=$did pfn=$pfn rse=$rse"
+echo "Local input:"
+ls -lh "$local_input"
 
 # ----------------------------------------------------------------------
 # dune-tms currently requires Scientific Linux 7
@@ -87,7 +103,7 @@ echo "Reco output:    $ND_PRODUCTION_TMSRECO_OUTFILE"
 echo "Readout output: $ND_PRODUCTION_TMSRECOREADOUT_OUTFILE"
 
 start=$(date +%s)
-ConvertToTMSTree "$pfn" > "$logfile" 2>&1
+ConvertToTMSTree "$local_input" > "$logfile" 2>&1
 rc=$?
 elapsed=$(( $(date +%s) - start ))
 echo "ConvertToTMSTree exit $rc after $elapsed s"
