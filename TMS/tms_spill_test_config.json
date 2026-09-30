@@ -1,7 +1,7 @@
 {
   "workflow": {
     "description": "TMS MiniProdN5p3 FHC spill test",
-    "mql": "files from neardet-lar-tms-sand:MiniProdN5p3_NDComplex_FHC_spill_full_sanddrift limit 5"
+    "mql": "files from neardet-lar-tms-sand:MiniProdN5p3_NDComplex_FHC_spill_full_sanddrift"
   },
   "defaults": {
     "repo": "SFBayLaser/dune-justin",
@@ -17,6 +17,7 @@
       "jobscript": "TMS/tms.jobscript",
       "wall_seconds": 28800,
       "rss_mib": 4000,
+      "disk_space": 3000000,
       "lifetime_days": 4,
       "output_patterns": [
         "*_RecoCandidates.root",
