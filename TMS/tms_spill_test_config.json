@@ -1,7 +1,7 @@
 {
   "workflow": {
     "description": "TMS MiniProdN5p3 FHC spill Processing",
-    "mql": "files from neardet-lar-tms-sand:MiniProdN5p3_NDComplex_FHC_spill_full_sanddrift"
+    "mql": "files from neardet-lar-tms-sand:MiniProdN5p3_NDComplex_FHC_spill_full_sanddrift limit 50"
   },
   "defaults": {
     "repo": "SFBayLaser/dune-justin",
@@ -20,7 +20,7 @@
       "disk_space": 3000000,
       "lifetime_days": 4,
       "env": {
-        "TMS_PRODUCTION_TAG": "TMSReco_Cluster3D_v01"
+        "TMS_PRODUCTION_TAG": "TMSReco_Cluster3D_test"
       },
       "output_patterns": [
         "*_RecoCandidates.root",
