@@ -1,7 +1,7 @@
 {
   "workflow": {
     "description": "TMS MiniProdN5p3 FHC spill Processing",
-    "mql": "files from neardet-lar-tms-sand:MiniProdN5p3_NDComplex_FHC_spill_full_sanddrift limit 50"
+    "mql": "files from neardet-lar-tms-sand:MiniProdN5p3_NDComplex_FHC_spill_full_sanddrift"
   },
   "defaults": {
     "repo": "SFBayLaser/dune-justin",
@@ -9,7 +9,7 @@
     "lifetime_days": 4,
     "max_distance": 60,
     "limit_sites": false,
-    "tarfile_dir": "/cvmfs/fifeuser2.opensciencegrid.org/sw/dune/26f73542717b8c53f30a36a42e3b8ad5188adccb"
+    "tarfile_dir": "/cvmfs/fifeuser3.opensciencegrid.org/sw/dune/207bf0f82ad82acd335acf3956dbdfc9c618d03d"
   },
   "stages": [
     {
@@ -19,7 +19,7 @@
       "rss_mib": 4000,
       "lifetime_days": 4,
       "env": {
-        "TMS_PRODUCTION_TAG": "TMSReco_Cluster3D_test"
+        "TMS_PRODUCTION_TAG": "TMSReco_Cluster3D_v01"
       },
       "output_patterns": [
         "*_RecoCandidates.root",
