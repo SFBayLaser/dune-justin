@@ -17,7 +17,6 @@
       "jobscript": "TMS/tms.jobscript",
       "wall_seconds": 28800,
       "rss_mib": 4000,
-      "disk_space": 3000000,
       "lifetime_days": 4,
       "env": {
         "TMS_PRODUCTION_TAG": "TMSReco_Cluster3D_test"
