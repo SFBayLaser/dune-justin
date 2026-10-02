@@ -1,7 +1,7 @@
 {
   "workflow": {
     "description": "TMS MiniProdN5p3 FHC spill Processing",
-    "mql": "files from neardet-lar-tms-sand:MiniProdN5p3_NDComplex_FHC_spill_full_sanddrift limit 2"
+    "mql": "files from neardet-lar-tms-sand:MiniProdN5p3_NDComplex_FHC_spill_full_sanddrift limit 50"
   },
   "defaults": {
     "repo": "SFBayLaser/dune-justin",
