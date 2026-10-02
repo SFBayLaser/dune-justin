@@ -9,7 +9,7 @@
     "lifetime_days": 4,
     "max_distance": 60,
     "limit_sites": false,
-    "tarfile_dir": "/cvmfs/fifeuser3.opensciencegrid.org/sw/dune/207bf0f82ad82acd335acf3956dbdfc9c618d03d"
+    "tarfile_dir": "/cvmfs/fifeuser1.opensciencegrid.org/sw/dune/fab697d5dfe887d9eb0a4af098c26a1182fa7e8a"
   },
   "stages": [
     {
