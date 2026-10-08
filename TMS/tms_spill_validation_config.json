@@ -1,0 +1,43 @@
+{
+  "workflow": {
+    "description": "TMS MiniProdN5p3 FHC spill processing + validation (two stage)",
+    "mql": "files from neardet-lar-tms-sand:MiniProdN5p3_NDComplex_FHC_spill_full_sanddrift"
+  },
+  "defaults": {
+    "repo": "SFBayLaser/dune-justin",
+    "ref": "main",
+    "lifetime_days": 4,
+    "max_distance": 60,
+    "limit_sites": false,
+    "tarfile_dir": "/cvmfs/fifeuser4.opensciencegrid.org/sw/dune/34be580199e254dfb5e01e23ead1762ab8d3b9c4"
+  },
+  "stages": [
+    {
+      "id": 1,
+      "jobscript": "TMS/tms.jobscript",
+      "wall_seconds": 28800,
+      "rss_mib": 4000,
+      "lifetime_days": 14,
+      "env": {
+        "TMS_PRODUCTION_TAG": "TMSReco_Cluster3D_v03"
+      },
+      "output_patterns": [
+        "*_Readout.root",
+        "*_convert.log"
+      ],
+      "output_pattern_next_stage": "*_RecoCandidates.root"
+    },
+    {
+      "id": 2,
+      "jobscript": "TMS/tms_validation.jobscript",
+      "wall_seconds": 14400,
+      "rss_mib": 8000,
+      "lifetime_days": 14,
+      "output_patterns": [
+        "*_validation_legacy.root",
+        "*_validation_cluster3d.root",
+        "*_validation.log"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,138 @@
+#!/bin/bash
+# justIN jobscript: run dune-tms Tracking_Validation on one RecoCandidates file made by the tms.jobscript stage.
+#
+# The same dune-tms build tarball (INPUT_TAR_DIR_LOCAL) as the conversion stage is used. It must also contain the
+# Tracking_Validation executable (scripts/Validation/Tracking_Validation), which is not part of the cmake install.
+#
+# Tracking_Validation is run twice on the file, once for the legacy reconstruction and once for Cluster3D
+# (TMS_VALIDATION_RECO_TREE / TMS_VALIDATION_TRUTH_TREE select Reco_Tree_C3D / Truth_Info_C3D). Outputs, in the
+# justIN workspace so the wrapper can upload them:
+#   <base>_validation_legacy.root
+#   <base>_validation_cluster3d.root
+#   <base>_validation.log
+# The histograms in these files add correctly with hadd, so the per-file outputs can be merged afterward.
+
+echo "=== TMS Tracking_Validation job starting ==="
+echo "Host: $(hostname)"
+echo "PWD:  $(pwd -P)"
+echo "JUSTIN_PATH=${JUSTIN_PATH:-unset}"
+
+workdir="$(pwd -P)"
+
+# ----------------------------------------------------------------------
+# Allocate one RecoCandidates input (the output of the previous stage)
+# ----------------------------------------------------------------------
+if [[ -z "${JUSTIN_PATH:-}" ]]; then
+  echo "ERROR: JUSTIN_PATH is not set (not running under justIN wrapper?)" >&2
+  exit 2
+fi
+
+alloc="$("$JUSTIN_PATH/justin-get-file")"
+if [[ -z "$alloc" ]]; then
+  echo "No input file allocated by justIN"
+  exit 0
+fi
+
+did="$(echo "$alloc" | awk '{print $1}')"
+pfn="$(echo "$alloc" | awk '{print $2}')"
+rse="$(echo "$alloc" | awk '{print $3}')"
+
+echo "Input: did=$did pfn=$pfn rse=$rse"
+
+input_name=$(basename "${did#*:}")
+local_input="${workdir}/${input_name}"
+
+echo "Copying input locally: $pfn -> $local_input"
+xrdcp -f "$pfn" "$local_input"
+xrd_status=$?
+
+if [ $xrd_status -ne 0 ] || [ ! -s "$local_input" ]; then
+    echo "ERROR: Failed to copy input file locally"
+    exit 1
+fi
+ls -lh "$local_input"
+
+# ----------------------------------------------------------------------
+# dune-tms currently requires Scientific Linux 7
+# ----------------------------------------------------------------------
+if ! grep -q "Scientific Linux" /etc/redhat-release 2>/dev/null; then
+  echo "ERROR: not an SL7 environment ($(cat /etc/redhat-release 2>/dev/null))" >&2
+  exit 3
+fi
+
+# ----------------------------------------------------------------------
+# Set up the packaged dune-tms build
+# ----------------------------------------------------------------------
+TMS_BUILD="${INPUT_TAR_DIR_LOCAL:-}/dune-tms"
+if [[ -z "${INPUT_TAR_DIR_LOCAL:-}" || ! -f "$TMS_BUILD/setup.sh" ]]; then
+  echo "ERROR: INPUT_TAR_DIR_LOCAL (${INPUT_TAR_DIR_LOCAL:-unset}) does not contain dune-tms/setup.sh" >&2
+  exit 4
+fi
+
+echo "Using packaged dune-tms build: $TMS_BUILD"
+cd "$TMS_BUILD" || exit 4
+# setup.sh intentionally sets TMS_DIR from PWD.
+source setup.sh
+setup_rc=$?
+if [[ $setup_rc -ne 0 ]]; then
+  echo "ERROR: dune-tms setup.sh failed with status $setup_rc" >&2
+  exit $setup_rc
+fi
+
+# The validation setup.sh adds dune_plot_style, which Tracking_Validation was compiled against.
+validation_dir="$TMS_BUILD/scripts/Validation"
+VALIDATION_EXE="$validation_dir/Tracking_Validation"
+if [[ ! -x "$VALIDATION_EXE" ]]; then
+  echo "ERROR: $VALIDATION_EXE is missing or not executable; the tarball must include the built Tracking_Validation" >&2
+  exit 5
+fi
+cd "$validation_dir" || exit 4
+source setup.sh
+cd "$workdir" || exit 4
+
+# ----------------------------------------------------------------------
+# Run the validation, legacy then Cluster3D. Arguments: input, all events (-1), max slices to draw (5), output.
+# ----------------------------------------------------------------------
+base=$(basename "${did#*:}" .root)
+validation_log="${workdir}/${base}_validation.log"
+legacy_out="${workdir}/${base}_validation_legacy.root"
+c3d_out="${workdir}/${base}_validation_cluster3d.root"
+
+start=$(date +%s)
+echo "=== legacy reconstruction ===" > "$validation_log"
+"$VALIDATION_EXE" "$local_input" -1 5 "$legacy_out" >> "$validation_log" 2>&1
+rc_legacy=$?
+
+echo "=== Cluster3D reconstruction ===" >> "$validation_log"
+TMS_VALIDATION_RECO_TREE=Reco_Tree_C3D TMS_VALIDATION_TRUTH_TREE=Truth_Info_C3D \
+  "$VALIDATION_EXE" "$local_input" -1 5 "$c3d_out" >> "$validation_log" 2>&1
+rc_c3d=$?
+elapsed=$(( $(date +%s) - start ))
+
+echo "Tracking_Validation exit: legacy $rc_legacy, Cluster3D $rc_c3d, after $elapsed s"
+tail -10 "$validation_log" || true
+
+if [[ $rc_legacy -ne 0 || $rc_c3d -ne 0 ]]; then
+  echo "ERROR: Tracking_Validation failed (legacy $rc_legacy, Cluster3D $rc_c3d)" >&2
+  exit 6
+fi
+
+for f in "$legacy_out" "$c3d_out"; do
+  if [[ ! -s "$f" ]]; then
+    echo "ERROR: validation output $f was not produced or is empty" >&2
+    exit 7
+  fi
+done
+
+echo "Validation outputs:"
+ls -lh "$legacy_out" "$c3d_out" "$validation_log"
+
+# Cleanup
+rm -f "$local_input"
+
+# Tell justIN that the allocated input was successfully processed.
+echo "$did" >> "$workdir/justin-processed-dids.txt"
+echo "Wrote processed DID: $did"
+
+echo "=== TMS Tracking_Validation job completed successfully ==="
+exit 0
