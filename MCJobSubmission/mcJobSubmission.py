@@ -209,7 +209,9 @@ def main():
         # Limit sites?
         if "limit_sites" in st_merged and st_merged["limit_sites"] is True:
             req = '(GLIDEIN_Site=="FNAL_FERMIGRID") || regexp("NERSC", GLIDEIN_Site)'
-            cmd += " --append_condor_requirements=" + '"' + req + '"'
+            # cmd is a list, so the option must be appended as a list element; "+=" with a string would
+            # extend it one character at a time. No shell quoting here: run_cmd quotes each argument itself.
+            cmd += ["--append_condor_requirements=" + req]
 
         # Output patterns (repeatable)
         # - final stage typically uses output_patterns (list) or output_pattern (string)
