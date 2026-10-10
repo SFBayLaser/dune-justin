@@ -11,6 +11,7 @@
 #   OUT_DIR         everything is written here (created if needed)
 #
 # Needs the dune-tms environment (source setup.sh inside dune-tms) so PyROOT and numpy are available.
+# (page_data.json calls the Cluster3D tracker "linked": that is the key the comparison-page template reads.)
 # Outputs: files_ok.txt, files.txt (the list used), endpoint_dz.log, dz_legacy.npy, dz_cluster3d.npy, cross_table.json,
 #          page_data.json, fits.json, scorecard.json, and a *.log for each step.
 
@@ -47,7 +48,7 @@ echo "analyzing $n files"
 step endpoint_dz  python3 "$here/endpoint_dz.py" "$OUT/files.txt" "$OUT"
 step cross_table  python3 "$here/cross_table.py" "$OUT/files.txt" "$OUT/cross_table.json"
 step page_data    python3 "$here/extract_page_data.py" "$OUT/page_data.json" \
-                    legacy="$VAL/legacy.root:$OUT/dz_legacy.npy" cluster3d="$VAL/cluster3d.root:$OUT/dz_cluster3d.npy"
+                    legacy="$VAL/legacy.root:$OUT/dz_legacy.npy" linked="$VAL/cluster3d.root:$OUT/dz_cluster3d.npy"
 step range_fit    python3 "$here/range_gaus_fit.py" "$OUT/files.txt" "$OUT/fits.json"
 step scorecard    python3 "$here/scorecard.py" "$OUT/files.txt" "$OUT/scorecard.json"
 echo "done: results in $OUT"
