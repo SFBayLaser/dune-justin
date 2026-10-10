@@ -1,0 +1,65 @@
+#!/bin/bash
+# justIN jobscript: run dune-tms ConvertToTMSTree (legacy + Cluster3D reconstruction) on one MiniProdN5p3 spill file.
+#
+# Code: the dune-tms tarball (optimized RelWithDebInfo build, branch feature/usher_spacepoint_clustering) unpacked
+# on cvmfs by `justin-cvmfs-upload`; its directory is passed in with --env INPUT_TAR_DIR_LOCAL=<that directory>.
+# Config: config/justin/TMS_Config_Cluster3D.toml inside the tarball (the default config with Cluster3D, cluster
+# linking and range momentum turned on -- what the 100-file validation runs used).
+# Timing mode is switched on (see below); everything else is the tarball's default readout config.
+# Outputs, written to the job's working directory for justIN to upload: <base>_RecoCandidates.root, <base>_Readout.root,
+# <base>_convert.log.
+
+# The input file.
+did_pfn_rse=$($JUSTIN_PATH/justin-get-file)
+if [ -z "$did_pfn_rse" ]; then
+  echo "No file to process"
+  exit 0
+fi
+did=$(echo $did_pfn_rse | cut -f1 -d' ')
+pfn=$(echo $did_pfn_rse | cut -f2 -d' ')
+rse=$(echo $did_pfn_rse | cut -f3 -d' ')
+echo "Input: did=$did pfn=$pfn rse=$rse"
+
+# dune-tms needs Scientific Linux 7 (setup.sh sets up SL7 UPS products).
+if ! grep -q "Scientific Linux" /etc/redhat-release 2>/dev/null; then
+  echo "Not an SL7 environment ($(cat /etc/redhat-release 2>/dev/null)); dune-tms's setup.sh needs SL7" >&2
+  exit 1
+fi
+
+workdir=$PWD
+if [ -z "$INPUT_TAR_DIR_LOCAL" ] || [ ! -f "$INPUT_TAR_DIR_LOCAL/dune-tms/setup.sh" ]; then
+  echo "INPUT_TAR_DIR_LOCAL ($INPUT_TAR_DIR_LOCAL) does not hold dune-tms/setup.sh" >&2
+  exit 1
+fi
+# setup.sh takes TMS_DIR from the current directory.
+cd $INPUT_TAR_DIR_LOCAL/dune-tms
+source setup.sh > /dev/null 2>&1
+cd $workdir
+echo "TMS_DIR=$TMS_DIR"
+which ConvertToTMSTree || { echo "ConvertToTMSTree not on PATH" >&2; exit 1; }
+
+# The DID is scope:name; name the outputs after the file name alone (no colon in dCache paths).
+base=$(basename ${did#*:} .root)
+export TMS_TOML=$TMS_DIR/config/justin/TMS_Config_Cluster3D.toml
+# Timing-mode front end (A5202/Citiroc model): fills the hit time over threshold (readout branch RecoHitToT).
+# The tarball's readout config is read-only on cvmfs, so run with a copy that has FrontEndTimingMode = true.
+export TMS_READOUT_TOML=$workdir/TMS_Readout_TimingMode.toml
+sed 's/^\( *FrontEndTimingMode *= *\)false/\1true/' $TMS_DIR/config/TMS_Readout_Default_Config.toml > $TMS_READOUT_TOML
+if ! grep -q '^ *FrontEndTimingMode *= *true' $TMS_READOUT_TOML; then
+  echo "FrontEndTimingMode not switched on in $TMS_READOUT_TOML" >&2
+  exit 1
+fi
+export ND_PRODUCTION_TMSRECO_OUTFILE=$workdir/${base}_RecoCandidates.root
+export ND_PRODUCTION_TMSRECOREADOUT_OUTFILE=$workdir/${base}_Readout.root
+start=$(date +%s)
+ConvertToTMSTree $pfn > $workdir/${base}_convert.log 2>&1
+rc=$?
+echo "ConvertToTMSTree exit $rc after $(( $(date +%s) - start )) s"
+tail -5 $workdir/${base}_convert.log
+if [ $rc -ne 0 ] || [ ! -s "$ND_PRODUCTION_TMSRECO_OUTFILE" ]; then
+  exit 1
+fi
+
+# Tell justIN this input is done.
+echo "$pfn" > justin-processed-pfns.txt
+exit 0
