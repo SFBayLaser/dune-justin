@@ -9,7 +9,7 @@
     "lifetime_days": 4,
     "max_distance": 60,
     "limit_sites": false,
-    "tarfile_dir": "/cvmfs/fifeuser4.opensciencegrid.org/sw/dune/df958745c9c3bd7dbae25a2b5c96bcdb1ddd7069"
+    "tarfile_dir": "/cvmfs/fifeuser1.opensciencegrid.org/sw/dune/bcf8e2f191e89f5d187e61342008de9550c4ed4c"
   },
   "stages": [
     {
@@ -19,7 +19,7 @@
       "rss_mib": 4000,
       "lifetime_days": 14,
       "env": {
-        "TMS_PRODUCTION_TAG": "TMSReco_Cluster3D_v04"
+        "TMS_PRODUCTION_TAG": "TMSReco_Cluster3D_v05"
       },
       "output_patterns": [
         "*_Readout.root",
