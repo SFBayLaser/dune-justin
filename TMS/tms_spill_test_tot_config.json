@@ -14,7 +14,7 @@
   "stages": [
     {
       "id": 1,
-      "jobscript": "TMS/tms.jobscript",
+      "jobscript": "TMS/tms_timing.jobscript",
       "wall_seconds": 28800,
       "rss_mib": 4000,
       "lifetime_days": 14,
@@ -29,7 +29,7 @@
     },
     {
       "id": 2,
-      "jobscript": "TMS/tms_convert_timing.jobscript",
+      "jobscript": "TMS/tms_validation.jobscript",
       "wall_seconds": 14400,
       "rss_mib": 8000,
       "lifetime_days": 14,
