@@ -1,0 +1,28 @@
+{
+  "workflow": {
+    "description": "TMS Tracking_Validation only, on existing RecoCandidates files",
+    "mql": "files from SCOPE:DATASET_OF_RECOCANDIDATES"
+  },
+  "defaults": {
+    "repo": "SFBayLaser/dune-justin",
+    "ref": "main",
+    "lifetime_days": 4,
+    "max_distance": 60,
+    "limit_sites": false,
+    "tarfile_dir": "/cvmfs/fifeuser1.opensciencegrid.org/sw/dune/REPLACE_WITH_UPLOAD_HASH"
+  },
+  "stages": [
+    {
+      "id": 1,
+      "jobscript": "TMS/tms_validation.jobscript",
+      "wall_seconds": 14400,
+      "rss_mib": 8000,
+      "lifetime_days": 14,
+      "output_patterns": [
+        "*_validation_legacy.root",
+        "*_validation_cluster3d.root",
+        "*_validation.log"
+      ]
+    }
+  ]
+}
