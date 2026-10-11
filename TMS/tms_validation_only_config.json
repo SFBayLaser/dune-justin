@@ -1,7 +1,7 @@
 {
   "workflow": {
     "description": "TMS Tracking_Validation only, on existing RecoCandidates files",
-    "mql": "files from SCOPE:DATASET_OF_RECOCANDIDATES"
+    "mql": "files from usertests:fnal-w21823s1p1"
   },
   "defaults": {
     "repo": "SFBayLaser/dune-justin",
