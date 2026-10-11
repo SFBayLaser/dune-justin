@@ -1,0 +1,165 @@
+#!/bin/bash
+# justIN jobscript: run dune-tms ConvertToTMSTree on one MiniProdN5p3 spill file with the LEGACY per-hit detector response
+# (Sim.DetSim.UseResponseElements = false, timing mode off). Control run for the slicing study: same code and inputs as tms_timing.jobscript.
+# RecoHitToT stays -999; the light-based TrueHit* truth may be absent in this mode (check with check_new_run.py).
+#
+# The dune-tms development build is supplied with justin-cvmfs-upload.  The
+# directory passed as INPUT_TAR_DIR_LOCAL is expected to contain dune-tms/,
+# with setup.sh, linux/bin, linux/lib and config beneath it.
+#
+# Outputs are written in the justIN workspace so the wrapper can upload them:
+#   <base>_RecoCandidates.root
+#   <base>_Readout.root
+#   <base>_convert.log
+
+echo "=== TMS ConvertToTMSTree job starting ==="
+echo "Host: $(hostname)"
+echo "PWD:  $(pwd -P)"
+echo "JUSTIN_PATH=${JUSTIN_PATH:-unset}"
+
+workdir="$(pwd -P)"
+
+# ----------------------------------------------------------------------
+# Allocate one EDepSim spill input
+# ----------------------------------------------------------------------
+if [[ -z "${JUSTIN_PATH:-}" ]]; then
+  echo "ERROR: JUSTIN_PATH is not set (not running under justIN wrapper?)" >&2
+  exit 2
+fi
+
+# Get input from justIN
+alloc="$("$JUSTIN_PATH/justin-get-file")"
+if [[ -z "$alloc" ]]; then
+  echo "No input file allocated by justIN"
+  exit 0
+fi
+
+did="$(echo "$alloc" | awk '{print $1}')"
+pfn="$(echo "$alloc" | awk '{print $2}')"
+rse="$(echo "$alloc" | awk '{print $3}')"
+
+echo "Input: did=$did pfn=$pfn rse=$rse"
+
+# Copy the remote input to the local worker scratch area
+input_name=$(basename "${did#*:}")
+local_input="${workdir}/${input_name}"
+
+echo "Copying input locally:"
+echo "  $pfn"
+echo "  -> $local_input"
+
+xrdcp -f "$pfn" "$local_input"
+xrd_status=$?
+
+if [ $xrd_status -ne 0 ] || [ ! -s "$local_input" ]; then
+    echo "ERROR: Failed to copy input file locally"
+    exit 1
+fi
+
+echo "Local input:"
+ls -lh "$local_input"
+
+# ----------------------------------------------------------------------
+# dune-tms currently requires Scientific Linux 7
+# ----------------------------------------------------------------------
+if ! grep -q "Scientific Linux" /etc/redhat-release 2>/dev/null; then
+  echo "ERROR: not an SL7 environment ($(cat /etc/redhat-release 2>/dev/null))" >&2
+  echo "dune-tms setup.sh requires Scientific Linux 7" >&2
+  exit 3
+fi
+
+# ----------------------------------------------------------------------
+# Set up packaged dune-tms development build
+# ----------------------------------------------------------------------
+TMS_BUILD="${INPUT_TAR_DIR_LOCAL:-}/dune-tms"
+if [[ -z "${INPUT_TAR_DIR_LOCAL:-}" || ! -f "$TMS_BUILD/setup.sh" ]]; then
+  echo "ERROR: INPUT_TAR_DIR_LOCAL (${INPUT_TAR_DIR_LOCAL:-unset}) does not contain dune-tms/setup.sh" >&2
+  exit 4
+fi
+
+echo "Using packaged dune-tms build: $TMS_BUILD"
+cd "$TMS_BUILD" || exit 4
+# setup.sh intentionally sets TMS_DIR from PWD.
+source setup.sh
+setup_rc=$?
+cd "$workdir" || exit 4
+if [[ $setup_rc -ne 0 ]]; then
+  echo "ERROR: dune-tms setup.sh failed with status $setup_rc" >&2
+  exit $setup_rc
+fi
+
+echo "TMS_DIR=${TMS_DIR:-unset}"
+command -v ConvertToTMSTree || { echo "ERROR: ConvertToTMSTree not on PATH" >&2; exit 5; }
+
+# ----------------------------------------------------------------------
+# Configure and run ConvertToTMSTree
+# ----------------------------------------------------------------------
+base=$(basename "${did#*:}" .root)
+if [[ -z "${TMS_PRODUCTION_TAG:-}" ]]; then
+    echo "ERROR: TMS_PRODUCTION_TAG is not set" >&2
+    exit 1
+fi
+
+outbase="${base}_${TMS_PRODUCTION_TAG}"
+
+export ND_PRODUCTION_TMSRECO_OUTFILE="${workdir}/${outbase}_RecoCandidates.root"
+export ND_PRODUCTION_TMSRECOREADOUT_OUTFILE="${workdir}/${outbase}_Readout.root"
+
+convert_log="${workdir}/${outbase}_convert.log"
+
+export TMS_TOML="$TMS_DIR/config/justin/TMS_Config_Cluster3D.toml"
+if [[ ! -f "$TMS_TOML" ]]; then
+  echo "ERROR: TMS configuration not found: $TMS_TOML" >&2
+  exit 6
+fi
+
+# Legacy detector response. The tarball's readout config is read-only on cvmfs, so run with a copy that has UseResponseElements = false
+# (and FrontEndTimingMode = false, which needs UseResponseElements = true).
+export TMS_READOUT_TOML="$workdir/TMS_Readout_LegacyResponse.toml"
+sed -e 's/^\( *UseResponseElements *= *\)true/\1false/' -e 's/^\( *FrontEndTimingMode *= *\)true/\1false/' "$TMS_DIR/config/TMS_Readout_Default_Config.toml" > "$TMS_READOUT_TOML"
+if ! grep -q '^ *UseResponseElements *= *false' "$TMS_READOUT_TOML" || ! grep -q '^ *FrontEndTimingMode *= *false' "$TMS_READOUT_TOML"; then
+  echo "ERROR: UseResponseElements and FrontEndTimingMode are not both false in $TMS_READOUT_TOML" >&2
+  exit 7
+fi
+echo "TMS_READOUT_TOML=$TMS_READOUT_TOML (UseResponseElements = false, FrontEndTimingMode = false)"
+
+echo "TMS_TOML=$TMS_TOML"
+echo "Reco output:    $ND_PRODUCTION_TMSRECO_OUTFILE"
+echo "Readout output: $ND_PRODUCTION_TMSRECOREADOUT_OUTFILE"
+
+start=$(date +%s)
+ConvertToTMSTree "$local_input" > "$convert_log" 2>&1
+rc=$?
+elapsed=$(( $(date +%s) - start ))
+echo "ConvertToTMSTree exit $rc after $elapsed s"
+tail -20 "$convert_log" || true
+
+if [[ $rc -ne 0 ]]; then
+  echo "ERROR: ConvertToTMSTree failed with status $rc" >&2
+  exit $rc
+fi
+
+if [[ ! -s "$ND_PRODUCTION_TMSRECO_OUTFILE" ]]; then
+  echo "ERROR: RecoCandidates output was not produced or is empty" >&2
+  exit 7
+fi
+
+if [[ ! -s "$ND_PRODUCTION_TMSRECOREADOUT_OUTFILE" ]]; then
+  echo "ERROR: Readout output was not produced or is empty" >&2
+  exit 8
+fi
+
+echo "TMS outputs:"
+ls -lh "$ND_PRODUCTION_TMSRECO_OUTFILE" "$ND_PRODUCTION_TMSRECOREADOUT_OUTFILE" "$convert_log"
+
+# Cleanup
+rm -f "$local_input"
+
+# Tell justIN that the allocated input was successfully processed.
+# justIN accepts either the DID in justin-processed-dids.txt or the PFN in
+# justin-processed-pfns.txt; use the DID convention used elsewhere in this repo.
+echo "$did" >> "$workdir/justin-processed-dids.txt"
+echo "Wrote processed DID: $did"
+
+echo "=== TMS ConvertToTMSTree job completed successfully ==="
+exit 0

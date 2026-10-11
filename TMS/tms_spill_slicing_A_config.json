@@ -1,0 +1,31 @@
+{
+  "workflow": {
+    "description": "TMS MiniProdN5p3 FHC spill processing for the slicing study, run A: response-element detector simulation, timing mode off (single stage)",
+    "mql": "files from neardet-lar-tms-sand:MiniProdN5p3_NDComplex_FHC_spill_full_sanddrift"
+  },
+  "defaults": {
+    "repo": "SFBayLaser/dune-justin",
+    "ref": "main",
+    "lifetime_days": 4,
+    "max_distance": 60,
+    "limit_sites": false,
+    "tarfile_dir": "/cvmfs/fifeuser3.opensciencegrid.org/sw/dune/47c31f127a853279827b69721157b2cbcae4182b"
+  },
+  "stages": [
+    {
+      "id": 1,
+      "jobscript": "TMS/tms.jobscript",
+      "wall_seconds": 28800,
+      "rss_mib": 4000,
+      "lifetime_days": 14,
+      "env": {
+        "TMS_PRODUCTION_TAG": "TMSReco_SlicingA_v01"
+      },
+      "output_patterns": [
+        "*_Readout.root",
+        "*_RecoCandidates.root",
+        "*_convert.log"
+      ]
+    }
+  ]
+}
