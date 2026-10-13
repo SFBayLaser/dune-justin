@@ -19,7 +19,7 @@
       "rss_mib": 4000,
       "lifetime_days": 14,
       "env": {
-        "TMS_PRODUCTION_TAG": "TMSReco_SlicingB_ToT_v01"
+        "TMS_PRODUCTION_TAG": "TMSReco_SlicingB_ToT_v02"
       },
       "output_patterns": [
         "*_Readout.root",
