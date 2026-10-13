@@ -9,7 +9,7 @@
     "lifetime_days": 4,
     "max_distance": 60,
     "limit_sites": false,
-    "tarfile_dir": "/cvmfs/fifeuser2.opensciencegrid.org/sw/dune/dde11b38900c582a40145dfe57ba7fc451dbc9fb"
+    "tarfile_dir": "/cvmfs/fifeuser4.opensciencegrid.org/sw/dune/0c65bf610091ce02ef1c2f1711d9180949f074f3"
   },
   "stages": [
     {
@@ -19,7 +19,7 @@
       "rss_mib": 4000,
       "lifetime_days": 14,
       "env": {
-        "TMS_PRODUCTION_TAG": "TMSReco_ToT_v02"
+        "TMS_PRODUCTION_TAG": "TMSReco_ToT_v03"
       },
       "output_patterns": [
         "*_Readout.root",
