@@ -1,0 +1,173 @@
+#!/bin/bash
+# justIN jobscript: run dune-tms ConvertToTMSTree on one MiniProdN5p3 spill file with a list of bad channels applied
+# (the bad channel scan: BAD_SET names one of the lists shipped in the tarball, config/justin/badchannels/<BAD_SET>.toml,
+# e.g. f10_s1 = 10% of the channels at random, seed 1; f00 = none).
+#
+# The dune-tms development build is supplied with justin-cvmfs-upload.  The
+# directory passed as INPUT_TAR_DIR_LOCAL is expected to contain dune-tms/,
+# with setup.sh, linux/bin, linux/lib and config beneath it.
+#
+# Outputs are written in the justIN workspace so the wrapper can upload them:
+#   <base>_RecoCandidates.root
+#   <base>_Readout.root
+#   <base>_convert.log
+
+echo "=== TMS ConvertToTMSTree job starting ==="
+echo "Host: $(hostname)"
+echo "PWD:  $(pwd -P)"
+echo "JUSTIN_PATH=${JUSTIN_PATH:-unset}"
+
+workdir="$(pwd -P)"
+
+# ----------------------------------------------------------------------
+# Allocate one EDepSim spill input
+# ----------------------------------------------------------------------
+if [[ -z "${JUSTIN_PATH:-}" ]]; then
+  echo "ERROR: JUSTIN_PATH is not set (not running under justIN wrapper?)" >&2
+  exit 2
+fi
+
+# Get input from justIN
+alloc="$("$JUSTIN_PATH/justin-get-file")"
+if [[ -z "$alloc" ]]; then
+  echo "No input file allocated by justIN"
+  exit 0
+fi
+
+did="$(echo "$alloc" | awk '{print $1}')"
+pfn="$(echo "$alloc" | awk '{print $2}')"
+rse="$(echo "$alloc" | awk '{print $3}')"
+
+echo "Input: did=$did pfn=$pfn rse=$rse"
+
+# Copy the remote input to the local worker scratch area
+input_name=$(basename "${did#*:}")
+local_input="${workdir}/${input_name}"
+
+echo "Copying input locally:"
+echo "  $pfn"
+echo "  -> $local_input"
+
+xrdcp -f "$pfn" "$local_input"
+xrd_status=$?
+
+if [ $xrd_status -ne 0 ] || [ ! -s "$local_input" ]; then
+    echo "ERROR: Failed to copy input file locally"
+    exit 1
+fi
+
+echo "Local input:"
+ls -lh "$local_input"
+
+# ----------------------------------------------------------------------
+# dune-tms currently requires Scientific Linux 7
+# ----------------------------------------------------------------------
+if ! grep -q "Scientific Linux" /etc/redhat-release 2>/dev/null; then
+  echo "ERROR: not an SL7 environment ($(cat /etc/redhat-release 2>/dev/null))" >&2
+  echo "dune-tms setup.sh requires Scientific Linux 7" >&2
+  exit 3
+fi
+
+# ----------------------------------------------------------------------
+# Set up packaged dune-tms development build
+# ----------------------------------------------------------------------
+TMS_BUILD="${INPUT_TAR_DIR_LOCAL:-}/dune-tms"
+if [[ -z "${INPUT_TAR_DIR_LOCAL:-}" || ! -f "$TMS_BUILD/setup.sh" ]]; then
+  echo "ERROR: INPUT_TAR_DIR_LOCAL (${INPUT_TAR_DIR_LOCAL:-unset}) does not contain dune-tms/setup.sh" >&2
+  exit 4
+fi
+
+echo "Using packaged dune-tms build: $TMS_BUILD"
+cd "$TMS_BUILD" || exit 4
+# setup.sh intentionally sets TMS_DIR from PWD.
+source setup.sh
+setup_rc=$?
+cd "$workdir" || exit 4
+if [[ $setup_rc -ne 0 ]]; then
+  echo "ERROR: dune-tms setup.sh failed with status $setup_rc" >&2
+  exit $setup_rc
+fi
+
+echo "TMS_DIR=${TMS_DIR:-unset}"
+command -v ConvertToTMSTree || { echo "ERROR: ConvertToTMSTree not on PATH" >&2; exit 5; }
+
+# ----------------------------------------------------------------------
+# Configure and run ConvertToTMSTree
+# ----------------------------------------------------------------------
+base=$(basename "${did#*:}" .root)
+if [[ -z "${TMS_PRODUCTION_TAG:-}" ]]; then
+    echo "ERROR: TMS_PRODUCTION_TAG is not set" >&2
+    exit 1
+fi
+
+outbase="${base}_${TMS_PRODUCTION_TAG}"
+
+export ND_PRODUCTION_TMSRECO_OUTFILE="${workdir}/${outbase}_RecoCandidates.root"
+export ND_PRODUCTION_TMSRECOREADOUT_OUTFILE="${workdir}/${outbase}_Readout.root"
+
+convert_log="${workdir}/${outbase}_convert.log"
+
+export TMS_TOML="$TMS_DIR/config/justin/TMS_Config_Cluster3D.toml"
+if [[ ! -f "$TMS_TOML" ]]; then
+  echo "ERROR: TMS configuration not found: $TMS_TOML" >&2
+  exit 6
+fi
+
+# The bad channel list for this job. The tarball's config is read-only on cvmfs, so run with a copy of it that names the list.
+if [[ -z "${BAD_SET:-}" ]]; then
+  echo "ERROR: BAD_SET is not set" >&2
+  exit 1
+fi
+bad_list="$TMS_DIR/config/justin/badchannels/${BAD_SET}.toml"
+if [[ ! -f "$bad_list" ]]; then
+  echo "ERROR: bad channel list not found: $bad_list" >&2
+  exit 6
+fi
+export TMS_TOML="$workdir/TMS_Config_${BAD_SET}.toml"
+sed "s#^\( *BadChannelFile *= *\).*#\1\"$bad_list\"#" "$TMS_DIR/config/justin/TMS_Config_Cluster3D.toml" > "$TMS_TOML"
+if ! grep -q "^ *BadChannelFile *= *\"$bad_list\"" "$TMS_TOML"; then
+  echo "ERROR: BadChannelFile not set in $TMS_TOML (does the tarball's config have a [Decoder] section?)" >&2
+  exit 6
+fi
+echo "BAD_SET=$BAD_SET, list $bad_list ($(grep -c 'Plane' "$bad_list") channels)"
+
+echo "TMS_TOML=$TMS_TOML"
+echo "Reco output:    $ND_PRODUCTION_TMSRECO_OUTFILE"
+echo "Readout output: $ND_PRODUCTION_TMSRECOREADOUT_OUTFILE"
+
+start=$(date +%s)
+ConvertToTMSTree "$local_input" > "$convert_log" 2>&1
+rc=$?
+elapsed=$(( $(date +%s) - start ))
+echo "ConvertToTMSTree exit $rc after $elapsed s"
+tail -20 "$convert_log" || true
+
+if [[ $rc -ne 0 ]]; then
+  echo "ERROR: ConvertToTMSTree failed with status $rc" >&2
+  exit $rc
+fi
+
+if [[ ! -s "$ND_PRODUCTION_TMSRECO_OUTFILE" ]]; then
+  echo "ERROR: RecoCandidates output was not produced or is empty" >&2
+  exit 7
+fi
+
+if [[ ! -s "$ND_PRODUCTION_TMSRECOREADOUT_OUTFILE" ]]; then
+  echo "ERROR: Readout output was not produced or is empty" >&2
+  exit 8
+fi
+
+echo "TMS outputs:"
+ls -lh "$ND_PRODUCTION_TMSRECO_OUTFILE" "$ND_PRODUCTION_TMSRECOREADOUT_OUTFILE" "$convert_log"
+
+# Cleanup
+rm -f "$local_input"
+
+# Tell justIN that the allocated input was successfully processed.
+# justIN accepts either the DID in justin-processed-dids.txt or the PFN in
+# justin-processed-pfns.txt; use the DID convention used elsewhere in this repo.
+echo "$did" >> "$workdir/justin-processed-dids.txt"
+echo "Wrote processed DID: $did"
+
+echo "=== TMS ConvertToTMSTree job completed successfully ==="
+exit 0
