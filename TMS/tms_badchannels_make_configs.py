@@ -10,7 +10,7 @@ The lists f<percent>_s<seed> (f00 = none) are the ones in the tarball's config/j
 scripts/BadChannels/make_bad_channel_lists.py in dune-tms. The tag in the output names is
 TMSReco_BadCh_<set>_<version>, so the set can be read off a file name.
 
-Usage: tms_badchannels_make_configs.py TARFILE_DIR [--sets f00 f05_s1 ...] [--version v01] [--limit N] [--outdir DIR]
+Usage: tms_badchannels_make_configs.py TARFILE_DIR [--sets f00 f05_s1 ...] [--version v01] [--limit N] [--outdir DIR] [--draw]
   TARFILE_DIR  the cvmfs directory justin-cvmfs-upload printed for the tarball
                current: /cvmfs/fifeuser4.opensciencegrid.org/sw/dune/bfe303fd3497a673c2ba2409ce941313629f5f7a
   --limit N    only the first N files of the dataset (a test)
@@ -29,6 +29,7 @@ def main():
     ap.add_argument("--version", default="v01")
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--outdir", default="badchannels_configs")
+    ap.add_argument("--draw", action="store_true", help="stage 2 with the event displays (tms_validation.jobscript)")
     args = ap.parse_args()
 
     mql = "files from neardet-lar-tms-sand:MiniProdN5p3_NDComplex_FHC_spill_full_sanddrift"
@@ -62,7 +63,7 @@ def main():
                 },
                 {
                     "id": 2,
-                    "jobscript": "TMS/tms_validation.jobscript",
+                    "jobscript": "TMS/tms_validation.jobscript" if args.draw else "TMS/tms_validation_nodraw.jobscript",
                     "wall_seconds": 14400,
                     "rss_mib": 8000,
                     "lifetime_days": 14,

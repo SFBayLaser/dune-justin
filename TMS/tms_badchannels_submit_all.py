@@ -9,7 +9,7 @@ Usage (from dune-justin/TMS, in the shell where you submit by hand):
   tms_badchannels_submit_all.py [CONFIG_DIR] [--sets f00 f10_s1 ...] [--dry-run] [--yes]
                                 [--with-dune-setup] [--delay SECONDS] [--log FILE]
   CONFIG_DIR   directory with tms_badchannels_<set>_config.json (default badchannels_configs)
-  --sets       only these sets (default: every config in CONFIG_DIR)
+  --sets       only these sets, submitted in this order (default: every config in CONFIG_DIR, alphabetical)
   --dry-run    run mcJobSubmission.py --dry-run: prints the justin commands, submits nothing, logs nothing
   --yes        do not ask for confirmation (it asks otherwise, since each workflow is a full dataset)
   --delay      seconds to wait between submissions (default 5)
@@ -63,6 +63,8 @@ def main():
         missing = set(args.sets) - {t[0] for t in todo} - set(done)
         if missing:
             sys.exit(f"no config for: {', '.join(sorted(missing))}")
+    if args.sets:  # submit in the order given on the command line
+        todo.sort(key=lambda t: args.sets.index(t[0]))
     if not todo:
         print("nothing to submit")
         return
