@@ -22,7 +22,13 @@ from the histograms' own statistics (exact, they add across files); their error 
   momentum__completeness__*          momentum completeness (contained / exiting muons)
   momentum__resolution__*            momentum resolution (mean and rms of (reco - true) / true)
 
+Detector configurations (xyxy, half, front16_back32, spread, depth<N>, edge<PP>; see
+dune-tms scripts/BadChannels/make_configuration_lists.py) are read the same way. They are tabulated with the number of
+planes with bars and the share of bars off, and plotted in badchannel_layouts.png: the depth curve and the other layouts
+against the planes with bars, and the edge strips against the random dead bars at the same share of bars off.
+
 Usage: badchannel_scan.py DATA_DIR OUT_DIR [--version v01] [--sets f00 f25_s1 ...] [--spills common|each]
+                          [--configs configurations.json]
 Needs uproot, numpy, matplotlib (the dune-tms python environment on the laptop).
 """
 import argparse
@@ -37,7 +43,8 @@ import sys
 import numpy as np
 import uproot
 
-NAME = re.compile(r"sanddrift\.(\d+)\..*_BadCh_(f\d+(?:_s\d+)?)_(v\d+)_RecoCandidates_validation_(legacy|cluster3d)\.root$")
+SETNAME = r"(f\d+(?:_s\d+)?|xyxy|half|front16_back32|spread|depth\d+|edge\d+)"
+NAME = re.compile(r"sanddrift\.(\d+)\..*_BadCh_" + SETNAME + r"_(v\d+)_RecoCandidates_validation_(legacy|cluster3d)\.root$")
 
 # (key, label, kind, histogram(s), note). kind: eff (numerator/denominator), mean, rms
 METRICS = [
@@ -117,8 +124,22 @@ def add(a, b):
             a[h] = a.get(h, 0.0) + v
 
 
+def is_random(name):
+    return re.match(r"f\d+(_s\d+)?$", name) is not None
+
+
 def percent(name):
-    return int(re.match(r"f(\d+)", name).group(1))
+    """Percent of dead bars of a random set (f00, f10_s2, ...); None for a detector configuration."""
+    m = re.match(r"f(\d+)", name)
+    return int(m.group(1)) if m else None
+
+
+LAYOUT_ORDER = ["xyxy", "half", "front16_back32", "spread", "depth22", "depth34", "depth46", "depth58", "depth70",
+                "edge05", "edge10", "edge20"]
+
+
+def set_key(name):
+    return (0, percent(name), seed(name)) if is_random(name) else (1, LAYOUT_ORDER.index(name) if name in LAYOUT_ORDER else 99, 0)
 
 
 def seed(name):
@@ -133,6 +154,8 @@ def main():
     ap.add_argument("--version", default="v01")
     ap.add_argument("--sets", nargs="+")
     ap.add_argument("--spills", choices=("common", "each"), default="common")
+    ap.add_argument("--configs", default="/media/usher/Drive2/DUNE/TMS/justin/badchannels/lists/configurations.json",
+                    help="configurations.json from make_configuration_lists.py (planes and bars of each layout)")
     args = ap.parse_args()
 
     files = collections.defaultdict(dict)  # (set, kind) -> {spill: path}
@@ -143,7 +166,7 @@ def main():
                 files[(m.group(2), m.group(4))][int(m.group(1))] = os.path.join(root, n)
     if not files:
         sys.exit(f"no {args.version} validation files under {args.data_dir}")
-    sets = sorted({s for s, _ in files}, key=lambda s: (percent(s), seed(s)))
+    sets = sorted({s for s, _ in files}, key=set_key)
     kinds = ("legacy", "cluster3d")
 
     spill_sets = [set(files[(s, k)]) for s in sets for k in kinds if (s, k) in files]
@@ -194,20 +217,56 @@ def main():
     with open(os.path.join(args.out_dir, "badchannel_scan.json"), "w") as f:
         json.dump(rows, f, indent=1)
 
+    rsets = [x for x in sets if is_random(x)]
+    lsets = [x for x in sets if not is_random(x)]
     # Text table: the seed average of the headline metrics per fraction
-    print(f"\n{'metric':42s} {'reco':10s} " + " ".join(f"{p:>8d}%" for p in sorted({percent(s) for s in sets})))
-    for key, label, _, _ in METRICS:
-        for k in kinds:
-            cells = []
-            for p in sorted({percent(s) for s in sets}):
-                vals = [results[(s, k)][key][0] for s in sets if percent(s) == p and key in results[(s, k)]]
-                cells.append(f"{np.mean(vals):9.3f}" if vals else f"{'-':>9s}")
-            print(f"{label[:42]:42s} {k:10s} " + " ".join(cells))
+    pcts = sorted({percent(x) for x in rsets})
+    if pcts:
+        print(f"\n{'metric':42s} {'reco':10s} " + " ".join(f"{p:>8d}%" for p in pcts))
+        for key, label, _, _ in METRICS:
+            for k in kinds:
+                cells = []
+                for p in pcts:
+                    vals = [results[(x, k)][key][0] for x in rsets if percent(x) == p and key in results[(x, k)]]
+                    cells.append(f"{np.mean(vals):9.3f}" if vals else f"{'-':>9s}")
+                print(f"{label[:42]:42s} {k:10s} " + " ".join(cells))
+
+    cfg = {}
+    if lsets:
+        try:
+            cfg = json.load(open(args.configs))
+        except OSError:
+            print(f"no {args.configs}: planes and bars of the layouts are not known, depth sets use N from the name")
+        info = layout_info(lsets, cfg)
+        names = ["f00"] + lsets if "f00" in sets else lsets
+        print(f"\n{'layout':16s} {'planes':>6s} {'bars off':>9s}   " + "  ".join(f"{key:>10s}" for key in ("eff_muon", "eff_good", "compl_cont", "res_cont_rms", "track_hits")))
+        for x in names:
+            pl, off = info.get(x, (82, 0.0))
+            for k in kinds:
+                vals = "  ".join(f"{results[(x, k)][key][0]:10.2f}" if key in results[(x, k)] else f"{'-':>10s}"
+                                 for key in ("eff_muon", "eff_good", "compl_cont", "res_cont_rms", "track_hits"))
+                print(f"{x + ' ' + k[:3]:16s} {pl:6d} {off:8.1f}%   {vals}")
 
     try:
-        plot(results, sets, nspill, args.out_dir)
+        if len(rsets) > 1:
+            plot(results, rsets, nspill, args.out_dir)
+        if lsets:
+            plot_layouts(results, sets, rsets, lsets, info, args.out_dir)
     except ImportError as e:
         print(f"matplotlib not available, no figure: {e}")
+
+
+def layout_info(lsets, cfg):
+    """{set: (planes with bars, percent of bars off)} from configurations.json."""
+    out = {"f00": (82, 0.0)}
+    for x in lsets:
+        c = cfg.get(x)
+        if c:
+            out[x] = (c["n_planes"], 100.0 * c["n_channels_absent"] / c.get("n_channels_total", 15744))
+        elif x.startswith("depth"):
+            n = int(x[5:])
+            out[x] = (n, 100.0 * (82 - n) / 82)
+    return out
 
 
 def plot(results, sets, nspill, out_dir):
@@ -252,6 +311,73 @@ def plot(results, sets, nspill, out_dir):
     path = os.path.join(out_dir, "badchannel_scan.png")
     fig.savefig(path, dpi=130)
     print("wrote", path)
+
+
+def plot_layouts(results, sets, rsets, lsets, info, out_dir):
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    style = {"cluster3d": dict(color="#2a78d6", marker="o", ls="-", label="Cluster3D"),
+             "legacy": dict(color="#eb6834", marker="s", ls="--", label="Legacy")}
+    panels = [("eff_muon", "Muon efficiency (%)", 100), ("eff_good", "Good-reco muon efficiency (%)", 100),
+              ("compl_cont", "Momentum completeness, contained (%)", 100), ("res_cont_rms", "Momentum resolution, contained (rms, %)", 100),
+              ("res_exit_mean", "Momentum bias, exiting (mean, %)", 100), ("track_hits", "Hits per track", 1)]
+
+    def val(x, k, key):
+        r = results.get((x, k), {}).get(key)
+        return r[0] if r else None
+
+    # Figure 1: planes with bars. The depth curve (with the back-half layout and the full detector) is a line, the other
+    # layouts are labeled points.
+    curve = [x for x in sets if x == "f00" or x.startswith("depth") or x == "half"]
+    others = [x for x in ("xyxy", "front16_back32", "spread") if x in sets]
+    fig, axes = plt.subplots(2, 3, figsize=(15, 8), constrained_layout=True)
+    for ax, (key, title, scale) in zip(axes.flat, panels):
+        for k, st in style.items():
+            pts = sorted((info[x][0], val(x, k, key) * scale) for x in curve if x in info and val(x, k, key) is not None)
+            if pts:
+                ax.plot(*zip(*pts), color=st["color"], marker=st["marker"], ls=st["ls"], lw=2, ms=8, mec="#fcfcfb", mew=1.5, label=st["label"])
+            for x in others:
+                if x in info and val(x, k, key) is not None:
+                    ax.plot([info[x][0]], [val(x, k, key) * scale], marker=st["marker"], ms=9, mfc="none", mec=st["color"], mew=1.8, ls="none")
+                    if k == "cluster3d":
+                        ax.annotate(x, (info[x][0], val(x, k, key) * scale), textcoords="offset points", xytext=(6, 6), fontsize=8, color="#44525e")
+        ax.set_title(title, fontsize=10)
+        ax.set_xlabel("planes with bars", fontsize=9)
+        ax.grid(axis="y", color="#e4e8eb", lw=0.8)
+        for side in ("top", "right"):
+            ax.spines[side].set_visible(False)
+    axes.flat[0].legend(frameon=False, fontsize=9)
+    fig.suptitle("Depth curve (line: first N planes, N = 22 ... 82) and other layouts (hollow points)", fontsize=10, color="#44525e")
+    path = os.path.join(out_dir, "badchannel_layouts.png")
+    fig.savefig(path, dpi=130); print("wrote", path)
+
+    # Figure 2: edge strips against random dead bars, at the same share of bars off
+    edges = [x for x in sets if x.startswith("edge")]
+    if edges:
+        fig, axes = plt.subplots(2, 3, figsize=(15, 8), constrained_layout=True)
+        for ax, (key, title, scale) in zip(axes.flat, panels):
+            for k, st in style.items():
+                pts = sorted((info[x][1], val(x, k, key) * scale) for x in edges + (["f00"] if "f00" in sets else []) if x in info and val(x, k, key) is not None)
+                if pts:
+                    ax.plot(*zip(*pts), color=st["color"], marker=st["marker"], ls=st["ls"], lw=2, ms=8, mec="#fcfcfb", mew=1.5, label=st["label"] + ", edge strips")
+                by = {}
+                for x in rsets:
+                    if val(x, k, key) is not None:
+                        by.setdefault(percent(x), []).append(val(x, k, key) * scale)
+                if by:
+                    ps = sorted(by)
+                    ax.plot(ps, [np.mean(by[p]) for p in ps], color=st["color"], ls=":", lw=1.5, marker=st["marker"], ms=5, mfc="none", label=st["label"] + ", random bars")
+            ax.set_title(title, fontsize=10)
+            ax.set_xlabel("bars off (% of 15,744)", fontsize=9)
+            ax.grid(axis="y", color="#e4e8eb", lw=0.8)
+            for side in ("top", "right"):
+                ax.spines[side].set_visible(False)
+        axes.flat[0].legend(frameon=False, fontsize=8)
+        fig.suptitle("Edge strips (solid) against randomly dead bars (dotted) at the same share of bars off", fontsize=10, color="#44525e")
+        path = os.path.join(out_dir, "badchannel_edges.png")
+        fig.savefig(path, dpi=130); print("wrote", path)
 
 
 if __name__ == "__main__":
