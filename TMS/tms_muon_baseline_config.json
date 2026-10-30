@@ -1,0 +1,46 @@
+{
+  "workflow": {
+    "description": "TMS single-muon baseline: edep-sim (CLEAN_NEW_GEOMETRY, BField tags) then Cluster3D reco",
+    "monte_carlo": 4
+  },
+  "defaults": {
+    "repo": "SFBayLaser/dune-justin",
+    "ref": "main",
+    "lifetime_days": 4,
+    "max_distance": 60,
+    "limit_sites": false
+  },
+  "stages": [
+    {
+      "id": 1,
+      "jobscript": "TMS/muon_edepsim.jobscript",
+      "wall_seconds": 3600,
+      "rss_mib": 2000,
+      "env": {
+        "NEVENTS": "2000",
+        "SEED_BASE": "100000",
+        "CHARGE": "alternate",
+        "GEOM_TAG": "cleannew",
+        "FIELD_TAG": "bfieldtags",
+        "GDML_URL": "https://raw.githubusercontent.com/DUNE/dune-tms/0a059d4eb484c146d41857377e5d940bc970f976/mapper_integration/nd_hall_with_lar_tms_nosand_CLEAN_NEW_GEOMETRY.gdml",
+        "GDML_SHA256": "96825bba242f3bf372faa69da7dc4547c95a6d39e669d0ea2abc8f2626069e24"
+      },
+      "output_pattern_next_stage": "*.edep.root"
+    },
+    {
+      "id": 2,
+      "jobscript": "TMS/tms.jobscript",
+      "wall_seconds": 7200,
+      "rss_mib": 4000,
+      "tarfile_dir": "/cvmfs/fifeuser4.opensciencegrid.org/sw/dune/34be580199e254dfb5e01e23ead1762ab8d3b9c4",
+      "env": {
+        "TMS_PRODUCTION_TAG": "TMSReco_Cluster3D_v03"
+      },
+      "output_patterns": [
+        "*_RecoCandidates.root",
+        "*_Readout.root",
+        "*_convert.log"
+      ]
+    }
+  ]
+}

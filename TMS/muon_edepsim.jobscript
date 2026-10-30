@@ -1,0 +1,187 @@
+#!/bin/bash
+# justIN jobscript: single-muon generation + edep-sim (stage 1 of the TMS field-baseline workflow).
+#
+# Fires NEVENTS single muons at the TMS with a Geant4 GPS gun and runs edep-sim on the GDML given by GDML_URL.
+# The magnetic field is whatever that GDML defines (BField tags, or an ArbBField map named in an auxiliary tag).
+# Stage 2 (TMS/tms.jobscript) reconstructs the output.
+#
+# Environment (set per stage in the workflow config):
+#   NEVENTS        muons per job
+#   GDML_URL       geometry file, fetched with curl (pin it to a commit, not a branch)
+#   GEOM_TAG       short geometry label used in the output name
+#   FIELD_TAG      short field label used in the output name (e.g. bfieldtags, mapper)
+#   SEED_BASE      the job's random seed is SEED_BASE + the job number
+# Optional:
+#   CHARGE         mu-, mu+, or alternate (default: even job numbers mu-, odd mu+)
+#   KE_MIN_MEV / KE_MAX_MEV      kinetic energy, flat between (default 500 / 5000)
+#   START_X_MM / START_Y_MM / START_Z_MM   centre of the start rectangle (default 0 / -2202 / 11000)
+#   HALF_X_MM / HALF_Y_MM        half-size of the rectangle (default 3000 / 1000)
+#   CONE_DEG       half-angle of the direction cone about +z (default 10)
+#   GDML_SHA256    expected checksum of the GDML
+#   MAP_URL        field-map file fetched into the working directory under its own name: edep-sim opens
+#                  an ArbBField map by the name written in the GDML, relative to where it runs
+#   EDEPSIM_VERSION  (default v3_2_0e)
+#
+# Output (picked up by the stage's output pattern):  muon_<mum|mup>_<GEOM_TAG>_<FIELD_TAG>_<jobnum>.edep.root
+
+echo "=== muon edep-sim job starting ==="
+echo "Host: $(hostname)"
+echo "PWD:  $(pwd -P)"
+echo "JUSTIN_PATH=${JUSTIN_PATH:-unset}"
+
+workdir="$(pwd -P)"
+
+if [[ -z "${JUSTIN_PATH:-}" ]]; then
+  echo "ERROR: JUSTIN_PATH is not set (not running under justIN wrapper?)" >&2
+  exit 2
+fi
+
+for v in NEVENTS GDML_URL GEOM_TAG FIELD_TAG SEED_BASE; do
+  if [[ -z "${!v:-}" ]]; then
+    echo "ERROR: $v is not set" >&2
+    exit 3
+  fi
+done
+
+# ----------------------------------------------------------------------
+# The Monte Carlo "counter file": its DID ends in the job number
+# ----------------------------------------------------------------------
+alloc="$("$JUSTIN_PATH/justin-get-file")"
+if [[ -z "$alloc" ]]; then
+  echo "No more inputs allocated (workflow complete). Exiting cleanly."
+  exit 0
+fi
+
+did="$(echo "$alloc" | awk '{print $1}' | tr -d '\r' | xargs)"
+echo "Allocated: $alloc"
+jobnum_str="${did##*-}"
+jobnum=$((10#$jobnum_str))
+seed=$((SEED_BASE + jobnum))
+
+charge="${CHARGE:-alternate}"
+if [[ "$charge" == "alternate" ]]; then
+  if (( jobnum % 2 == 0 )); then charge="mu-"; else charge="mu+"; fi
+fi
+case "$charge" in
+  mu-) ctag=mum ;;
+  mu+) ctag=mup ;;
+  *) echo "ERROR: CHARGE must be mu-, mu+ or alternate (got '$charge')" >&2; exit 3 ;;
+esac
+
+ke_min="${KE_MIN_MEV:-500}"
+ke_max="${KE_MAX_MEV:-5000}"
+sx="${START_X_MM:-0}"
+sy="${START_Y_MM:--2202}"
+sz="${START_Z_MM:-11000}"
+hx="${HALF_X_MM:-3000}"
+hy="${HALF_Y_MM:-1000}"
+cone="${CONE_DEG:-10}"
+edepsim_version="${EDEPSIM_VERSION:-v3_2_0e}"
+
+echo "job $jobnum  seed $seed  $charge  KE ${ke_min}-${ke_max} MeV  events $NEVENTS"
+
+# ----------------------------------------------------------------------
+# Geometry (and, if given, the field map)
+# ----------------------------------------------------------------------
+gdml="${workdir}/$(basename "$GDML_URL")"
+curl -fsSL -o "$gdml" "$GDML_URL" || { echo "ERROR: could not fetch $GDML_URL" >&2; exit 4; }
+if [[ -n "${GDML_SHA256:-}" ]]; then
+  got="$(sha256sum "$gdml" | awk '{print $1}')"
+  if [[ "$got" != "$GDML_SHA256" ]]; then
+    echo "ERROR: GDML checksum $got does not match GDML_SHA256 $GDML_SHA256" >&2
+    exit 4
+  fi
+fi
+ls -l "$gdml"
+
+if [[ -n "${MAP_URL:-}" ]]; then
+  mapfile="${workdir}/$(basename "$MAP_URL")"
+  curl -fsSL -o "$mapfile" "$MAP_URL" || { echo "ERROR: could not fetch $MAP_URL" >&2; exit 4; }
+  ls -l "$mapfile"
+fi
+
+# ----------------------------------------------------------------------
+# edep-sim environment
+# ----------------------------------------------------------------------
+source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh > /dev/null 2>&1
+setup edepsim "$edepsim_version" -q e26:prof
+if ! command -v edep-sim > /dev/null; then
+  echo "ERROR: edep-sim $edepsim_version is not available" >&2
+  exit 5
+fi
+echo "edep-sim: $(command -v edep-sim)"
+
+# ----------------------------------------------------------------------
+# Macro: the ND_Production physics settings plus a GPS muon gun.
+# /gps/ang/type iso emits along -(sin t cos f, sin t sin f, cos t), so +z needs t in [180-cone, 180].
+# ----------------------------------------------------------------------
+macro="${workdir}/muon_gun.mac"
+cat > "$macro" <<EOF
+/control/macroPath /cvmfs/dune.opensciencegrid.org/products/dune/edepsim/${edepsim_version}/Linux64bit+3.10-2.17-e26-prof/lib/EDepSim
+/control/execute edepsim-defaults-1.0.mac
+/edep/phys/ionizationModel 0
+/edep/db/set/neutronThreshold 0 MeV
+/edep/db/set/lengthThreshold 0 mm
+/edep/db/set/gammaThreshold 0 MeV
+/edep/db/set/saveAllPrimTraj true
+/edep/random/randomSeed ${seed}
+/edep/update
+/generator/kinematics/set gps
+/generator/position/set free
+/generator/time/set free
+/generator/count/fixed/number 1
+/generator/count/set fixed
+/generator/add
+/gps/particle ${charge}
+/gps/ene/type Lin
+/gps/ene/min ${ke_min} MeV
+/gps/ene/max ${ke_max} MeV
+/gps/ene/gradient 0
+/gps/ene/intercept 1
+/gps/pos/type Plane
+/gps/pos/shape Rectangle
+/gps/pos/centre ${sx} ${sy} ${sz} mm
+/gps/pos/halfx ${hx} mm
+/gps/pos/halfy ${hy} mm
+/gps/ang/type iso
+/gps/ang/mintheta $(awk -v c="$cone" 'BEGIN{print 180-c}') deg
+/gps/ang/maxtheta 180 deg
+EOF
+
+# ----------------------------------------------------------------------
+# Run edep-sim in the working directory (so a field-map name in the GDML resolves)
+# ----------------------------------------------------------------------
+outname="muon_${ctag}_${GEOM_TAG}_${FIELD_TAG}_$(printf '%06d' "$jobnum")"
+outfile="${workdir}/${outname}.edep.root"
+log="${workdir}/${outname}.edep.log"
+
+start=$(date +%s)
+edep-sim -C -g "$gdml" -o "$outfile" -e "$NEVENTS" "$macro" > "$log" 2>&1
+rc=$?
+echo "edep-sim exit $rc after $(( $(date +%s) - start )) s"
+tail -5 "$log"
+
+# A field map that cannot be opened is logged by edep-sim ("Can't read <file>"); with this version it then crashes
+# on the first event, but report the cause first either way.
+if grep -q "Can't read" "$log"; then
+  echo "ERROR: edep-sim could not read a field map:" >&2
+  grep "Can't read" "$log" >&2
+  exit 6
+fi
+
+if [[ $rc -ne 0 ]]; then
+  echo "ERROR: edep-sim failed with status $rc" >&2
+  exit $rc
+fi
+
+if [[ ! -s "$outfile" ]]; then
+  echo "ERROR: edep-sim output was not produced or is empty" >&2
+  exit 7
+fi
+ls -lh "$outfile" "$log"
+
+# Tell justIN that the allocated counter file was successfully processed.
+echo "$did" >> "$workdir/justin-processed-dids.txt"
+echo "Wrote processed DID: $did"
+echo "=== muon edep-sim job completed successfully ==="
+exit 0
