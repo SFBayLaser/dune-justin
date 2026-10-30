@@ -1,12 +1,12 @@
 {
   "workflow": {
     "description": "TMS single-muon baseline: edep-sim (CLEAN_NEW_GEOMETRY, BField tags), then Cluster3D reco and flat tuple",
-    "monte_carlo": 4
+    "monte_carlo": 100
   },
   "defaults": {
     "repo": "SFBayLaser/dune-justin",
     "ref": "main",
-    "lifetime_days": 4,
+    "lifetime_days": 28,
     "max_distance": 60,
     "limit_sites": false
   },
@@ -18,7 +18,7 @@
       "rss_mib": 2000,
       "env": {
         "NEVENTS": "2000",
-        "SEED_BASE": "100000",
+        "SEED_BASE": "200000",
         "CHARGE": "alternate",
         "GEOM_TAG": "cleannew",
         "FIELD_TAG": "bfieldtags",
