@@ -10,7 +10,8 @@
 #   GDML_URL       geometry file, fetched with curl (pin it to a commit, not a branch)
 #   GEOM_TAG       short geometry label used in the output name
 #   FIELD_TAG      short field label used in the output name (e.g. bfieldtags, mapper)
-#   SEED_BASE      the job's random seed is SEED_BASE + the job number
+#   SEED_BASE      added to the job's random seed, which is SEED_BASE + 10000 * workflow id + job number, so
+#                  two workflows never share seeds (and two jobs of one workflow never do)
 # Optional:
 #   CHARGE         mu-, mu+, or alternate (default: even job numbers mu-, odd mu+)
 #   KE_MIN_MEV / KE_MAX_MEV      kinetic energy, flat between (default 500 / 5000)
@@ -22,7 +23,10 @@
 #                  an ArbBField map by the name written in the GDML, relative to where it runs
 #   EDEPSIM_VERSION  (default v3_2_0e)
 #
-# Output (picked up by the stage's output pattern):  muon_<mum|mup>_<GEOM_TAG>_<FIELD_TAG>_<jobnum>.edep.root
+# Output (picked up by the stage's output pattern):
+#   muon_<mum|mup>_<GEOM_TAG>_<FIELD_TAG>_w<workflow id>_<jobnum>.edep.root
+# The workflow id is part of the name because the job number restarts at 1 in every workflow and Rucio file names
+# must be unique.
 
 echo "=== muon edep-sim job starting ==="
 echo "Host: $(hostname)"
@@ -54,9 +58,15 @@ fi
 
 did="$(echo "$alloc" | awk '{print $1}' | tr -d '\r' | xargs)"
 echo "Allocated: $alloc"
-jobnum_str="${did##*-}"
-jobnum=$((10#$jobnum_str))
-seed=$((SEED_BASE + jobnum))
+# The counter DID looks like monte-carlo-<workflow id>-<job number>, e.g. monte-carlo-022454-000004
+if [[ ! "$did" =~ -([0-9]+)-([0-9]+)$ ]]; then
+  echo "ERROR: cannot read the workflow id and job number from the counter DID '$did'" >&2
+  exit 3
+fi
+wfid_str="${BASH_REMATCH[1]}"
+jobnum=$((10#${BASH_REMATCH[2]}))
+wfid=$((10#$wfid_str))
+seed=$(( (SEED_BASE + 10000 * wfid + jobnum) % 2147483647 ))   # edep-sim takes an int
 
 charge="${CHARGE:-alternate}"
 if [[ "$charge" == "alternate" ]]; then
@@ -78,7 +88,7 @@ hy="${HALF_Y_MM:-1000}"
 cone="${CONE_DEG:-10}"
 edepsim_version="${EDEPSIM_VERSION:-v3_2_0e}"
 
-echo "job $jobnum  seed $seed  $charge  KE ${ke_min}-${ke_max} MeV  events $NEVENTS"
+echo "workflow $wfid_str  job $jobnum  seed $seed  $charge  KE ${ke_min}-${ke_max} MeV  events $NEVENTS"
 
 # ----------------------------------------------------------------------
 # Geometry (and, if given, the field map)
@@ -151,7 +161,7 @@ EOF
 # ----------------------------------------------------------------------
 # Run edep-sim in the working directory (so a field-map name in the GDML resolves)
 # ----------------------------------------------------------------------
-outname="muon_${ctag}_${GEOM_TAG}_${FIELD_TAG}_$(printf '%06d' "$jobnum")"
+outname="muon_${ctag}_${GEOM_TAG}_${FIELD_TAG}_w${wfid_str}_$(printf '%06d' "$jobnum")"
 outfile="${workdir}/${outname}.edep.root"
 log="${workdir}/${outname}.edep.log"
 
