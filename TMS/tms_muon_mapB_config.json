@@ -1,0 +1,32 @@
+{
+  "workflow": {
+    "description": "TMS single-muon step B: reco of step A edep files with the map-based field model",
+    "mql": "files from usertests:REPLACE_WITH_STEP_A_STAGE1_DATASET"
+  },
+  "defaults": {
+    "repo": "SFBayLaser/dune-justin",
+    "ref": "main",
+    "lifetime_days": 30,
+    "max_distance": 60,
+    "limit_sites": false,
+    "tarfile_dir": "/cvmfs/fifeuser3.opensciencegrid.org/sw/dune/e77a4b378328cb20a3a3a49b2c2f472994f3f36d"
+  },
+  "stages": [
+    {
+      "id": 1,
+      "jobscript": "TMS/tms_muon_reco_tuple.jobscript",
+      "wall_seconds": 7200,
+      "rss_mib": 4000,
+      "env": {
+        "TMS_PRODUCTION_TAG": "TMSReco_muonmapB_v01",
+        "TUPLE_SCRIPT_URL": "https://raw.githubusercontent.com/SFBayLaser/dune-justin/main/TMS/muon_tuple.py",
+        "FIELD_MAP_SOURCE": "/cvmfs/fifeuser4.opensciencegrid.org/sw/dune/7caef28d530578ceb3792436ad3f94c7f5f93ebb/fieldmap/Mapper_global_DIAGNOSTIC.txt",
+        "FIELD_MAP_SHA256": "83e21aec465cd5b0e5a8e513284956e802236edcb4808cd3d079db6f62ea54e5"
+      },
+      "output_patterns": [
+        "*_tuple.root",
+        "*_convert.log"
+      ]
+    }
+  ]
+}

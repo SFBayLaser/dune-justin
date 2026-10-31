@@ -1,0 +1,48 @@
+{
+  "workflow": {
+    "description": "TMS single-muon step A: mapped field simulation (ArbBField), built-in reco field",
+    "monte_carlo": 50
+  },
+  "defaults": {
+    "repo": "SFBayLaser/dune-justin",
+    "ref": "main",
+    "lifetime_days": 30,
+    "max_distance": 60,
+    "limit_sites": false
+  },
+  "stages": [
+    {
+      "id": 1,
+      "jobscript": "TMS/muon_edepsim.jobscript",
+      "wall_seconds": 3600,
+      "rss_mib": 2000,
+      "env": {
+        "NEVENTS": "2000",
+        "SEED_BASE": "200000",
+        "CHARGE": "alternate",
+        "GEOM_TAG": "cleannew",
+        "FIELD_TAG": "fieldmap",
+        "GDML_URL": "file:///cvmfs/fifeuser4.opensciencegrid.org/sw/dune/7caef28d530578ceb3792436ad3f94c7f5f93ebb/fieldmap/nd_hall_80layers_MAPPED.gdml",
+        "GDML_SHA256": "7ea174caacca77d5c1c0f20fd05d33d085491fad3429ee07f1c0199d15114bd3",
+        "MAP_SOURCE": "/cvmfs/fifeuser4.opensciencegrid.org/sw/dune/7caef28d530578ceb3792436ad3f94c7f5f93ebb/fieldmap/Mapper_global_DIAGNOSTIC.txt",
+        "MAP_SHA256": "83e21aec465cd5b0e5a8e513284956e802236edcb4808cd3d079db6f62ea54e5"
+      },
+      "output_pattern_next_stage": "*.edep.root"
+    },
+    {
+      "id": 2,
+      "jobscript": "TMS/tms_muon_reco_tuple.jobscript",
+      "wall_seconds": 7200,
+      "rss_mib": 4000,
+      "tarfile_dir": "/cvmfs/fifeuser3.opensciencegrid.org/sw/dune/e77a4b378328cb20a3a3a49b2c2f472994f3f36d",
+      "env": {
+        "TMS_PRODUCTION_TAG": "TMSReco_muonmapA_v01",
+        "TUPLE_SCRIPT_URL": "https://raw.githubusercontent.com/SFBayLaser/dune-justin/main/TMS/muon_tuple.py"
+      },
+      "output_patterns": [
+        "*_tuple.root",
+        "*_convert.log"
+      ]
+    }
+  ]
+}
