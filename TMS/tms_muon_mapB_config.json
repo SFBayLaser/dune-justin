@@ -1,7 +1,7 @@
 {
   "workflow": {
     "description": "TMS single-muon step B: reco of step A edep files with the map-based field model",
-    "mql": "files from usertests:REPLACE_WITH_STEP_A_STAGE1_DATASET"
+    "mql": "files from usertests:fnal-w22462s1p1"
   },
   "defaults": {
     "repo": "SFBayLaser/dune-justin",
