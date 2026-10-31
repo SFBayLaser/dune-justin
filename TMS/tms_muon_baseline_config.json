@@ -1,7 +1,7 @@
 {
   "workflow": {
     "description": "TMS single-muon baseline (100k muons): CLEAN_NEW_GEOMETRY with BField tags, built-in reco field",
-    "monte_carlo": 50
+    "monte_carlo": 100
   },
   "defaults": {
     "repo": "SFBayLaser/dune-justin",
