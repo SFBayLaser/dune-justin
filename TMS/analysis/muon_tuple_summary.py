@@ -37,6 +37,42 @@ def read_events(path):
         return {n: np.asarray(v) for n, v in cols.items()}
 
 
+def read_meta(path):
+    """The meta_* entries written by muon_tuple.py (how the tuple was made), as a dict."""
+    meta = {}
+    try:
+        import uproot
+        with uproot.open(path) as f:
+            for key in f.keys(cycle=False):
+                if key.startswith("meta_"):
+                    meta[key[5:]] = str(f[key].member("fTitle"))
+    except ImportError:
+        import ROOT
+        f = ROOT.TFile.Open(path)
+        for k in f.GetListOfKeys():
+            if k.GetName().startswith("meta_"):
+                meta[k.GetName()[5:]] = f.Get(k.GetName()).GetTitle()
+    return meta
+
+
+def report_provenance(paths):
+    """Print how the tuples were made and warn if they were made differently."""
+    metas = [read_meta(p) for p in paths]
+    keys = sorted({k for m in metas for k in m})
+    if not keys:
+        print("provenance: none stored in these tuples (made before metadata was added)")
+        return
+    print("provenance:")
+    for k in keys:
+        values = sorted({m.get(k, "<missing>") for m in metas})
+        if k == "edep_file":
+            continue
+        if len(values) == 1:
+            print("  %-24s %s" % (k, values[0]))
+        else:
+            print("  %-24s WARNING: files differ: %s" % (k, "; ".join(values)))
+
+
 def load(paths):
     parts = [read_events(p) for p in paths]
     return {k: np.concatenate([p[k] for p in parts]) for k in parts[0]}
@@ -140,6 +176,7 @@ def main():
     d = load(paths)
     p_bins = [float(x) for x in a.p_bins.split(",")]
     print("%s%d files, %d muons" % (a.label + ": " if a.label else "", len(paths), len(d["event"])))
+    report_provenance(paths)
     for name, sel in (("mu-", d["true_q"] == -1), ("mu+", d["true_q"] == 1), ("all muons", np.ones(len(d["event"]), bool))):
         summarize({k: v[sel] for k, v in d.items()}, name, p_bins, a.region_x)
 

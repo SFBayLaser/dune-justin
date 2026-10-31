@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 """Flat tuples for the single-muon TMS field studies.
 
-usage: muon_tuple.py <edep.root> <RecoCandidates.root> <out_tuple.root>
+usage: muon_tuple.py <edep.root> <RecoCandidates.root> <out_tuple.root> [--meta KEY=VALUE ...]
+
+Each --meta is stored in the output as a TNamed called meta_<KEY> (title = VALUE): which field the reco used, the map
+checksum, the dune-tms build and so on, so a tuple says how it was made.
 
 Writes two trees:
   events  one row per muon thrown (every edep-sim event, reconstructed or not): the truth from edep-sim plus the
@@ -159,7 +162,7 @@ def read_reco(reco_path):
     return by_event
 
 
-def main(edep_path, reco_path, out_path):
+def main(edep_path, reco_path, out_path, meta=()):
     truth = read_truth(edep_path)
     reco = read_reco(reco_path)
 
@@ -200,6 +203,8 @@ def main(edep_path, reco_path, out_path):
             tracks.fill()
 
     out.cd()
+    for key, value in meta:
+        ROOT.TNamed("meta_" + key, value).Write()
     events.tree.Write()
     tracks.tree.Write()
     out.Close()
@@ -208,6 +213,14 @@ def main(edep_path, reco_path, out_path):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 4:
+    args = sys.argv[1:]
+    meta = []
+    while "--meta" in args:
+        i = args.index("--meta")
+        if i + 1 >= len(args) or "=" not in args[i + 1]:
+            sys.exit(__doc__)
+        meta.append(tuple(args[i + 1].split("=", 1)))
+        del args[i:i + 2]
+    if len(args) != 3:
         sys.exit(__doc__)
-    main(*sys.argv[1:])
+    main(*args, meta=meta)

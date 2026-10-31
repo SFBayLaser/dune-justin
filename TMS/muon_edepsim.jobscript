@@ -19,8 +19,14 @@
 #   HALF_X_MM / HALF_Y_MM        half-size of the rectangle (default 3000 / 1000)
 #   CONE_DEG       half-angle of the direction cone about +z (default 10)
 #   GDML_SHA256    expected checksum of the GDML
-#   MAP_URL        field-map file fetched into the working directory under its own name: edep-sim opens
-#                  an ArbBField map by the name written in the GDML, relative to where it runs
+#   MAP_SOURCE    field-map file already on the worker (e.g. under the cvmfs directory shipped with
+#                  justin-cvmfs-upload); linked into the working directory. Use this for a large map.
+#   MAP_URL        alternatively, a field-map file fetched with curl (only for a small file)
+#   MAP_SHA256     expected checksum of the map
+#                  edep-sim opens an ArbBField map by the name written in the GDML's auxiliary tag, relative to
+#                  where it runs. The job reads that name from the GDML and places the map under it, so the file
+#                  you supply may have any name. A GDML that names a map needs MAP_SOURCE or MAP_URL, and a GDML
+#                  without one must not be given a map: either mismatch stops the job before edep-sim runs.
 #   EDEPSIM_VERSION  (default v3_2_0e)
 #
 # Output (picked up by the stage's output pattern):
@@ -104,10 +110,39 @@ if [[ -n "${GDML_SHA256:-}" ]]; then
 fi
 ls -l "$gdml"
 
-if [[ -n "${MAP_URL:-}" ]]; then
-  mapfile="${workdir}/$(basename "$MAP_URL")"
-  curl -fsSL -o "$mapfile" "$MAP_URL" || { echo "ERROR: could not fetch $MAP_URL" >&2; exit 4; }
-  ls -l "$mapfile"
+# The map the GDML asks for, if any: <auxiliary auxtype="ArbBField" auxvalue="NAME"/>
+required_maps="$(grep -oE 'auxtype="ArbBField"[[:space:]]+auxvalue="[^"]+"' "$gdml" | sed -E 's/.*auxvalue="([^"]+)".*/\1/' | sort -u)"
+n_required=$(printf '%s' "$required_maps" | grep -c .)
+if (( n_required > 1 )); then
+  echo "ERROR: the GDML names more than one field map: $(echo $required_maps)" >&2
+  exit 6
+fi
+if [[ -n "${MAP_SOURCE:-}${MAP_URL:-}" ]]; then
+  if (( n_required == 0 )); then
+    echo "ERROR: a field map was supplied but the GDML has no ArbBField tag, so edep-sim would ignore it" >&2
+    exit 6
+  fi
+  map_target="${workdir}/${required_maps}"
+  if [[ -n "${MAP_SOURCE:-}" ]]; then
+    [[ -r "$MAP_SOURCE" ]] || { echo "ERROR: cannot read MAP_SOURCE $MAP_SOURCE" >&2; exit 4; }
+    map_file="$MAP_SOURCE"
+    ln -sf "$MAP_SOURCE" "$map_target" || cp "$MAP_SOURCE" "$map_target" || exit 4
+  else
+    map_file="$map_target"
+    curl -fsSL -o "$map_target" "$MAP_URL" || { echo "ERROR: could not fetch $MAP_URL" >&2; exit 4; }
+  fi
+  if [[ -n "${MAP_SHA256:-}" ]]; then
+    got="$(sha256sum "$map_file" | awk '{print $1}')"
+    if [[ "$got" != "$MAP_SHA256" ]]; then
+      echo "ERROR: field map checksum $got does not match MAP_SHA256 $MAP_SHA256" >&2
+      exit 4
+    fi
+  fi
+  echo "Field map: $map_file as $(basename "$map_target")"
+  ls -lL "$map_target"
+elif (( n_required == 1 )); then
+  echo "ERROR: the GDML names the field map '$required_maps' but MAP_SOURCE and MAP_URL are not set" >&2
+  exit 6
 fi
 
 # ----------------------------------------------------------------------

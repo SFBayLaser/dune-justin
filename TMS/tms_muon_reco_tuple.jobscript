@@ -16,6 +16,13 @@
 #   TUPLE_SCRIPT_URL     where to fetch muon_tuple.py (e.g. the raw GitHub URL of dune-justin/TMS/muon_tuple.py)
 # Optional:
 #   TMS_TOML_SOURCE      reco config to start from (default $TMS_DIR/config/justin/TMS_Config_Cluster3D.toml)
+#   FIELD_MAP_SOURCE     field map for the reco's field model, a file already on the worker (e.g. under the cvmfs
+#                        directory shipped with justin-cvmfs-upload); linked into the working directory
+#   FIELD_MAP_URL        alternatively, fetched with curl (only for a small file)
+#   FIELD_MAP_SHA256     expected checksum of the map. Use the same map as the simulation, in the same workflow.
+#                        Needs a dune-tms build with MapFieldModel (branch feature/cluster3d-map-field-model);
+#                        a build without it would ignore the setting, so the job stops if the log does not show
+#                        the map being used. Without a map the reco uses its built-in +-1 T field model.
 #
 # Outputs:  <base>_<tag>_tuple.root   <base>_<tag>_convert.log
 
@@ -104,6 +111,41 @@ fi
 echo "TMS_TOML=$TMS_TOML (from $toml_source)"
 
 # ----------------------------------------------------------------------
+# Field map for the reco (optional): written into the config as [Recon.Cluster3D] FieldMapFile
+# ----------------------------------------------------------------------
+map_requested=0
+map_name=""
+if [[ -n "${FIELD_MAP_SOURCE:-}${FIELD_MAP_URL:-}" ]]; then
+  map_requested=1
+  map_name="$(basename "${FIELD_MAP_SOURCE:-$FIELD_MAP_URL}")"
+  map_local="${workdir}/${map_name}"
+  if [[ -n "${FIELD_MAP_SOURCE:-}" ]]; then
+    [[ -r "$FIELD_MAP_SOURCE" ]] || { echo "ERROR: cannot read FIELD_MAP_SOURCE $FIELD_MAP_SOURCE" >&2; exit 6; }
+    ln -sf "$FIELD_MAP_SOURCE" "$map_local" || cp "$FIELD_MAP_SOURCE" "$map_local" || exit 6
+  else
+    curl -fsSL -o "$map_local" "$FIELD_MAP_URL" || { echo "ERROR: could not fetch $FIELD_MAP_URL" >&2; exit 6; }
+  fi
+  if [[ -n "${FIELD_MAP_SHA256:-}" ]]; then
+    got="$(sha256sum "$map_local" | awk '{print $1}')"
+    if [[ "$got" != "$FIELD_MAP_SHA256" ]]; then
+      echo "ERROR: field map checksum $got does not match FIELD_MAP_SHA256 $FIELD_MAP_SHA256" >&2
+      exit 6
+    fi
+  fi
+  # replace any FieldMapFile line, then add ours under [Recon.Cluster3D]
+  grep -v '^[[:space:]]*FieldMapFile[[:space:]]*=' "$TMS_TOML" > "${TMS_TOML}.tmp"
+  awk -v f="$map_local" '{print} /^[[:space:]]*\[Recon\.Cluster3D\][[:space:]]*$/ {print "    FieldMapFile = \"" f "\""}' \
+      "${TMS_TOML}.tmp" > "$TMS_TOML"
+  rm -f "${TMS_TOML}.tmp"
+  if ! grep -q "^[[:space:]]*FieldMapFile = \"$map_local\"" "$TMS_TOML"; then
+    echo "ERROR: could not set FieldMapFile in $TMS_TOML (no [Recon.Cluster3D] section?)" >&2
+    exit 6
+  fi
+  echo "Field map for the reco: $map_local"
+  ls -lL "$map_local"
+fi
+
+# ----------------------------------------------------------------------
 # Reco
 # ----------------------------------------------------------------------
 base=$(basename "${did#*:}" .root)
@@ -126,13 +168,31 @@ if [[ ! -s "$ND_PRODUCTION_TMSRECO_OUTFILE" ]]; then
   exit 7
 fi
 
+# Which field model the reco really used (builds with MapFieldModel print this line; older ones print nothing)
+field_model_line="$(grep -a -m1 'Cluster3D field model' "$convert_log")"
+echo "Reco field model: ${field_model_line:-no model line in the log (build without MapFieldModel)}"
+# the same, without the per-job path, for the tuple metadata
+field_model_meta="$(echo "$field_model_line" | sed -E 's|map [^ ]*/([^/ ]+) |map \1 |')"
+if [[ $map_requested -eq 1 ]] && ! echo "$field_model_line" | grep -q "field model: map"; then
+  echo "ERROR: a field map was requested but the reco log does not show it being used; the dune-tms build in" >&2
+  echo "       INPUT_TAR_DIR_LOCAL probably lacks MapFieldModel and ran with the built-in field" >&2
+  exit 10
+fi
+
 # ----------------------------------------------------------------------
 # Tuple: edep-sim truth for every muon thrown, joined to the reco tracks
 # ----------------------------------------------------------------------
 tuple_script="${workdir}/muon_tuple.py"
 curl -fsSL -o "$tuple_script" "$TUPLE_SCRIPT_URL" || { echo "ERROR: could not fetch $TUPLE_SCRIPT_URL" >&2; exit 8; }
 tuple_out="${workdir}/${outbase}_tuple.root"
-python3 "$tuple_script" "$local_input" "$ND_PRODUCTION_TMSRECO_OUTFILE" "$tuple_out"
+python3 "$tuple_script" "$local_input" "$ND_PRODUCTION_TMSRECO_OUTFILE" "$tuple_out" \
+    --meta "edep_file=$input_name" \
+    --meta "reco_field_model=${field_model_meta:-built-in (no model line)}" \
+    --meta "reco_field_map=${map_name:-none}" \
+    --meta "reco_field_map_sha256=${FIELD_MAP_SHA256:-unknown}" \
+    --meta "momentum_from_range=false" \
+    --meta "tms_build=${INPUT_TAR_DIR_LOCAL}" \
+    --meta "tms_production_tag=${TMS_PRODUCTION_TAG}"
 rc=$?
 if [[ $rc -ne 0 || ! -s "$tuple_out" ]]; then
   echo "ERROR: tuple step failed (exit $rc)" >&2

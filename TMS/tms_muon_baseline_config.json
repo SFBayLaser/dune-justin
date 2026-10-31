@@ -1,12 +1,12 @@
 {
   "workflow": {
-    "description": "TMS single-muon baseline: edep-sim (CLEAN_NEW_GEOMETRY, BField tags), then Cluster3D reco and flat tuple",
-    "monte_carlo": 100
+    "description": "TMS single-muon baseline (100k muons): CLEAN_NEW_GEOMETRY with BField tags, built-in reco field",
+    "monte_carlo": 50
   },
   "defaults": {
     "repo": "SFBayLaser/dune-justin",
     "ref": "main",
-    "lifetime_days": 28,
+    "lifetime_days": 30,
     "max_distance": 60,
     "limit_sites": false
   },
@@ -32,9 +32,9 @@
       "jobscript": "TMS/tms_muon_reco_tuple.jobscript",
       "wall_seconds": 7200,
       "rss_mib": 4000,
-      "tarfile_dir": "/cvmfs/fifeuser4.opensciencegrid.org/sw/dune/34be580199e254dfb5e01e23ead1762ab8d3b9c4",
+      "tarfile_dir": "/cvmfs/fifeuser3.opensciencegrid.org/sw/dune/e77a4b378328cb20a3a3a49b2c2f472994f3f36d",
       "env": {
-        "TMS_PRODUCTION_TAG": "TMSReco_muonbase_v01",
+        "TMS_PRODUCTION_TAG": "TMSReco_muonbase_v02",
         "TUPLE_SCRIPT_URL": "https://raw.githubusercontent.com/SFBayLaser/dune-justin/main/TMS/muon_tuple.py"
       },
       "output_patterns": [
