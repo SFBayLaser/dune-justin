@@ -1,7 +1,7 @@
 {
   "workflow": {
     "description": "TMS single-muon step B (evenx map): reco of step A edep files with the map-based field model",
-    "mql": "files from @@AX_DATASET@@"
+    "mql": "files from usertests:fnal-w22469s1p1"
   },
   "defaults": {
     "repo": "SFBayLaser/dune-justin",
