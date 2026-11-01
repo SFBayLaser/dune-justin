@@ -8,8 +8,8 @@ separately and for all muons together: tracking efficiency, charge-sign correctn
 Kalman curvature fit and of the range estimate for muons that stop and muons that exit, and how well the reco
 containment flag tags exiting muons.
 
-Definitions (see muon_tuple.py): "reconstructible" = more than 1 m of true TMS path; "exits" = the true muon goes on
-more than 300 mm past its last TMS hit; resolutions are (reco - truth) / truth with the true momentum entering the TMS.
+Definitions (see muon_tuple.py): "reconstructible" = more than 1 m of true TMS path; "exits" = the true muon's end
+point is outside the TMS bar region (not "300 mm past the last hit", which also counts muons that stop in the steel); resolutions are (reco - truth) / truth with the true momentum entering the TMS.
 The reco momentum is the curvature fit only if the reco ran with MomentumFromRange = false (tms_muon_reco_tuple.jobscript
 does that).
 """
@@ -96,6 +96,21 @@ def frac_line(k, n):
     return "%d/%d = %.1f%% +- %.1f" % (k, n, pct(k / n) if n else float("nan"), pct(binom_err(k, n)))
 
 
+BAR_LO = (-3501.0, -3102.23, 11104.5)   # bar region of CLEAN_NEW_GEOMETRY, as in muon_tuple.py
+BAR_HI = (3501.0, 397.77, 18510.5)
+
+
+def leaves_bar(d):
+    """True if the muon's end point is outside the bar region (it left the TMS rather than stopping in it).
+    Uses true_leaves_bar when the tuple has it, otherwise recomputes it from true_xend/yend/zend."""
+    if "true_leaves_bar" in d:
+        return d["true_leaves_bar"].astype(bool)
+    inside = np.ones(len(d["event"]), bool)
+    for k, lo, hi in (("true_xend", BAR_LO[0], BAR_HI[0]), ("true_yend", BAR_LO[1], BAR_HI[1]), ("true_zend", BAR_LO[2], BAR_HI[2])):
+        inside &= (d[k] > lo) & (d[k] < hi)
+    return ~inside
+
+
 def summarize(d, name, p_bins, region_x):
     n = len(d["event"])
     if n == 0:
@@ -104,7 +119,7 @@ def summarize(d, name, p_bins, region_x):
     nseg = d["true_nseg_tms"]
     path = d["true_zhi_tms"] - d["true_zlo_tms"]
     recon = (nseg > 0) & (path > 1000.0)
-    exits = d["true_exits_tms"].astype(bool)
+    exits = leaves_bar(d)
     good = recon & found & (d["reco_true_p_enter"] > 0)
     print("\n" + "=" * 100)
     print("%s: %d muons thrown, %d with any TMS hit, %d reconstructible (>1 m TMS path)" % (name, n, int((nseg > 0).sum()), int(recon.sum())))

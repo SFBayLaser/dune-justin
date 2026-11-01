@@ -34,7 +34,13 @@ BAR_LO = (-3501.0, -3102.23, 11104.5)
 BAR_HI = (3501.0, 397.77, 18510.5)
 CONTAIN_XY_MM = 100.0
 CONTAIN_Z_MM = 100.0
-EXIT_DIST_MM = 300.0        # a muon whose trajectory goes on this far past its last TMS hit has left the TMS
+EXIT_DIST_MM = 300.0        # trajectory this far past its last TMS hit: true_exits_tms. Counts muons that stop in the steel after
+                            # their last hit as exits (a third of them), so the summary uses true_leaves_bar instead.
+
+
+def leaves_bar(x, y, z):
+    """The muon's end point is outside the bar region: it left the TMS (and did not stop in it)."""
+    return int(not (BAR_LO[0] < x < BAR_HI[0] and BAR_LO[1] < y < BAR_HI[1] and BAR_LO[2] < z < BAR_HI[2]))
 
 ROOT.gROOT.SetBatch(True)
 ROOT.gSystem.Load("libedepsim_io")
@@ -170,7 +176,7 @@ def main(edep_path, reco_path, out_path, meta=()):
     ev_keys = [("event", "I"), ("true_pdg", "I"), ("true_q", "I"), ("true_p0", "F"), ("true_ke0", "F"),
                ("true_x0", "F"), ("true_y0", "F"), ("true_z0", "F"), ("true_dxdz0", "F"), ("true_dydz0", "F"),
                ("true_p_enter", "F"), ("true_xend", "F"), ("true_yend", "F"), ("true_zend", "F"), ("true_ke_end", "F"),
-               ("true_dist_after_tms", "F"), ("true_p_exit", "F"), ("true_exits_tms", "O"), ("true_nseg_tms", "I"), ("true_zlo_tms", "F"), ("true_zhi_tms", "F"),
+               ("true_dist_after_tms", "F"), ("true_p_exit", "F"), ("true_exits_tms", "O"), ("true_leaves_bar", "O"), ("true_nseg_tms", "I"), ("true_zlo_tms", "F"), ("true_zhi_tms", "F"),
                ("true_edep_tms", "F"),
                ("n_slices", "I"), ("n_tracks", "I"), ("found", "O")]
     trk_keys = [("nhits", "I"), ("p", "F"), ("q", "I"), ("q_curv", "I"), ("ke_range", "F"), ("p_range", "F"),
@@ -188,7 +194,8 @@ def main(edep_path, reco_path, out_path, meta=()):
                        true_x0=t["x0"], true_y0=t["y0"], true_z0=t["z0"], true_dxdz0=t["dxdz0"], true_dydz0=t["dydz0"],
                        true_p_enter=t["p_enter"], true_xend=t["xe"], true_yend=t["ye"], true_zend=t["ze"],
                        true_ke_end=t["ke_end"], true_dist_after_tms=t["dist_after"], true_p_exit=t["p_exit"],
-                       true_exits_tms=int(t["dist_after"] > EXIT_DIST_MM), true_nseg_tms=t["nseg"],
+                       true_exits_tms=int(t["dist_after"] > EXIT_DIST_MM),
+                       true_leaves_bar=leaves_bar(t["xe"], t["ye"], t["ze"]), true_nseg_tms=t["nseg"],
                        true_zlo_tms=t["zlo"], true_zhi_tms=t["zhi"], true_edep_tms=t["edep"])
         trs = sorted(reco.get(i, []), key=lambda r: -r["nhits"])
         events.set(n_slices=len({r["slice"] for r in trs}), n_tracks=len(trs), found=int(bool(trs)))
