@@ -20,7 +20,7 @@
       "env": {
         "TMS_PRODUCTION_TAG": "TMSReco_muonmapBx_v01",
         "TUPLE_SCRIPT_URL": "https://raw.githubusercontent.com/SFBayLaser/dune-justin/main/TMS/muon_tuple.py",
-        "FIELD_MAP_SOURCE": "/cvmfs/fifeuser4.opensciencegrid.org/sw/dune/15eb575233c303574ab5e4f77114296245f65f7c/fieldmap/Mapper_global_evenx.txt",
+        "FIELD_MAP_SOURCE": "/cvmfs/fifeuser3.opensciencegrid.org/sw/dune/15eb575233c303574ab5e4f77114296245f65f7c/fieldmap/Mapper_global_evenx.txt",
         "FIELD_MAP_SHA256": "ef38fb823a5f6669c3aaacc3e99d60c4eecb6b21c14a64c5287e467953de288c"
       },
       "output_patterns": [

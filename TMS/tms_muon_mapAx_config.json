@@ -22,9 +22,9 @@
         "CHARGE": "alternate",
         "GEOM_TAG": "cleannew",
         "FIELD_TAG": "fieldmapx",
-        "GDML_URL": "file:///cvmfs/fifeuser4.opensciencegrid.org/sw/dune/15eb575233c303574ab5e4f77114296245f65f7c/fieldmap/nd_hall_80layers_MAPPED_evenx.gdml",
+        "GDML_URL": "file:///cvmfs/fifeuser3.opensciencegrid.org/sw/dune/15eb575233c303574ab5e4f77114296245f65f7c/fieldmap/nd_hall_80layers_MAPPED_evenx.gdml",
         "GDML_SHA256": "060d8eb6900953ebbab206781ae852e75dd558cf392dda3fe769593b308125f9",
-        "MAP_SOURCE": "/cvmfs/fifeuser4.opensciencegrid.org/sw/dune/15eb575233c303574ab5e4f77114296245f65f7c/fieldmap/Mapper_global_evenx.txt",
+        "MAP_SOURCE": "/cvmfs/fifeuser3.opensciencegrid.org/sw/dune/15eb575233c303574ab5e4f77114296245f65f7c/fieldmap/Mapper_global_evenx.txt",
         "MAP_SHA256": "ef38fb823a5f6669c3aaacc3e99d60c4eecb6b21c14a64c5287e467953de288c"
       },
       "output_pattern_next_stage": "*.edep.root"
