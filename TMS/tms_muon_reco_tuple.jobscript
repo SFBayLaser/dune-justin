@@ -6,15 +6,17 @@
 # from the edep-sim file and the tuple joins it to the reco output. Only the tuple and the logs are uploaded: the
 # RecoCandidates and Readout files stay in the job's scratch area.
 #
-# The reco runs with [Recon.Cluster3D] MomentumFromRange = false, whatever the packaged justIN config says, so that
-# Reco_Tree_C3D.Momentum is the Kalman curvature momentum for every track. The range estimate is taken separately
-# from EnergyRange in the tuple.
+# The reco runs with [Recon.Cluster3D] MomentumFromRange = false by default, whatever the packaged justIN config says, so
+# that Reco_Tree_C3D.Momentum is the Kalman curvature momentum for every track. The range estimate is taken separately
+# from EnergyRange in the tuple (the straight line 82 + 1.75 L in builds without PR #352). MOMENTUM_FROM_RANGE=true
+# switches to the range-table momentum for tracks that stop inside the TMS (curvature momentum for the others).
 #
 # The dune-tms development build is supplied with justin-cvmfs-upload (INPUT_TAR_DIR_LOCAL contains dune-tms/).
 # Environment:
 #   TMS_PRODUCTION_TAG   label added to the output names
 #   TUPLE_SCRIPT_URL     where to fetch muon_tuple.py (e.g. the raw GitHub URL of dune-justin/TMS/muon_tuple.py)
 # Optional:
+#   MOMENTUM_FROM_RANGE  true or false (default false): [Recon.Cluster3D] MomentumFromRange for this run
 #   TMS_TOML_SOURCE      reco config to start from (default $TMS_DIR/config/justin/TMS_Config_Cluster3D.toml)
 #   FIELD_MAP_SOURCE     field map for the reco's field model, a file already on the worker (e.g. under the cvmfs
 #                        directory shipped with justin-cvmfs-upload); linked into the working directory
@@ -102,10 +104,15 @@ if [[ ! -f "$toml_source" ]]; then
   echo "ERROR: TMS configuration not found: $toml_source" >&2
   exit 6
 fi
-export TMS_TOML="${workdir}/TMS_Config_curvature.toml"
-sed 's/^\([[:space:]]*MomentumFromRange[[:space:]]*=[[:space:]]*\).*/\1false/' "$toml_source" > "$TMS_TOML"
-if ! grep -qE '^[[:space:]]*MomentumFromRange[[:space:]]*=[[:space:]]*false' "$TMS_TOML"; then
-  echo "ERROR: could not set MomentumFromRange = false in $toml_source" >&2
+mfr="${MOMENTUM_FROM_RANGE:-false}"
+if [[ "$mfr" != "true" && "$mfr" != "false" ]]; then
+  echo "ERROR: MOMENTUM_FROM_RANGE must be true or false, not '$mfr'" >&2
+  exit 6
+fi
+export TMS_TOML="${workdir}/TMS_Config_momentum.toml"
+sed "s/^\([[:space:]]*MomentumFromRange[[:space:]]*=[[:space:]]*\).*/\1${mfr}/" "$toml_source" > "$TMS_TOML"
+if ! grep -qE "^[[:space:]]*MomentumFromRange[[:space:]]*=[[:space:]]*${mfr}" "$TMS_TOML"; then
+  echo "ERROR: could not set MomentumFromRange = ${mfr} in $toml_source" >&2
   exit 6
 fi
 echo "TMS_TOML=$TMS_TOML (from $toml_source)"
@@ -190,7 +197,7 @@ python3 "$tuple_script" "$local_input" "$ND_PRODUCTION_TMSRECO_OUTFILE" "$tuple_
     --meta "reco_field_model=${field_model_meta:-built-in (no model line)}" \
     --meta "reco_field_map=${map_name:-none}" \
     --meta "reco_field_map_sha256=${FIELD_MAP_SHA256:-unknown}" \
-    --meta "momentum_from_range=false" \
+    --meta "momentum_from_range=${mfr}" \
     --meta "tms_build=${INPUT_TAR_DIR_LOCAL}" \
     --meta "tms_production_tag=${TMS_PRODUCTION_TAG}"
 rc=$?

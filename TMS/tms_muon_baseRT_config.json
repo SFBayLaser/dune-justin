@@ -1,0 +1,31 @@
+{
+  "workflow": {
+    "description": "TMS single-muon: reco of the baseline edep files with the range-table momentum (MomentumFromRange=true, dune-tms with PR #352), built-in field",
+    "mql": "files from usertests:fnal-w22460s1p1"
+  },
+  "defaults": {
+    "repo": "SFBayLaser/dune-justin",
+    "ref": "main",
+    "lifetime_days": 30,
+    "max_distance": 60,
+    "limit_sites": false,
+    "tarfile_dir": "/cvmfs/fifeuser1.opensciencegrid.org/sw/dune/b6d4ea731894d84a3788f4d5671680c9bcec3984"
+  },
+  "stages": [
+    {
+      "id": 1,
+      "jobscript": "TMS/tms_muon_reco_tuple.jobscript",
+      "wall_seconds": 7200,
+      "rss_mib": 4000,
+      "env": {
+        "TMS_PRODUCTION_TAG": "TMSReco_muonbaseRT_v01",
+        "TUPLE_SCRIPT_URL": "https://raw.githubusercontent.com/SFBayLaser/dune-justin/main/TMS/muon_tuple.py",
+        "MOMENTUM_FROM_RANGE": "true"
+      },
+      "output_patterns": [
+        "*_tuple.root",
+        "*_convert.log"
+      ]
+    }
+  ]
+}
