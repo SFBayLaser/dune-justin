@@ -18,7 +18,7 @@
       "wall_seconds": 7200,
       "rss_mib": 4000,
       "env": {
-        "TMS_PRODUCTION_TAG": "TMSReco_muonbaseRT_v01",
+        "TMS_PRODUCTION_TAG": "TMSReco_muonbaseRT_v02",
         "TUPLE_SCRIPT_URL": "https://raw.githubusercontent.com/SFBayLaser/dune-justin/main/TMS/muon_tuple.py",
         "MOMENTUM_FROM_RANGE": "true"
       },
