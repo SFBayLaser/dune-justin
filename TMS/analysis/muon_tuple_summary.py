@@ -120,10 +120,16 @@ def summarize(d, name, p_bins, region_x):
     path = d["true_zhi_tms"] - d["true_zlo_tms"]
     recon = (nseg > 0) & (path > 1000.0)
     exits = leaves_bar(d)
+    # A track whose true muon has no stored trajectory point inside the TMS (short tracks, mostly muons leaving through the
+    # sides) carries a default of sqrt(3) * 1e8 in reco_true_p_enter: its entering momentum is undefined, so it is left out
+    # of the momentum statistics (mgood) but kept in the charge and exit-tag ones (good), whose truth is per muon.
+    matched = (d["reco_true_p_enter"] > 0) & (d["reco_true_p_enter"] < 1.0e7)
     good = recon & found & (d["reco_true_p_enter"] > 0)
+    mgood = good & matched
     print("\n" + "=" * 100)
     print("%s: %d muons thrown, %d with any TMS hit, %d reconstructible (>1 m TMS path)" % (name, n, int((nseg > 0).sum()), int(recon.sum())))
     print("  events with more than one reco track: %d" % int((d["n_tracks"] > 1).sum()))
+    print("  found reconstructible muons whose track has no true-momentum match (left out of the momentum statistics): %d of %d" % (int((recon & found & ~matched).sum()), int((recon & found).sum())))
 
     print("  tracking efficiency (event has a reco track):")
     print("    all thrown        %s" % frac_line(int(found.sum()), n))
@@ -152,7 +158,7 @@ def summarize(d, name, p_bins, region_x):
     print("  momentum, (reco - true)/true with true p entering the TMS: median [16%, 84%]   (n)")
     tp = d["reco_true_p_enter"]
     for cls, sel in (("stopping", ~exits), ("exiting", exits)):
-        m = good & sel
+        m = mgood & sel
         fit = (d["reco_p"][m] - tp[m]) / tp[m]
         has_range = d["reco_p_range"][m] > 0
         rng = (d["reco_p_range"][m][has_range] - tp[m][has_range]) / tp[m][has_range]
@@ -160,7 +166,7 @@ def summarize(d, name, p_bins, region_x):
               ((cls,) + tuple(pct(v) for v in quantiles(fit)) + (m.sum(),) + tuple(pct(v) for v in quantiles(rng)) + (has_range.sum(),)))
     print("    fit p by true p_enter (all found):")
     for lo, hi in zip(p_bins[:-1], p_bins[1:]):
-        m = good & (tp >= lo) & (tp < hi)
+        m = mgood & (tp >= lo) & (tp < hi)
         fit = (d["reco_p"][m] - tp[m]) / tp[m]
         print("      %5d-%-5d  %+6.1f%% [%+6.1f, %+6.1f]  (%d)" % ((lo, hi) + tuple(pct(v) for v in quantiles(fit)) + (m.sum(),)))
 
@@ -170,7 +176,7 @@ def summarize(d, name, p_bins, region_x):
     print("  reco containment flag as an exit tag: true exits tagged %d, missed %d; true stops tagged exit %d, tagged stop %d" % (tp_, fn_, fp_, tn_))
     print("    purity %.0f%%, efficiency %.0f%%" % (pct(tp_ / max(1, tp_ + fp_)), pct(tp_ / max(1, tp_ + fn_))))
     for cname, sel in (("tagged contained", inside), ("tagged exiting", ~inside)):
-        m = good & sel
+        m = mgood & sel
         fit = (d["reco_p"][m] - tp[m]) / tp[m]
         has_range = d["reco_p_range"][m] > 0
         rng = (d["reco_p_range"][m][has_range] - tp[m][has_range]) / tp[m][has_range]

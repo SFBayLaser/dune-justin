@@ -136,6 +136,14 @@ def read_truth(edep_path):
     return truth
 
 
+def true_p(v):
+    """|p| of a true momentum branch entry, or -999 where it was never set (-999 or the 1e8 default: a true muon with no stored
+    trajectory point inside the TMS has no entering momentum) or the branch is missing."""
+    if v is None or v[0] == -999.0 or abs(v[0]) > 1.0e7:
+        return -999.0
+    return math.sqrt(v[0] ** 2 + v[1] ** 2 + v[2] ** 2)
+
+
 def read_reco(reco_path):
     """All reco tracks, grouped by SpillNo (= edep event number)."""
     f = ROOT.TFile.Open(reco_path)
@@ -148,6 +156,10 @@ def read_reco(reco_path):
             ps, pe = triple(e.StartPos, i), triple(e.EndPos, i)
             ds, de = triple(e.StartDirection, i), triple(e.EndDirection, i)
             tm, tp = four(e.RecoTrackPrimaryParticleTrueMomentumEnteringTMS, i), four(e.RecoTrackPrimaryParticleTruePositionEnteringTMS, i)
+            # entering momentum corrected for the energy lost before the first stored trajectory point inside the TMS, and the
+            # true momentum at the z where the reco track starts (older builds do not write these branches)
+            tm_sc = four(e.RecoTrackPrimaryParticleTrueMomentumEnteringTMSSteelCorrected, i) if hasattr(e, "RecoTrackPrimaryParticleTrueMomentumEnteringTMSSteelCorrected") else None
+            tm_ts = four(e.RecoTrackPrimaryParticleTrueMomentumTrackStart, i) if hasattr(e, "RecoTrackPrimaryParticleTrueMomentumTrackStart") else None
             ke_range = float(e.EnergyRange[i])
             tr = dict(
                 slice=int(e.EventNo), nslice_tracks=n, nhits=int(e.nHits[i]), p=float(e.Momentum[i]),
@@ -162,7 +174,7 @@ def read_reco(reco_path):
                 stops_inside=int(BAR_LO[0] + CONTAIN_XY_MM < pe[0] < BAR_HI[0] - CONTAIN_XY_MM and
                                  BAR_LO[1] + CONTAIN_XY_MM < pe[1] < BAR_HI[1] - CONTAIN_XY_MM and
                                  pe[2] < BAR_HI[2] - CONTAIN_Z_MM),
-                true_p_enter=math.sqrt(tm[0] ** 2 + tm[1] ** 2 + tm[2] ** 2) if tm[0] != -999.0 else -999.0,
+                true_p_enter=true_p(tm), true_p_enter_sc=true_p(tm_sc), true_p_trackstart=true_p(tm_ts),
                 true_x_enter=tp[0])
             by_event.setdefault(int(e.SpillNo), []).append(tr)
     return by_event
@@ -182,7 +194,7 @@ def main(edep_path, reco_path, out_path, meta=()):
     trk_keys = [("nhits", "I"), ("p", "F"), ("q", "I"), ("q_curv", "I"), ("ke_range", "F"), ("p_range", "F"),
                 ("length", "F"), ("chi2", "F"), ("ndof", "I"), ("xs", "F"), ("ys", "F"), ("zs", "F"), ("xe", "F"),
                 ("ye", "F"), ("ze", "F"), ("dxdzs", "F"), ("dxdze", "F"), ("pdg", "I"), ("stops_inside", "O"), ("true_p_enter", "F"),
-                ("true_x_enter", "F")]
+                ("true_p_enter_sc", "F"), ("true_p_trackstart", "F"), ("true_x_enter", "F")]
     events = Row("events", ev_keys + [("reco_" + k, t) for k, t in trk_keys])
     tracks = Row("tracks", [("event", "I"), ("slice", "I"), ("rank", "I")] + [("reco_" + k, t) for k, t in trk_keys])
 
