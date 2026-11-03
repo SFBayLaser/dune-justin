@@ -109,7 +109,7 @@ and compares them.
 | 2026-08-27 | laptop, `FD/workarea` | FD supera slow vs fast (before the FD override fix) | 100 | `*_supera.root`, `*_supera_fast.root`, `slow.log`, `fast.log`. Old builder 3.1 s/event mean. Fast tool may not have been exercised (see above). |
 | 2026-09 | justIN | FD and VD testcode workflows | ? | **Not recorded.** Workflow IDs and outcomes unknown. |
 | 2026-11-02 | laptop, `FD/localtest` | FD supera, baseline vs new, same detsim input | 5 | Builder 1.71 s vs 1.97 s per event; 21-38% more raw space points in the new builder; efficiency and ghost fraction equal within noise at r = 2 (eff 0.685 vs 0.689, ghost 0.654 vs 0.636 raw). `FD/localtest/truth_compare.json` |
-| 2026-11-02 | laptop, `FD/localtest40` | same, 40 events | 40 | pending |
+| 2026-11-02 | laptop, `FD/localtest40` | same, 40 events (`run_fd_local.sh 40`) | 40 | Builder time/event mean 2.27 s (baseline) vs 2.47 s (new); wall 39:04 vs 45:56; peak RSS 3.49 vs 3.81 GB. Raw points/event 181k vs 207k (+14%); after Supera cuts 16.8k vs 21.0k (+25%). At r = 2: raw eff 0.705 vs 0.709, ghost 0.692 vs 0.679; after cuts eff 0.624 vs 0.628, ghost 0.049 vs 0.047 (energy-weighted eff 0.882 vs 0.885). `FD/localtest40/truth_compare.json` |
 | | justIN | FD baseline (`mvpmpr_2hitSP_baseline_config.json`) | 10 x 20 | not yet submitted |
 | | justIN | VD baseline (`mpvmpr_2hitSP_baseline_config.json`) | 10 x 20 | not yet submitted |
 
