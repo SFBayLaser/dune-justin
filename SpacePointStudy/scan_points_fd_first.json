@@ -1,0 +1,20 @@
+{
+  "detector": {
+    "fcl_dir": "/run/media/usher/Drive2/DUNE/dune-justin/DUNESpineWorkshop2026/fhicl",
+    "fcl_new": "supera_sponly_dune10kt_1x2x6.fcl",
+    "fcl_baseline": "supera_sponly_dune10kt_1x2x6_baseline.fcl"
+  },
+  "input": "/run/media/usher/Drive2/DUNE/FD/localtest40/new/GenMPVMPR_20260826T182831_g4_detsim_supera.root",
+  "events": 40,
+  "outdir": "/run/media/usher/Drive2/DUNE/FD/scan_first",
+  "common": {"MaxHitChiSquare": 10.0},
+  "points": {
+    "baseline":        {"builder": "baseline"},
+    "new_default":     {"builder": "new"},
+    "new_dts175":      {"builder": "new", "params": {"DeltaPeakTimeSig": 1.75}},
+    "new_dts150":      {"builder": "new", "params": {"DeltaPeakTimeSig": 1.5, "DeltaPeakTimeSigLongHit": 1.5}},
+    "new_no2hit":      {"builder": "new", "params": {"SaveMythicalPoints": false}},
+    "new_pwr15":       {"builder": "new", "params": {"WirePitchScaleFactor": 1.5}},
+    "new_phfrac06":    {"builder": "new", "params": {"PulseHeightFraction": 0.6}}
+  }
+}

@@ -1,0 +1,8 @@
+# Second pass with the standard Cluster3D builder; see supera_sponly_dune10kt_1x2x6.fcl
+
+#include "standard_mythical_supera_dune10kt_1x2x6_baseline.fcl"
+
+process_name: SuperaSP
+
+physics.reco:       [ cluster3d ]
+physics.end_paths:  [ outana ]

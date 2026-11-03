@@ -8,8 +8,15 @@ Reco   : sparse3d_reco         (raw space points)   and
 For tolerance r (in voxels, Chebyshev distance):
   efficiency = fraction of truth voxels having a reco voxel within r   (also energy weighted)
   ghost frac = fraction of reco voxels having no truth voxel within r
+  n_ghost    = number of reco voxels with no truth voxel within r (per event)
 
-Usage: compare_truth.py LABEL=larcv.root [LABEL=larcv.root ...] [--tol 0 1 2 4] [--nevents N] [--json out.json]
+Reco voxels are also split by the number of hits that made the point (sparse3d_reco_nhits):
+  all, 3hit (triplets), 2hit ("mythical" points). Efficiency of a class uses only that class's points.
+Chi-square cuts can be emulated offline, since the chi2 of each point is stored (sparse3d_reco_chi2):
+  --max-chi2-3hit X / --max-chi2-2hit Y drop points above the cut (cannot be looser than the run's own cut).
+
+Usage: compare_truth.py LABEL=larcv.root [LABEL=larcv.root ...] [--tol 0 1 2 4] [--nevents N]
+       [--max-chi2-3hit X] [--max-chi2-2hit Y] [--json out.json]
 Run via larcv_env.sh (PyROOT + cvmfs larcv2).
 """
 import argparse, itertools, json
@@ -67,6 +74,8 @@ def main():
     ap.add_argument("--tol", type=int, nargs="+", default=[0, 1, 2, 4])
     ap.add_argument("--min-sed", type=float, default=0.0, help="min truth voxel energy (MeV)")
     ap.add_argument("--nevents", type=int, default=None)
+    ap.add_argument("--max-chi2-3hit", type=float, default=None)
+    ap.add_argument("--max-chi2-2hit", type=float, default=None)
     ap.add_argument("--json", default=None)
     a = ap.parse_args()
 
@@ -82,26 +91,47 @@ def main():
             tid, tval, dims = read(f, TRUTH, i)
             sel = tval > a.min_sed
             tid, tval = tid[sel], tval[sel]
+            raw_id, _, _ = read(f, "sparse3d_reco", i)
+            nid, nh, _ = read(f, "sparse3d_reco_nhits", i)
+            cid, chi, _ = read(f, "sparse3d_reco_chi2", i)
+            assert np.array_equal(raw_id, nid) and np.array_equal(raw_id, cid)
+            keep = np.ones(len(raw_id), dtype=bool)
+            if a.max_chi2_3hit is not None:
+                keep &= ~((nh == 3) & (chi > a.max_chi2_3hit))
+            if a.max_chi2_2hit is not None:
+                keep &= ~((nh == 2) & (chi > a.max_chi2_2hit))
             for rn in RECO:
-                rid, _, _ = read(f, rn, i)
-                for r in a.tol:
-                    eff_mask = near(tid, rid, dims, r)
-                    gh_mask = ~near(rid, tid, dims, r)
-                    rows.append(dict(event=i, reco=rn, tol=r, n_truth=int(len(tid)), n_reco=int(len(rid)),
-                                     eff=float(eff_mask.mean()),
-                                     eff_e=float(tval[eff_mask].sum() / tval.sum()),
-                                     ghost=float(gh_mask.mean())))
+                if rn == "sparse3d_reco":
+                    rid, rnh = raw_id[keep], nh[keep]
+                else:
+                    qid, _, _ = read(f, rn, i)
+                    pos = np.searchsorted(raw_id, qid)          # rescaled voxels are a subset of raw voxels
+                    ok = keep[pos]
+                    rid, rnh = qid[ok], nh[pos][ok]
+                for cls, cmask in (("all", np.ones(len(rid), bool)), ("3hit", rnh == 3), ("2hit", rnh == 2)):
+                    cid_ = rid[cmask]
+                    for r in a.tol:
+                        if len(cid_) == 0:
+                            eff = eff_e = 0.0; gh = 0.0; ngh = 0
+                        else:
+                            eff_mask = near(tid, cid_, dims, r)
+                            gh_mask = ~near(cid_, tid, dims, r)
+                            eff, eff_e = float(eff_mask.mean()), float(tval[eff_mask].sum() / tval.sum())
+                            gh, ngh = float(gh_mask.mean()), int(gh_mask.sum())
+                        rows.append(dict(event=i, reco=rn, cls=cls, tol=r, n_truth=int(len(tid)), n_reco=int(len(cid_)),
+                                         eff=eff, eff_e=eff_e, ghost=gh, n_ghost=ngh))
         out[label] = rows
 
     # summary table (mean over events)
-    print(f"{'label':<12}{'reco':<24}{'tol':>4}{'<n_reco>':>10}{'<n_truth>':>10}{'eff':>8}{'eff(E)':>8}{'ghost':>8}")
+    print(f"{'label':<14}{'reco':<24}{'cls':<5}{'tol':>4}{'<n_reco>':>10}{'<n_ghost>':>10}{'eff':>8}{'eff(E)':>8}{'ghost':>8}")
     for label, rows in out.items():
         for rn in RECO:
-            for r in a.tol:
-                s = [x for x in rows if x["reco"] == rn and x["tol"] == r]
-                m = lambda k: np.mean([x[k] for x in s])
-                print(f"{label:<12}{rn:<24}{r:>4}{m('n_reco'):>10.0f}{m('n_truth'):>10.0f}"
-                      f"{m('eff'):>8.3f}{m('eff_e'):>8.3f}{m('ghost'):>8.3f}")
+            for cls in ("all", "3hit", "2hit"):
+                for r in a.tol:
+                    s = [x for x in rows if x["reco"] == rn and x["cls"] == cls and x["tol"] == r]
+                    m = lambda k: np.mean([x[k] for x in s])
+                    print(f"{label:<14}{rn:<24}{cls:<5}{r:>4}{m('n_reco'):>10.0f}{m('n_ghost'):>10.0f}"
+                          f"{m('eff'):>8.3f}{m('eff_e'):>8.3f}{m('ghost'):>8.3f}")
     if a.json:
         json.dump(out, open(a.json, "w"), indent=1)
 

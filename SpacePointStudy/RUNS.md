@@ -102,6 +102,24 @@ PyROOT (`SpacePointStudy/larcv_env.sh`; there is no python larcv module). Voxels
 r = 2 is ~1 cm. `SpacePointStudy/run_fd_local.sh [N]` runs both builders on the 27 Aug FD detsim file
 and compares them.
 
+### Fast scans (second pass)
+
+`DUNESpineWorkshop2026/fhicl/supera_sponly_dune10kt_1x2x6[_baseline].fcl` rerun only the builder + Supera on an
+existing `*_supera.root` (it already holds `gaushit`, `mcreco`, sed, simchannels). Verified 2026-11-02: voxel-for-voxel
+identical to the full chain on 3 events. Cost is dominated by the Supera driver (about 37 s/event versus 1.6 s for
+the builder), so the saving is only the upstream reconstruction; run points **in parallel**
+(each ~1.3 GB, 1 core): `SpacePointStudy/run_scan.py <spec.json> --jobs 7`. A spec lists points as
+`{builder, params}` on top of `common` params. First spec: `scan_points_fd_first.json`.
+A point counts as finished only if `time.log` has `Exit status: 0`.
+
+### What the truth tool reports
+
+`compare_truth.py` splits reco points by hit multiplicity (`sparse3d_reco_nhits`): `3hit` = triplets,
+`2hit` = "mythical" two-plane points. It also reports `n_ghost` and can emulate chi-square cuts offline
+(`--max-chi2-3hit`, `--max-chi2-2hit`), because each point's chi2 is stored (`sparse3d_reco_chi2`).
+Facts established from the stored values: 2-hit chi2 is capped exactly at `DeltaPeakTimeSig`^2 (3.06 baseline,
+4.0 new), so `MaxMythicalChiSquare = 25` never acts; 3-hit chi2 tops out at `MaxHitChiSquare`.
+
 ## Run log
 
 | Date | Where | What | Events | Result / location |
@@ -109,7 +127,9 @@ and compares them.
 | 2026-08-27 | laptop, `FD/workarea` | FD supera slow vs fast (before the FD override fix) | 100 | `*_supera.root`, `*_supera_fast.root`, `slow.log`, `fast.log`. Old builder 3.1 s/event mean. Fast tool may not have been exercised (see above). |
 | 2026-09 | justIN | FD and VD testcode workflows | ? | **Not recorded.** Workflow IDs and outcomes unknown. |
 | 2026-11-02 | laptop, `FD/localtest` | FD supera, baseline vs new, same detsim input | 5 | Builder 1.71 s vs 1.97 s per event; 21-38% more raw space points in the new builder; efficiency and ghost fraction equal within noise at r = 2 (eff 0.685 vs 0.689, ghost 0.654 vs 0.636 raw). `FD/localtest/truth_compare.json` |
-| 2026-11-02 | laptop, `FD/localtest40` | same, 40 events (`run_fd_local.sh 40`) | 40 | Builder time/event mean 2.27 s (baseline) vs 2.47 s (new); wall 39:04 vs 45:56; peak RSS 3.49 vs 3.81 GB. Raw points/event 181k vs 207k (+14%); after Supera cuts 16.8k vs 21.0k (+25%). At r = 2: raw eff 0.705 vs 0.709, ghost 0.692 vs 0.679; after cuts eff 0.624 vs 0.628, ghost 0.049 vs 0.047 (energy-weighted eff 0.882 vs 0.885). `FD/localtest40/truth_compare.json` |
+| 2026-11-02 | laptop, `FD/localtest40` | same, 40 events (`run_fd_local.sh 40`; `MaxHitChiSquare` 10 baseline / 6 new) | 40 | Builder time/event mean 2.27 s (baseline) vs 2.47 s (new); wall 39:04 vs 45:56; peak RSS 3.49 vs 3.81 GB. Raw points/event 181k vs 207k (+14%); after Supera cuts 16.8k vs 21.0k (+25%). At r = 2: raw eff 0.705 vs 0.709, ghost 0.692 vs 0.679; after cuts eff 0.624 vs 0.628, ghost 0.049 vs 0.047 (energy-weighted eff 0.882 vs 0.885). `FD/localtest40/truth_compare.json` |
+| 2026-11-02 | laptop, `FD/localtest40` | class split of the above (r = 2, raw points) | 40 | 3-hit: 34.1k (baseline) vs 47.1k (new), ghost fraction 0.279 vs 0.281, eff 0.632 vs 0.638. 2-hit: 147k vs 160k, ghost 0.787 vs 0.799, eff 0.669 vs 0.670. After Supera cuts 3-hit survivors +39% at equal ghost fraction (0.044 vs 0.043); 2-hit survivors -10% with lower efficiency (0.525 vs 0.503). Excess is in 3-hit points and looks real (not ghosts); 2-hit points are ~85% of raw points but ~25% of survivors. `FD/localtest40/truth_compare_cls.json` |
+| 2026-11-02 | laptop, `FD/scan_first` | first FD scan, 7 points, `MaxHitChiSquare` 10 for all (see `scan_points_fd_first.json`) | 40 | running |
 | | justIN | FD baseline (`mvpmpr_2hitSP_baseline_config.json`) | 10 x 20 | not yet submitted |
 | | justIN | VD baseline (`mpvmpr_2hitSP_baseline_config.json`) | 10 x 20 | not yet submitted |
 
