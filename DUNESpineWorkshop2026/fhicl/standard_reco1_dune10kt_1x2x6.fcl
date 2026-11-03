@@ -14,8 +14,9 @@ physics.producers:
     wclsmcnfsp: @local::dune10kt_1x2x6_mc_nfsp
 }
 
-# Default is the "fast" version
-physics.producers.cluster3d.Hit3DBuilderAlg: @local::standard_snippethit3dbuilderDUNE
+# Builder choice is made in workflow_reco_dune10kt.fcl (SpacePointBuilderDUNE + Fast tool);
+# see the *_baseline.fcl variants for the standard Cluster3D
+#physics.producers.cluster3d.Hit3DBuilderAlg: @local::standard_snippethit3dbuilderDUNE
 #physics.producers.cluster3d.Hit3DBuilderAlg.SaveBadChannelPairs: false
 
 # reset the gaushit long hits

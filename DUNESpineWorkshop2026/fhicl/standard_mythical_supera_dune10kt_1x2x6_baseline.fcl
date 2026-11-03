@@ -1,0 +1,12 @@
+# BASELINE: standard Cluster3D space point building (Cluster3DDUNE + SnippetHit3DBuilderDUNE),
+# run in MakeSpacePointsOnly mode. Matches the configuration used before commit 7bb08ba.
+# Compare against standard_mythical_supera_dune10kt_1x2x6.fcl (SpacePointBuilderDUNE + Fast tool).
+
+#include "standard_mythical_supera_dune10kt_1x2x6.fcl"
+
+physics.producers.cluster3d:                                          @local::standard_cluster3ddune
+physics.producers.cluster3d.HitFinderModuleLabel:                     ["gaushit"]
+physics.producers.cluster3d.MakeSpacePointsOnly:                      true
+physics.producers.cluster3d.Hit3DBuilderAlg:                          @local::standard_snippethit3dbuilderDUNE
+physics.producers.cluster3d.Hit3DBuilderAlg.MaxHitChiSquare:          10.   # value used in the old production fhicl (tool default is 6)
+physics.producers.cluster3d.Hit3DBuilderAlg.SaveMythicalPoints:       true
