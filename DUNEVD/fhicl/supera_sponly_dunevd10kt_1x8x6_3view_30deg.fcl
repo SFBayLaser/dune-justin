@@ -1,0 +1,8 @@
+# Second pass: rerun ONLY the space point builder + Supera on an existing *_supera.root. New builder.
+# Baseline: supera_sponly_dunevd10kt_1x8x6_3view_30deg_baseline.fcl
+#include "standard_supera_dunevd10kt_1x8x6_3view_30deg.fcl"
+
+process_name: SuperaSP
+
+physics.reco:       [ cluster3d ]
+physics.end_paths:  [ outana ]

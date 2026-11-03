@@ -1,0 +1,102 @@
+{
+  "detector": {
+    "fcl_dir": "/run/media/usher/Drive2/DUNE/dune-justin/DUNEVD/fhicl",
+    "fcl_new": "supera_sponly_dunevd10kt_1x8x6_3view_30deg.fcl",
+    "fcl_baseline": "supera_sponly_dunevd10kt_1x8x6_3view_30deg_baseline.fcl"
+  },
+  "input": "/run/media/usher/Drive2/DUNE/samples/VD_20001/VD_20001_g4_detsim_supera.root",
+  "events": 20,
+  "outdir": "/run/media/usher/Drive2/DUNE/samples/VD_20001/scan",
+  "common": {
+    "MaxHitChiSquare": 10.0
+  },
+  "points": {
+    "baseline": {
+      "builder": "baseline"
+    },
+    "new_default": {
+      "builder": "new"
+    },
+    "new_dts175": {
+      "builder": "new",
+      "params": {
+        "DeltaPeakTimeSig": 1.75
+      }
+    },
+    "new_dts150": {
+      "builder": "new",
+      "params": {
+        "DeltaPeakTimeSig": 1.5,
+        "DeltaPeakTimeSigLongHit": 1.5
+      }
+    },
+    "new_dts150_Ldef": {
+      "builder": "new",
+      "params": {
+        "DeltaPeakTimeSig": 1.5
+      }
+    },
+    "new_dts125": {
+      "builder": "new",
+      "params": {
+        "DeltaPeakTimeSig": 1.25,
+        "DeltaPeakTimeSigLongHit": 1.25
+      }
+    },
+    "new_dts100": {
+      "builder": "new",
+      "params": {
+        "DeltaPeakTimeSig": 1.0,
+        "DeltaPeakTimeSigLongHit": 1.0
+      }
+    },
+    "new_pwr10": {
+      "builder": "new",
+      "params": {
+        "WirePitchScaleFactor": 1.0
+      }
+    },
+    "new_pwr25": {
+      "builder": "new",
+      "params": {
+        "WirePitchScaleFactor": 2.5
+      }
+    },
+    "new_pwr30": {
+      "builder": "new",
+      "params": {
+        "WirePitchScaleFactor": 3.0
+      }
+    },
+    "new_no2hit": {
+      "builder": "new",
+      "params": {
+        "SaveMythicalPoints": false
+      }
+    },
+    "new_minph2_8": {
+      "builder": "new",
+      "params": {
+        "MinPHFor2HitPoints": 8.0
+      }
+    },
+    "new_phlow4": {
+      "builder": "new",
+      "params": {
+        "PHLowSelection": 4.0
+      }
+    },
+    "new_tpp2": {
+      "builder": "new",
+      "params": {
+        "MaxTripletsPerPair": 2
+      }
+    },
+    "new_mpw4": {
+      "builder": "new",
+      "params": {
+        "MaxMythicalPointsPerWire": 4
+      }
+    }
+  }
+}

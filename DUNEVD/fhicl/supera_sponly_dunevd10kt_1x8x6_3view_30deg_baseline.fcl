@@ -1,0 +1,7 @@
+# Second pass, baseline Cluster3D builder (see supera_sponly_dunevd10kt_1x8x6_3view_30deg.fcl)
+#include "standard_supera_dunevd10kt_1x8x6_3view_30deg_baseline.fcl"
+
+process_name: SuperaSP
+
+physics.reco:       [ cluster3d ]
+physics.end_paths:  [ outana ]
