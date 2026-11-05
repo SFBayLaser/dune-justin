@@ -1,6 +1,6 @@
 {
   "workflow": {
-    "description": "TMS single-muon small test, 1 T-equivalent re-laid map: reco of the A edep files with the map-based field model, fit momentum",
+    "description": "TMS muon 5k test, 1T-equiv re-laid map: map-reader reco, fit",
     "mql": "files from usertests:fnal-wWORKFLOWID_OF_N5S_STAGE1s1p1"
   },
   "defaults": {

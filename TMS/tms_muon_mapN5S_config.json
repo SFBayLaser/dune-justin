@@ -1,6 +1,6 @@
 {
   "workflow": {
-    "description": "TMS single-muon small test (5000 muons): revised 100x100x5 mm map with plates re-laid at the GDML positions and scaled to the +-1 T bend integral (Mapper_global_100_100_05_RELAID_1T.txt), mapped sim (stage 1), then BUILT-IN reco with the +-1 T field tags, fit momentum",
+    "description": "TMS muon 5k test, 1T-equiv re-laid map: map sim, built-in reco, fit",
     "monte_carlo": 5
   },
   "defaults": {
