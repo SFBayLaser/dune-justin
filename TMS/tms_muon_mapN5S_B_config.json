@@ -1,0 +1,33 @@
+{
+  "workflow": {
+    "description": "TMS single-muon small test, 1 T-equivalent re-laid map: reco of the A edep files with the map-based field model, fit momentum",
+    "mql": "files from usertests:fnal-wWORKFLOWID_OF_N5S_STAGE1s1p1"
+  },
+  "defaults": {
+    "repo": "SFBayLaser/dune-justin",
+    "ref": "main",
+    "lifetime_days": 30,
+    "max_distance": 60,
+    "limit_sites": false,
+    "tarfile_dir": "/cvmfs/fifeuser3.opensciencegrid.org/sw/dune/e77a4b378328cb20a3a3a49b2c2f472994f3f36d"
+  },
+  "stages": [
+    {
+      "id": 1,
+      "jobscript": "TMS/tms_muon_reco_tuple.jobscript",
+      "wall_seconds": 7200,
+      "rss_mib": 6000,
+      "env": {
+        "TMS_PRODUCTION_TAG": "TMSReco_muonmapN5SMapFit_v01",
+        "TUPLE_SCRIPT_URL": "https://raw.githubusercontent.com/SFBayLaser/dune-justin/main/TMS/muon_tuple.py",
+        "FIELD_MAP_SOURCE": "/cvmfs/fifeuser2.opensciencegrid.org/sw/dune/ba64c7cc102b6c6dd9538e9ead74067a1b953d1e/fieldmap/Mapper_global_100_100_05_RELAID_1T.txt",
+        "FIELD_MAP_SHA256": "b65d140e7bd16bc370f43143ed3306a819c48357ea5a063eff73227c278d2f44",
+        "MOMENTUM_FROM_RANGE": "false"
+      },
+      "output_patterns": [
+        "*_tuple.root",
+        "*_convert.log"
+      ]
+    }
+  ]
+}

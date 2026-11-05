@@ -1,0 +1,49 @@
+{
+  "workflow": {
+    "description": "TMS single-muon small test (5000 muons): revised 100x100x5 mm map with plates re-laid at the GDML positions and scaled to the +-1 T bend integral (Mapper_global_100_100_05_RELAID_1T.txt), mapped sim (stage 1), then BUILT-IN reco with the +-1 T field tags, fit momentum",
+    "monte_carlo": 5
+  },
+  "defaults": {
+    "repo": "SFBayLaser/dune-justin",
+    "ref": "main",
+    "lifetime_days": 30,
+    "max_distance": 60,
+    "limit_sites": false
+  },
+  "stages": [
+    {
+      "id": 1,
+      "jobscript": "TMS/muon_edepsim.jobscript",
+      "wall_seconds": 3600,
+      "rss_mib": 3000,
+      "env": {
+        "NEVENTS": "1000",
+        "SEED_BASE": "500000",
+        "CHARGE": "alternate",
+        "GEOM_TAG": "cleannew",
+        "FIELD_TAG": "fieldmapn5s",
+        "GDML_URL": "file:///cvmfs/fifeuser2.opensciencegrid.org/sw/dune/ba64c7cc102b6c6dd9538e9ead74067a1b953d1e/fieldmap/nd_hall_80layers_MAPPED_n5s.gdml",
+        "GDML_SHA256": "d5279dd0c66f803504f563b319c0e3561ea050553f89a6585af0416966d9a746",
+        "MAP_SOURCE": "/cvmfs/fifeuser2.opensciencegrid.org/sw/dune/ba64c7cc102b6c6dd9538e9ead74067a1b953d1e/fieldmap/Mapper_global_100_100_05_RELAID_1T.txt",
+        "MAP_SHA256": "b65d140e7bd16bc370f43143ed3306a819c48357ea5a063eff73227c278d2f44"
+      },
+      "output_pattern_next_stage": "*.edep.root"
+    },
+    {
+      "id": 2,
+      "jobscript": "TMS/tms_muon_reco_tuple.jobscript",
+      "wall_seconds": 7200,
+      "rss_mib": 6000,
+      "tarfile_dir": "/cvmfs/fifeuser3.opensciencegrid.org/sw/dune/e77a4b378328cb20a3a3a49b2c2f472994f3f36d",
+      "env": {
+        "TMS_PRODUCTION_TAG": "TMSReco_muonmapN5SBuiltin_v01",
+        "MOMENTUM_FROM_RANGE": "false",
+        "TUPLE_SCRIPT_URL": "https://raw.githubusercontent.com/SFBayLaser/dune-justin/main/TMS/muon_tuple.py"
+      },
+      "output_patterns": [
+        "*_tuple.root",
+        "*_convert.log"
+      ]
+    }
+  ]
+}
