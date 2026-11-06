@@ -145,3 +145,20 @@ Facts established from the stored values: 2-hit chi2 is capped exactly at `Delta
    `HitWidthScaleFactor`, `MaxHitChiSquare`, `MaxMythicalChiSquare`, `MaxMythicalPointsPerWire`,
    `WirePitchScaleFactor`. Run the reco stage only, on a fixed detsim sample.
 5. Confirm the best settings with SPINE-level metrics and on dunesw v10_26_00d05.
+
+## No-jitter check of the drift-axis (x) offset (2026-11-06)
+
+Samples regenerated with `G4TimeJitter: 0` (`mpvmpr_gen_1x2x6_nojitter.fcl`, `mpvmpr_gen_vd_1x8x6_nojitter.fcl`):
+`samples/FD_330002` (40 ev), `samples/VD_20002` (20 ev). Compared with the jittered `FD_330001`, `VD_20001`
+using `drift_shift.py` and `drift_tolerance.py` (first 8 events, new builder, ry = rz = 2).
+
+| sample | x peak shift (voxels) | frac at peak | y max frac | eff rx=2 / 4 | ghost rx=2 / 4 |
+|---|---|---|---|---|---|
+| FD jitter | -1 | 0.654 | 0.746 | 0.661 / 0.684 | 0.013 / 0.001 |
+| FD no jitter | +2 | 0.614 | 0.624 | 0.638 / 0.661 | 0.014 / 0.001 |
+| VD jitter | -1 | 0.764 | 0.785 | 0.614 / 0.643 | 0.001 / 0.000 |
+| VD no jitter | -1 | 0.886 | 0.870 | 0.612 / 0.637 | 0.000 / 0.000 |
+
+Without jitter the x distribution is as sharp as y and z (jitter broadened it), but a constant offset remains
+(FD +2, VD -1 voxels), so the x-tolerance sensitivity persists. The remaining offset is a systematic between truth
+and reco x (t0 convention, e.g. G4Time 5000 ns is ~0.8 cm at 1.6 mm/us), not a per-particle effect.

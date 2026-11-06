@@ -1,0 +1,5 @@
+# Same as mpvmpr_gen_vd_1x8x6.fcl but every generated particle gets the same time (no jitter).
+#include "mpvmpr_gen_vd_1x8x6.fcl"
+
+physics.producers.generator.G4TimeJitter: 0.
+physics.producers.rain.G4TimeJitter:      0.

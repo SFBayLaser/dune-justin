@@ -1,0 +1,6 @@
+# Same as mpvmpr_gen_1x2x6.fcl but every generated particle gets the same time (no jitter),
+# to test whether per-particle time offsets shift reco along the drift axis relative to truth.
+#include "mpvmpr_gen_1x2x6.fcl"
+
+physics.producers.generator.G4TimeJitter: 0.
+physics.producers.rain.G4TimeJitter:      0.
