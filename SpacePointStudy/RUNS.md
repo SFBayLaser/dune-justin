@@ -191,3 +191,29 @@ So the earlier offset (FD -2/+2 by drift volume, VD -1) is the 5 us generation t
 
 Removing the offset cuts the r = 2 ghost fraction from 0.011 to 0.003 and shrinks the gain from a wider x tolerance (+0.013 against +0.022),
 but the efficiency itself does not rise (different events, 20 each). A small x sensitivity remains.
+
+## Baseline vs new builder with art output, hit-level purity (2026-11-07)
+
+Sample `samples/FD_330003` (t0 = 0, no jitter). `scan_points_fd_art_notime.json` reruns cluster3d + Supera for `baseline` and `new_default`
+(MaxHitChiSquare 10, 20 events) with `supera_sponly_dune10kt_1x2x6[_baseline]_art.fcl`, which also write `sp_art.root`
+(cluster3d products, SimChannels, MCParticles, gaushit; ~0.5 GB per point) into `samples/FD_330003/artcmp/<point>/`.
+`sp_truth_purity.py` on events 0 to 7, raw space points (before Supera cuts):
+
+| builder | hits | points | pure | partial | mixed | untruthed |
+|---|---|---|---|---|---|---|
+| baseline | 3 | 207,607 | 84.6% | 9.1% | 6.2% | 0.2% |
+| new | 3 | 439,165 | 85.3% | 8.7% | 5.9% | 0.1% |
+| baseline | 2 | 890,868 | 64.5% | n/a | 35.3% | 0.2% |
+| new | 2 | 943,885 | 63.2% | n/a | 36.6% | 0.2% |
+
+`theta_inefficiency.py` (truth voxels of `cluster3d_sed` per particle, direction from `particle_pcluster`, theta_x folded to 0-90 deg,
+r = 2, particles with >= 20 voxels, 20 events; 1 - efficiency, baseline / new):
+
+| theta_x | 0-10 | 10-20 | 20-30 | 30-40 | 40-50 | 50-60 | 60-70 | 70-80 | 80-90 |
+|---|---|---|---|---|---|---|---|---|---|
+| voxels (baseline) | 279 | 6270 | 17103 | 13833 | 24497 | 56512 | 27348 | 98123 | 46046 |
+| 1 - eff baseline | 0.032 | 0.290 | 0.345 | 0.235 | 0.266 | 0.299 | 0.215 | 0.339 | 0.333 |
+| 1 - eff new | 0.032 | 0.286 | 0.344 | 0.235 | 0.265 | 0.297 | 0.214 | 0.338 | 0.332 |
+| 1 - eff(E) baseline | 0.005 | 0.073 | 0.055 | 0.034 | 0.046 | 0.049 | 0.039 | 0.055 | 0.053 |
+
+Json in `samples/FD_330003/artcmp/theta.json`.

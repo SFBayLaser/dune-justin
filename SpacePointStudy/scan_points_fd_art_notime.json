@@ -1,0 +1,21 @@
+{
+  "detector": {
+    "fcl_dir": "/run/media/usher/Drive2/DUNE/dune-justin/DUNESpineWorkshop2026/fhicl",
+    "fcl_new": "supera_sponly_dune10kt_1x2x6_art.fcl",
+    "fcl_baseline": "supera_sponly_dune10kt_1x2x6_baseline_art.fcl"
+  },
+  "input": "/run/media/usher/Drive2/DUNE/samples/FD_330003/FD_330003_g4_detsim_supera.root",
+  "events": 20,
+  "outdir": "/run/media/usher/Drive2/DUNE/samples/FD_330003/artcmp",
+  "common": {
+    "MaxHitChiSquare": 10.0
+  },
+  "points": {
+    "baseline": {
+      "builder": "baseline"
+    },
+    "new_default": {
+      "builder": "new"
+    }
+  }
+}

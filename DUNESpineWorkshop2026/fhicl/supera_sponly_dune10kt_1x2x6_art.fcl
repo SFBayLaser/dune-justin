@@ -1,0 +1,15 @@
+# As supera_sponly_dune10kt_1x2x6.fcl but also writes an art file (sp_art.root) with the cluster3d
+# products and the SimChannels, for hit-level truth matching with gallery (SpacePointStudy/sp_truth_purity.py).
+
+#include "supera_sponly_dune10kt_1x2x6.fcl"
+
+outputs.artout: {
+  module_type: RootOutput
+  fileName: "sp_art.root"
+  compressionLevel: 1
+  dataTier: "reco"
+  streamName: "out1"
+  outputCommands: [ "drop *", "keep *_cluster3d_*_*", "keep sim::SimChannels_*_*_*", "keep simb::MCParticles_*_*_*", "keep recob::Hits_gaushit_*_*" ]
+}
+physics.stream1:   [ artout ]
+physics.end_paths: [ outana, stream1 ]
