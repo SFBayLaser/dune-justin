@@ -162,3 +162,15 @@ using `drift_shift.py` and `drift_tolerance.py` (first 8 events, new builder, ry
 Without jitter the x distribution is as sharp as y and z (jitter broadened it), but a constant offset remains
 (FD +2, VD -1 voxels), so the x-tolerance sensitivity persists. The remaining offset is a systematic between truth
 and reco x (t0 convention, e.g. G4Time 5000 ns is ~0.8 cm at 1.6 mm/us), not a per-particle effect.
+
+## Hit-level truth matching (gallery) (2026-11-07)
+
+`sp_truth_purity.py`: reads the art file with gallery from PyROOT (setup dunesw, then `setup gallery v1_22_06 -q e26:prof`;
+no galleryUtils needed). Each cluster3d hit -> dominant particle via `SimChannel::TrackIDEs(start, end)` (abs(trackID));
+each space point is pure / partial / mixed / untruthed. SimChannel IDEs carry x, y, z, so a positional check is possible too.
+First look, FD_330002 events 7 and 11, new builder, raw (before Supera cuts):
+
+| hits | points | pure | partial | mixed | untruthed |
+|---|---|---|---|---|---|
+| 3 | 8664 | 95.3% | 2.9% | 0.8% | 1.1% |
+| 2 | 25149 | 63.6% | n/a | 35.6% | 0.9% |
