@@ -174,3 +174,20 @@ First look, FD_330002 events 7 and 11, new builder, raw (before Supera cuts):
 |---|---|---|---|---|---|
 | 3 | 8664 | 95.3% | 2.9% | 0.8% | 1.1% |
 | 2 | 25149 | 63.6% | n/a | 35.6% | 0.9% |
+
+## G4Time = 0 check (2026-11-07)
+
+Samples with `G4Time: 0` and `G4TimeJitter: 0` (`mpvmpr_gen_1x2x6_notime.fcl`, `mpvmpr_gen_vd_1x8x6_notime.fcl`): `samples/FD_330003` (20 ev), `samples/VD_20003` (10 ev).
+Voxel sizes from the Supera metadata: FD 0.479 cm (x range +-552 cm, 2304 voxels), VD 0.766 cm (+-325 cm, 849 voxels).
+`drift_shift_side.py` (x shift per x bin, first 8 events): peak shift is 0 in all four bins in both FD and VD, fraction at peak 0.74 to 0.91.
+So the earlier offset (FD -2/+2 by drift volume, VD -1) is the 5 us generation time against a clock that starts at 0 (`detectorclocks_dune.fcl`: G4RefTime 0, TriggerOffsetTPC 0).
+`drift_tolerance.py`, 20 events, new builder, ry = rz = 2, rx = 2 / 4:
+
+| sample | eff | eff(E) | eff > 0.5 MeV | ghost |
+|---|---|---|---|---|
+| FD_330003 (t0 = 0) | 0.643 / 0.656 | 0.904 / 0.907 | 0.951 / 0.953 | 0.003 / 0.001 |
+| FD_330002 (t0 = 5 us, no jitter) | 0.650 / 0.672 | 0.922 / 0.933 | 0.956 / 0.966 | 0.011 / 0.001 |
+| FD_330001 (t0 = 5 us + jitter) | 0.633 / 0.666 | 0.896 / 0.926 | 0.934 / 0.962 | 0.024 / 0.002 |
+
+Removing the offset cuts the r = 2 ghost fraction from 0.011 to 0.003 and shrinks the gain from a wider x tolerance (+0.013 against +0.022),
+but the efficiency itself does not rise (different events, 20 each). A small x sensitivity remains.

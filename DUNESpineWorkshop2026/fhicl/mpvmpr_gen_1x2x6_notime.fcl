@@ -1,0 +1,4 @@
+#include "mpvmpr_gen_1x2x6_nojitter.fcl"
+# No generation time offset or jitter: particles start at G4 time 0 (= TPC clock start)
+physics.producers.generator.G4Time: 0.
+physics.producers.rain.G4Time: 0.
