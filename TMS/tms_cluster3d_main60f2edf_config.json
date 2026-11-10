@@ -1,0 +1,43 @@
+{
+  "workflow": {
+    "description": "TMS MiniProdN5p3 FHC: Cluster3D + legacy reco, then validation (two stage), dune-tms main 60f2edf (PR #354)",
+    "mql": "files from neardet-lar-tms-sand:MiniProdN5p3_NDComplex_FHC_spill_full_sanddrift"
+  },
+  "defaults": {
+    "repo": "SFBayLaser/dune-justin",
+    "ref": "main",
+    "lifetime_days": 4,
+    "max_distance": 60,
+    "limit_sites": false,
+    "tarfile_dir": "/cvmfs/fifeuser2.opensciencegrid.org/sw/dune/01b5294ba04d9a39fd951e2e28d07eec856b0773"
+  },
+  "stages": [
+    {
+      "id": 1,
+      "jobscript": "TMS/tms.jobscript",
+      "wall_seconds": 28800,
+      "rss_mib": 4000,
+      "lifetime_days": 14,
+      "env": {
+        "TMS_PRODUCTION_TAG": "TMSReco_Cluster3D_v07"
+      },
+      "output_patterns": [
+        "*_Readout.root",
+        "*_convert.log"
+      ],
+      "output_pattern_next_stage": "*_RecoCandidates.root"
+    },
+    {
+      "id": 2,
+      "jobscript": "TMS/tms_validation_nodraw.jobscript",
+      "wall_seconds": 14400,
+      "rss_mib": 8000,
+      "lifetime_days": 14,
+      "output_patterns": [
+        "*_validation_legacy.root",
+        "*_validation_cluster3d.root",
+        "*_validation.log"
+      ]
+    }
+  ]
+}
