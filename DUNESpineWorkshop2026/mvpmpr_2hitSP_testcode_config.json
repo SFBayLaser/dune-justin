@@ -1,6 +1,6 @@
 {
   "workflow": {
-    "description": "gen->reco 2 hit",
+    "description": "FD HD MPVMPR new SP builder (8a986278)",
     "monte_carlo": 20
   },
 
@@ -11,7 +11,7 @@
     "max_distance": 60,
     "dunesw_version": "v10_24_00d00",
     "fhicl_files": "https://raw.githubusercontent.com/SFBayLaser/dune-justin/main/bundles/fhicl_bundle.tgz",
-    "tarfile_dir": "/cvmfs/fifeuser1.opensciencegrid.org/sw/dune/4de2fb4d19f920807e0a8e8b5b93dbea2c08229c"
+    "tarfile_dir": "/cvmfs/fifeuser1.opensciencegrid.org/sw/dune/b1e047352838e58c7fb1e808920974ee7a7dcb1d"
   },
 
   "stages": [
@@ -22,7 +22,7 @@
       "rss_mib": 4000,
       "env": {
         "NEVENTS": "50",
-        "RUN_BASE": "310000",
+        "RUN_BASE": "340000",
         "JOB_FHICL_FILE": "mpvmpr_gen_1x2x6.fcl"
       },
       "output_pattern_next_stage": "*_gen.root"

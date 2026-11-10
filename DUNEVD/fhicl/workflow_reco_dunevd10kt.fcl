@@ -27,6 +27,13 @@
 
 BEGIN_PROLOG
 
+# SpacePointBuilderDUNE (space points only, no clustering/pattern recognition products) running the ORIGINAL SnippetHit3DBuilderDUNE tool;
+# the Fast tool (standard_spacepointbuilderdune default) has not proven itself.
+standard_spacepointbuilderdune_origtool: @local::standard_spacepointbuilderdune
+standard_spacepointbuilderdune_origtool.Hit3DBuilderAlg: @local::standard_snippethit3dbuilderDUNE
+standard_spacepointbuilderdune_origtool.Hit3DBuilderAlg.MaxHitChiSquare: 10.   # as in the baseline fcl (tool default is 6)
+
+
 dunefd_vertdrift_producers:
 {
    rns:            { module_type: "RandomNumberSaver" }
@@ -34,7 +41,7 @@ dunefd_vertdrift_producers:
    # Actual hit finder
    gaushit:            @local::dunevdfd_gaushitfinder
    # Spacepoints from hit finder
-   cluster3d:          @local::standard_spacepointbuilderdune
+   cluster3d:          @local::standard_spacepointbuilderdune_origtool
    # Pattern recognition
    pandora:            @local::dunefdvd_pandora_neutrino
    # Characterisation
