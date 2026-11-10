@@ -1,6 +1,6 @@
 {
   "workflow": {
-    "description": "FD VD MPVMPR new SP builder (8a986278)",
+    "description": "FD VD MPVMPR SpacePointBuilderDUNE module, original SP tool",
     "monte_carlo": 10
   },
 
