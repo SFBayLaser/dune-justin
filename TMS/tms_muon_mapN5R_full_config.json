@@ -1,0 +1,51 @@
+{
+  "workflow": {
+    "description": "TMS single-muon 200k: re-laid revised map (N5R, about 1.3 T), mapped sim then map-based reco, fit momentum",
+    "monte_carlo": 100
+  },
+  "defaults": {
+    "repo": "SFBayLaser/dune-justin",
+    "ref": "main",
+    "lifetime_days": 30,
+    "max_distance": 60,
+    "limit_sites": false
+  },
+  "stages": [
+    {
+      "id": 1,
+      "jobscript": "TMS/muon_edepsim.jobscript",
+      "wall_seconds": 7200,
+      "rss_mib": 3000,
+      "env": {
+        "NEVENTS": "2000",
+        "SEED_BASE": "900000",
+        "CHARGE": "alternate",
+        "GEOM_TAG": "cleannew",
+        "FIELD_TAG": "fieldmapn5r",
+        "GDML_URL": "file:///cvmfs/fifeuser1.opensciencegrid.org/sw/dune/0331f095b0cb6cbfdf199269309d26d74aac95d8/fieldmap/nd_hall_80layers_MAPPED_n5r.gdml",
+        "GDML_SHA256": "cd22e25673c8e17bd6d4bd7a1f3c4db012de40fcb66ad4a9f363093ada399cc3",
+        "MAP_SOURCE": "/cvmfs/fifeuser1.opensciencegrid.org/sw/dune/0331f095b0cb6cbfdf199269309d26d74aac95d8/fieldmap/Mapper_global_100_100_05_RELAID.txt",
+        "MAP_SHA256": "4d3ab9bd5382b0ec835a85cb1bcd0b88f2036b3de7c2e638eb9441d64ad27e4e"
+      },
+      "output_pattern_next_stage": "*.edep.root"
+    },
+    {
+      "id": 2,
+      "jobscript": "TMS/tms_muon_reco_tuple.jobscript",
+      "wall_seconds": 10800,
+      "rss_mib": 6000,
+      "tarfile_dir": "/cvmfs/fifeuser3.opensciencegrid.org/sw/dune/e77a4b378328cb20a3a3a49b2c2f472994f3f36d",
+      "env": {
+        "TMS_PRODUCTION_TAG": "TMSReco_muonmapN5RFull_v01",
+        "MOMENTUM_FROM_RANGE": "false",
+        "TUPLE_SCRIPT_URL": "https://raw.githubusercontent.com/SFBayLaser/dune-justin/main/TMS/muon_tuple.py",
+        "FIELD_MAP_SOURCE": "/cvmfs/fifeuser1.opensciencegrid.org/sw/dune/0331f095b0cb6cbfdf199269309d26d74aac95d8/fieldmap/Mapper_global_100_100_05_RELAID.txt",
+        "FIELD_MAP_SHA256": "4d3ab9bd5382b0ec835a85cb1bcd0b88f2036b3de7c2e638eb9441d64ad27e4e"
+      },
+      "output_patterns": [
+        "*_tuple.root",
+        "*_convert.log"
+      ]
+    }
+  ]
+}
