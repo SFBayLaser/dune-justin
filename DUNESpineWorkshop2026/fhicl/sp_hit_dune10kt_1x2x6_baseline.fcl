@@ -1,0 +1,16 @@
+# Hit-level scan stage: rerun ONLY the space point builder on an existing *_supera.root and write a small art file
+# (sp_art.root: cluster3d products + gaushit, no Supera, no SimChannels; truth is read from the input file by
+# SpacePointStudy/sp_truth_scan.py). Builder = standard Cluster3D (baseline).
+
+#include "supera_sponly_dune10kt_1x2x6_baseline.fcl"
+
+outputs.artout: {
+  module_type: RootOutput
+  fileName: "sp_art.root"
+  compressionLevel: 1
+  dataTier: "reco"
+  streamName: "out1"
+  outputCommands: [ "drop *", "keep *_cluster3d_*_*", "keep recob::Hits_gaushit_*_*" ]
+}
+physics.stream1:   [ artout ]
+physics.end_paths: [ stream1 ]

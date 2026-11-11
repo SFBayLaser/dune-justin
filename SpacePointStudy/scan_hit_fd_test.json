@@ -1,0 +1,16 @@
+{
+  "detector": {
+    "fcl_dir": "/run/media/usher/Drive2/DUNE/dune-justin/DUNESpineWorkshop2026/fhicl",
+    "fcl_new": "sp_hit_dune10kt_1x2x6.fcl",
+    "fcl_baseline": "sp_hit_dune10kt_1x2x6_baseline.fcl"
+  },
+  "input": "/run/media/usher/Drive2/DUNE/samples/FD_330003/FD_330003_g4_detsim_supera.root",
+  "events": 8,
+  "outdir": "/run/media/usher/Drive2/DUNE/samples/FD_330003/hitscan_test",
+  "common": {"MaxHitChiSquare": 10.0},
+  "points": {
+    "baseline": {"builder": "baseline"},
+    "new_default": {"builder": "new"},
+    "new_chi5": {"builder": "new", "params": {"MaxHitChiSquare": 5.0}}
+  }
+}

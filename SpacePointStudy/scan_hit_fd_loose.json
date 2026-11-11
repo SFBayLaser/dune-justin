@@ -1,0 +1,185 @@
+{
+ "_comment": "Screening scan, one parameter at a time around new_default; MaxHitChiSquare (and MaxMythicalChiSquare) stay fixed because the chi-square is used by the SPINE/Supera deghosting. Goal: find the parameters that raise recall of true points per event, set them as loose as the point volume allows.",
+ "detector": {
+  "fcl_dir": "/run/media/usher/Drive2/DUNE/dune-justin/DUNESpineWorkshop2026/fhicl",
+  "fcl_new": "sp_hit_dune10kt_1x2x6.fcl",
+  "fcl_baseline": "sp_hit_dune10kt_1x2x6_baseline.fcl"
+ },
+ "input": "/run/media/usher/Drive2/DUNE/samples/FD_330003/FD_330003_g4_detsim_supera.root",
+ "events": 8,
+ "outdir": "/run/media/usher/Drive2/DUNE/samples/FD_330003/hitscan_loose",
+ "common": {
+  "MaxHitChiSquare": 10.0
+ },
+ "points": {
+  "baseline": {
+   "builder": "baseline"
+  },
+  "new_default": {
+   "builder": "new"
+  },
+  "hwsf_3.5": {
+   "builder": "new",
+   "params": {
+    "HitWidthScaleFactor": 3.5
+   }
+  },
+  "hwsf_5": {
+   "builder": "new",
+   "params": {
+    "HitWidthScaleFactor": 5.0
+   }
+  },
+  "dpts_3": {
+   "builder": "new",
+   "params": {
+    "DeltaPeakTimeSig": 3.0,
+    "HitWidthScaleFactor": 3.5
+   }
+  },
+  "dpts_4": {
+   "builder": "new",
+   "params": {
+    "DeltaPeakTimeSig": 4.0,
+    "HitWidthScaleFactor": 4.5
+   }
+  },
+  "dptsl_3": {
+   "builder": "new",
+   "params": {
+    "DeltaPeakTimeSigLongHit": 3.0,
+    "HitWidthScaleFactor": 3.5
+   }
+  },
+  "dptsl_5": {
+   "builder": "new",
+   "params": {
+    "DeltaPeakTimeSigLongHit": 5.0,
+    "HitWidthScaleFactor": 5.5
+   }
+  },
+  "wps_2.5": {
+   "builder": "new",
+   "params": {
+    "WirePitchScaleFactor": 2.5
+   }
+  },
+  "wps_3.5": {
+   "builder": "new",
+   "params": {
+    "WirePitchScaleFactor": 3.5
+   }
+  },
+  "rns_4": {
+   "builder": "new",
+   "params": {
+    "RangeNumSigma": 4.0
+   }
+  },
+  "rns_5": {
+   "builder": "new",
+   "params": {
+    "RangeNumSigma": 5.0
+   }
+  },
+  "lhs_1": {
+   "builder": "new",
+   "params": {
+    "LongHitsStretchFactor": 1.0
+   }
+  },
+  "lhs_2.5": {
+   "builder": "new",
+   "params": {
+    "LongHitsStretchFactor": 2.5
+   }
+  },
+  "phf_0.2": {
+   "builder": "new",
+   "params": {
+    "PulseHeightFraction": 0.2
+   }
+  },
+  "phf_0": {
+   "builder": "new",
+   "params": {
+    "PulseHeightFraction": 0.0
+   }
+  },
+  "phl_4": {
+   "builder": "new",
+   "params": {
+    "PHLowSelection": 4.0
+   }
+  },
+  "phl_0": {
+   "builder": "new",
+   "params": {
+    "PHLowSelection": 0.0
+   }
+  },
+  "mph_2": {
+   "builder": "new",
+   "params": {
+    "MinPHFor2HitPoints": 2.0
+   }
+  },
+  "mph_0": {
+   "builder": "new",
+   "params": {
+    "MinPHFor2HitPoints": 0.0
+   }
+  },
+  "trip_8": {
+   "builder": "new",
+   "params": {
+    "MaxTripletsPerPair": 8
+   }
+  },
+  "trip_32": {
+   "builder": "new",
+   "params": {
+    "MaxTripletsPerPair": 32
+   }
+  },
+  "trip_64": {
+   "builder": "new",
+   "params": {
+    "MaxTripletsPerPair": 64
+   }
+  },
+  "myth_8": {
+   "builder": "new",
+   "params": {
+    "MaxMythicalPointsPerWire": 8
+   }
+  },
+  "myth_32": {
+   "builder": "new",
+   "params": {
+    "MaxMythicalPointsPerWire": 32
+   }
+  },
+  "myth_64": {
+   "builder": "new",
+   "params": {
+    "MaxMythicalPointsPerWire": 64
+   }
+  },
+  "loose_all": {
+   "builder": "new",
+   "params": {
+    "HitWidthScaleFactor": 5.0,
+    "DeltaPeakTimeSig": 3.0,
+    "DeltaPeakTimeSigLongHit": 3.0,
+    "WirePitchScaleFactor": 2.5,
+    "RangeNumSigma": 4.0,
+    "PulseHeightFraction": 0.2,
+    "PHLowSelection": 4.0,
+    "MinPHFor2HitPoints": 2.0,
+    "MaxTripletsPerPair": 32,
+    "MaxMythicalPointsPerWire": 32
+   }
+  }
+ }
+}

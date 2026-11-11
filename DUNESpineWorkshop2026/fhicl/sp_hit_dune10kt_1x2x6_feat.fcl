@@ -1,0 +1,5 @@
+# As sp_hit_dune10kt_1x2x6.fcl, but the producer is SpacePointBuilderDUNEFeat: same builder, plus the hit sharing features
+# in SpacePoint ErrXYZ()[2], [4], [5] (see Cluster3D/SpacePointBuilderDUNEFeat_module.cc).
+#include "sp_hit_dune10kt_1x2x6.fcl"
+
+physics.producers.cluster3d.module_type: SpacePointBuilderDUNEFeat
