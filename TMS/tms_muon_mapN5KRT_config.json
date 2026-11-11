@@ -1,0 +1,33 @@
+{
+  "workflow": {
+    "description": "TMS single-muon 200k: reco only of the approx. 30 kA-turns re-laid map (N5K) edep files (workflow 23043) with the range-table momentum (MomentumFromRange=true, dune-tms with PR #352), map-based reco field",
+    "mql": "files from usertests:fnal-w23043s1p1"
+  },
+  "defaults": {
+    "repo": "SFBayLaser/dune-justin",
+    "ref": "main",
+    "lifetime_days": 30,
+    "max_distance": 60,
+    "limit_sites": false,
+    "tarfile_dir": "/cvmfs/fifeuser1.opensciencegrid.org/sw/dune/b6d4ea731894d84a3788f4d5671680c9bcec3984"
+  },
+  "stages": [
+    {
+      "id": 1,
+      "jobscript": "TMS/tms_muon_reco_tuple.jobscript",
+      "wall_seconds": 10800,
+      "rss_mib": 6000,
+      "env": {
+        "TMS_PRODUCTION_TAG": "TMSReco_muonmapN5KRT_v01",
+        "MOMENTUM_FROM_RANGE": "true",
+        "TUPLE_SCRIPT_URL": "https://raw.githubusercontent.com/SFBayLaser/dune-justin/main/TMS/muon_tuple.py",
+        "FIELD_MAP_SOURCE": "/cvmfs/fifeuser2.opensciencegrid.org/sw/dune/8c11608ea3f7e5a707b61eb803c5fecefd85b053/fieldmap/Mapper_global_100_100_05_RELAID_30kA.txt",
+        "FIELD_MAP_SHA256": "447f183345e4b60e8a99b098f1bfda21918d1ac50a69b8c05a680bed134a8c55"
+      },
+      "output_patterns": [
+        "*_tuple.root",
+        "*_convert.log"
+      ]
+    }
+  ]
+}
