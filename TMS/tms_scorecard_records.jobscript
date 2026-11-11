@@ -1,0 +1,181 @@
+#!/bin/bash
+# justIN jobscript: extract the per-muon records that the requirements scorecard and the Gaussian core fits start from,
+# from one RecoCandidates file made by the tms.jobscript stage (legacy and Cluster3D trees). Output, one small file per
+# input (about 10 kB):
+#   <base>_scorecard_records.json.gz     records, concatenated and analysed locally by aggregate_records.py
+#   <base>_scorecard.log
+# The extraction code is extract_records.py (the loops of reports/2026-09-28_scorecard/scorecard.py and
+# range_gaus_fit.py, unchanged), embedded below so that the jobscript is the only file to publish. Needs PyROOT from the
+# packaged dune-tms environment (setup.sh), same tarball as the reconstruction (INPUT_TAR_DIR_LOCAL).
+
+echo "=== TMS scorecard records job starting ==="
+echo "Host: $(hostname)"
+echo "PWD:  $(pwd -P)"
+echo "JUSTIN_PATH=${JUSTIN_PATH:-unset}"
+
+workdir="$(pwd -P)"
+
+# ----------------------------------------------------------------------
+# Allocate one RecoCandidates input (the output of the previous stage)
+# ----------------------------------------------------------------------
+if [[ -z "${JUSTIN_PATH:-}" ]]; then
+  echo "ERROR: JUSTIN_PATH is not set (not running under justIN wrapper?)" >&2
+  exit 2
+fi
+
+alloc="$("$JUSTIN_PATH/justin-get-file")"
+if [[ -z "$alloc" ]]; then
+  echo "No input file allocated by justIN"
+  exit 0
+fi
+
+did="$(echo "$alloc" | awk '{print $1}')"
+pfn="$(echo "$alloc" | awk '{print $2}')"
+rse="$(echo "$alloc" | awk '{print $3}')"
+
+echo "Input: did=$did pfn=$pfn rse=$rse"
+
+input_name=$(basename "${did#*:}")
+local_input="${workdir}/${input_name}"
+
+echo "Copying input locally: $pfn -> $local_input"
+xrdcp -f "$pfn" "$local_input"
+xrd_status=$?
+
+if [ $xrd_status -ne 0 ] || [ ! -s "$local_input" ]; then
+    echo "ERROR: Failed to copy input file locally"
+    exit 1
+fi
+ls -lh "$local_input"
+
+# ----------------------------------------------------------------------
+# dune-tms currently requires Scientific Linux 7
+# ----------------------------------------------------------------------
+if ! grep -q "Scientific Linux" /etc/redhat-release 2>/dev/null; then
+  echo "ERROR: not an SL7 environment ($(cat /etc/redhat-release 2>/dev/null))" >&2
+  exit 3
+fi
+
+# ----------------------------------------------------------------------
+# Set up the packaged dune-tms build
+# ----------------------------------------------------------------------
+TAR_DIR="${INPUT_TAR_DIR_LOCAL:-}"
+TMS_BUILD="${TAR_DIR}/dune-tms"
+if [[ -z "$TAR_DIR" || ! -f "$TMS_BUILD/setup.sh" ]]; then
+  echo "ERROR: tarball directory (${TAR_DIR:-unset}) does not contain dune-tms/setup.sh" >&2
+  exit 4
+fi
+
+echo "Using packaged dune-tms build: $TMS_BUILD"
+cd "$TMS_BUILD" || exit 4
+# setup.sh intentionally sets TMS_DIR from PWD.
+source setup.sh
+setup_rc=$?
+if [[ $setup_rc -ne 0 ]]; then
+  echo "ERROR: dune-tms setup.sh failed with status $setup_rc" >&2
+  exit $setup_rc
+fi
+
+cd "$workdir" || exit 4
+
+# ----------------------------------------------------------------------
+# Extract the records
+# ----------------------------------------------------------------------
+base=$(basename "${did#*:}" .root)
+records="${workdir}/${base}_scorecard_records.json.gz"
+log="${workdir}/${base}_scorecard.log"
+cat > "${workdir}/extract_records.py" << 'PYEOF'
+# Per-file extraction for the requirements scorecard (reports/2026-09-28_scorecard/scorecard.py) and the Gaussian core
+# fits (range_gaus_fit.py). Reads ONE RecoCandidates file and writes the per-muon records both analyses start from, as
+# gzipped JSON, so that records of many files can be concatenated and analysed locally (aggregate_records.py).
+# The extraction loops are copied unchanged from those two scripts.
+# Usage: python3 extract_records.py <RecoCandidates.root> <out.json.gz>
+import ROOT, sys, json, gzip, math
+ROOT.gROOT.SetBatch(True)
+fn, outname = sys.argv[1], sys.argv[2]
+MMU = 0.1056584
+XLO, XHI, YLO, YHI, ZHI, MARGIN = -3501.0, 3501.0, -3102.0, 398.0, 18510.0, 100.0
+def ke(p): return math.sqrt(p * p + MMU * MMU) - MMU
+def clean(x):
+    return None if (isinstance(x, float) and not math.isfinite(x)) else x
+out = {"file": fn}
+for tracker, rt_name, ti_name in [("legacy", "Reco_Tree", "Truth_Info"), ("cluster3d", "Reco_Tree_C3D", "Truth_Info_C3D")]:
+    muons = []
+    f = ROOT.TFile.Open(fn)
+    ts, rt, ti = f.Get("Truth_Spill"), f.Get(rt_name), f.Get(ti_name)
+    best = {}
+    for e in range(rt.GetEntries()):
+        rt.GetEntry(e); ti.GetEntry(e)
+        for it in range(min(rt.nTracks, 20)):
+            ip = ti.RecoTrackPrimaryParticleIndex[it]
+            if ip < 0 or abs(ti.RecoTrackPrimaryParticlePDG[it]) != 13: continue
+            tot = ti.RecoTrackTrueVisibleEnergy[it]
+            pur = ti.RecoTrackPrimaryParticleTrueVisibleEnergy[it] / tot if tot > 0 else 0.0
+            k = (rt.SpillNo, ip)
+            if k in best and best[k]["purity"] >= pur: continue
+            ent = [ti.RecoTrackPrimaryParticleTruePositionEnteringTMS[4 * it + j] for j in range(3)]
+            pent = [ti.RecoTrackPrimaryParticleTrueMomentumEnteringTMS[4 * it + j] for j in range(4)]
+            end = [rt.EndPos[4 * it + j] for j in range(3)]
+            best[k] = dict(purity=pur, charge=rt.Charge[it], p_reco=rt.Momentum[it],
+                           start=[rt.StartPos[4 * it + j] for j in range(3)], sdir=[rt.StartDirection[3 * it + j] for j in range(3)],
+                           ent=ent, pent=pent,
+                           reco_stops=(XLO + MARGIN < end[0] < XHI - MARGIN and YLO + MARGIN < end[1] < YHI - MARGIN and end[2] < ZHI - MARGIN))
+    for e in range(ts.GetEntries()):
+        ts.GetEntry(e)
+        spill_vis = 0.0
+        cand = []
+        for ip in range(ts.nTrueParticles):
+            if ts.TMSFiducialTouch[ip]: spill_vis += ts.TrueVisibleEnergy[ip]
+            if abs(ts.PDG[ip]) != 13 or not ts.LArFiducialStart[ip]: continue
+            b = [ts.BirthMomentum[4 * ip + j] for j in range(4)]
+            if b[2] <= 0: continue
+            cand.append((ip, b, ts.BirthPosition[4 * ip + 2], ts.PositionTMSEnd[4 * ip + 2]))
+        for ip, b, vz, zend in cand:
+            p = math.sqrt(b[0] ** 2 + b[1] ** 2 + b[2] ** 2) / 1000.0
+            theta = math.degrees(math.atan2(math.hypot(b[0], b[1]), b[2]))
+            c = best.get((ts.SpillNo, ip))
+            muons.append(dict(T=ke(p), p=p, theta=theta, vz=vz, zend=zend, pdg=int(ts.PDG[ip]), enters=bool(ts.TMSFiducialTouch[ip]),
+                              stops=bool(ts.TMSFiducialEnd[ip]) and bool(ts.TMSFiducialTouch[ip]),
+                              spill_vis=spill_vis, credit=c))
+    # --- range_gaus_fit.py collection: each muon's most complete track, true momentum entering the TMS vs reco momentum
+    pvals = []
+    for e in range(rt.GetEntries()):
+        rt.GetEntry(e); ti.GetEntry(e)
+        bst = {}
+        for it in range(rt.nTracks):
+            if abs(ti.RecoTrackPrimaryParticlePDG[it]) != 13 or not ti.RecoTrackPrimaryParticleLArFiducialStart[it]: continue
+            ip = ti.RecoTrackPrimaryParticleIndex[it]
+            if ip < 0: continue
+            if ip not in bst or ti.RecoTrackPrimaryParticleTrueVisibleEnergy[it] > ti.RecoTrackPrimaryParticleTrueVisibleEnergy[bst[ip]]: bst[ip] = it
+        for ip, it in bst.items():
+            if not ti.RecoTrackPrimaryParticleTMSFiducialEnd[it]: continue
+            m = ti.RecoTrackPrimaryParticleTrueMomentumEnteringTMS
+            pt = math.sqrt(sum(m[it * 4 + d] ** 2 for d in range(3)))
+            pr = rt.Momentum[it]
+            if pt > 0 and pr > 0 and math.isfinite(pr): pvals.append((pt / 1000.0, (pr - pt) / pt))
+    f.Close()
+    out[tracker] = {"muons": muons, "pvals": pvals}
+    print(tracker, len(muons), "muons,", len(pvals), "momentum entries")
+with gzip.open(outname, "wt") as g:
+    json.dump(out, g, default=clean, allow_nan=False)
+PYEOF
+python3 -c "import ROOT; print('PyROOT', ROOT.__version__)" > "$log" 2>&1 || { echo "ERROR: PyROOT not available" >&2; cat "$log" >&2; exit 5; }
+start=$(date +%s)
+python3 "${workdir}/extract_records.py" "$local_input" "$records" >> "$log" 2>&1
+rc=$?
+echo "extract_records exit $rc after $(( $(date +%s) - start )) s"
+tail -5 "$log"
+if [[ $rc -ne 0 || ! -s "$records" ]]; then
+  echo "ERROR: record extraction failed (exit $rc)" >&2
+  exit 6
+fi
+ls -lh "$records" "$log"
+
+rm -f "$local_input"
+
+# Tell justIN that the allocated input was successfully processed.
+echo "$did" >> "$workdir/justin-processed-dids.txt"
+echo "Wrote processed DID: $did"
+
+echo "=== TMS scorecard records job completed successfully ==="
+exit 0

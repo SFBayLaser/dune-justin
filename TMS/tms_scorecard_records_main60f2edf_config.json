@@ -1,0 +1,27 @@
+{
+  "workflow": {
+    "description": "TMS scorecard records (per-muon records for the PDR table and Gaussian core fits) from the RecoCandidates of workflow 23031 (dune-tms main 60f2edf)",
+    "mql": "files from usertests:fnal-w23031s1p3"
+  },
+  "defaults": {
+    "repo": "SFBayLaser/dune-justin",
+    "ref": "main",
+    "lifetime_days": 4,
+    "max_distance": 60,
+    "limit_sites": false,
+    "tarfile_dir": "/cvmfs/fifeuser2.opensciencegrid.org/sw/dune/01b5294ba04d9a39fd951e2e28d07eec856b0773"
+  },
+  "stages": [
+    {
+      "id": 1,
+      "jobscript": "TMS/tms_scorecard_records.jobscript",
+      "wall_seconds": 7200,
+      "rss_mib": 4000,
+      "lifetime_days": 14,
+      "output_patterns": [
+        "*_scorecard_records.json.gz",
+        "*_scorecard.log"
+      ]
+    }
+  ]
+}
