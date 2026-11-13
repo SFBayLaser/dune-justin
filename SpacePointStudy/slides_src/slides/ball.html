@@ -1,0 +1,17 @@
+<section id="ball" data-transition="fade">
+<div class="stack">
+<p class="eyebrow">THE BALL LABEL</p>
+<h2>True means one particle feeds all three hits locally</h2>
+<p class="small-lead">Slide a ball of radius R along a particle’s deposits. A point is true if inside one ball every hit gets at least f of its energy from that particle, and the point is within 0.5 cm of the particle’s deposits there. Long hits count.</p>
+<table class="t">
+<tr><th style="width:24%">Share judged true</th><th style="width:13%;text-align:right">Truth triple</th><th style="width:13%;text-align:right">W hit 1 wire off</th><th style="width:13%;text-align:right">2 wires</th><th style="width:13%;text-align:right">3 wires</th><th style="width:12%;text-align:right">5 wires</th><th style="width:12%;text-align:right">Random W</th></tr>
+<tr><td>Ball R = 0.5 cm</td><td style="text-align:right">92.4%</td><td style="text-align:right">67.4%</td><td style="text-align:right">30.6%</td><td style="text-align:right">6.5%</td><td style="text-align:right">0.0%</td><td style="text-align:right">0.3%</td></tr>
+<tr style="background:#E3ECFB"><td>Ball R = 1 cm</td><td style="text-align:right">95.8%</td><td style="text-align:right">84.4%</td><td style="text-align:right">67.1%</td><td style="text-align:right">43.0%</td><td style="text-align:right">2.2%</td><td style="text-align:right">0.4%</td></tr>
+<tr><td>Ball R = 2 cm</td><td style="text-align:right">97.7%</td><td style="text-align:right">91.9%</td><td style="text-align:right">85.5%</td><td style="text-align:right">76.9%</td><td style="text-align:right">49.0%</td><td style="text-align:right">0.8%</td></tr>
+<tr><td>Old single-deposit label</td><td style="text-align:right">100%</td><td style="text-align:right">39.9%</td><td style="text-align:right">2.6%</td><td style="text-align:right">0.0%</td><td style="text-align:right">0.0%</td><td style="text-align:right">0.2%</td></tr>
+</table>
+<p class="small-lead">The ball accepts wrong hits up to about R away. R = 2 cm is too loose, so we use R = 1 cm.</p>
+</div>
+<p class="foot">Decoys: W hit of a true triple replaced by one k wires away (1 wire ≈ 0.48 cm). Ball only, f ≥ 0.05, 4 events.</p>
+<aside>This is the leniency test of the ball label. We take true triples, swap the W hit for a hit on a wire k away within 15 ticks, and see how often the label still says true. At R = 1 cm it accepts most one- and two-wire shifts but rejects five wires; at R = 2 cm it accepts a hit 2.4 cm off half of the time, so that radius is too large. The real label also requires the point to be within 0.5 cm of the particle's deposits, which tightens this further; the table does not include that condition. A random W hit is accepted under 1% in every case.</aside>
+</section>

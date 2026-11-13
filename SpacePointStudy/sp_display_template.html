@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Space point event display</title>
+<style>
+  :root { --bg:#101216; --panel:#1a1d23; --fg:#dfe3ea; --mut:#8b93a1; --line:#2b303a; }
+  html,body { margin:0; height:100%; background:var(--bg); color:var(--fg); font:13px/1.4 system-ui,sans-serif; overflow:hidden; }
+  #c { position:absolute; inset:0; }
+  #panel { position:absolute; top:10px; left:10px; width:290px; max-height:calc(100% - 20px); overflow:auto; background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:12px 14px; }
+  h1 { font-size:14px; margin:0 0 2px; } .sub { color:var(--mut); margin-bottom:10px; }
+  .row { display:flex; align-items:center; gap:8px; margin:5px 0; } .row label { flex:1; cursor:pointer; }
+  .sw { width:11px; height:11px; border-radius:50%; flex:none; } .cnt { color:var(--mut); font-variant-numeric:tabular-nums; }
+  hr { border:0; border-top:1px solid var(--line); margin:10px 0; }
+  select, button { background:#0f1115; color:var(--fg); border:1px solid var(--line); border-radius:5px; padding:3px 6px; font:inherit; }
+  button { cursor:pointer; } button:hover { border-color:var(--mut); }
+  input[type=range] { flex:1; } .small { color:var(--mut); font-size:12px; margin-top:8px; }
+</style></head><body>
+<div id="c"></div>
+<div id="panel">
+  <h1 id="title">Event display</h1><div class="sub" id="sub"></div>
+  <div class="row"><label for="ev">Event</label><select id="ev"></select></div>
+  <hr>
+  <div class="row"><span class="sw" style="background:#2ec4ff"></span><input type="checkbox" id="l_sed" checked><label for="l_sed">SimEnergyDeposit</label><span class="cnt" id="n_sed"></span></div>
+  <div class="row"><span class="sw" style="background:#ff4fd8"></span><input type="checkbox" id="l_ide" checked><label for="l_ide">SimChannel IDE xyz</label><span class="cnt" id="n_ide"></span></div>
+  <div class="row"><span class="sw" style="background:#ffe600"></span><input type="checkbox" id="l_t3" checked><label for="l_t3">true space points, 3-hit</label><span class="cnt" id="n_t3"></span></div>
+  <div class="row"><span class="sw" style="background:#ff9f1a"></span><input type="checkbox" id="l_t2" checked><label for="l_t2">true space points, 2-hit</label><span class="cnt" id="n_t2"></span></div>
+  <div class="row"><span class="sw" style="background:#d0d3d8"></span><input type="checkbox" id="l_o"><label for="l_o">other space points</label><span class="cnt" id="n_o"></span></div>
+  <div class="row"><span class="sw" style="background:conic-gradient(#ff5a5a 0 33%,#4be07a 0 66%,#4da3ff 0)"></span><input type="checkbox" id="l_ax" checked><label for="l_ax">axes (x drift, y up, z beam)</label></div>
+  <hr>
+  <div class="small" style="margin:0 0 4px">What counts as true</div>
+  <div class="row"><label>label</label><select id="lt"><option value="ball">sliding ball (particle level)</option><option value="old">single deposit (old)</option></select></div>
+  <div class="row"><label id="f_lab">fraction f ≥</label><select id="f"></select></div>
+  <div id="g_ball">
+    <div class="row"><label>ball radius R</label><select id="br"></select><span>cm</span></div>
+    <div class="row"><input type="checkbox" id="bp" checked><label for="bp">point within 0.5 cm of the particle's deposits in the ball</label></div>
+    <div class="small">hits of all kinds incl. long hits. true = one particle gives each hit at least f of its energy inside one ball of radius R.</div>
+  </div>
+  <div id="g_old">
+    <div class="row"><label>deposit distance δ ≤</label><select id="d"><option>0.2</option><option>0.4</option></select><span>cm</span></div>
+    <div class="row"><label>point within tol of deposits</label><select id="t"><option value="0.3">0.3</option><option value="0.5" selected>0.5</option><option value="1">1.0</option><option value="none">off</option></select><span>cm</span></div>
+    <div class="small">normal hits only; f is applied per 0.2 cm voxel (biased against inclined tracks).</div>
+  </div>
+  <hr>
+  <div class="row"><label>deposit point size</label><input type="range" id="s_d" min="1" max="8" step="0.5" value="2"></div>
+  <div class="row"><label>space point size</label><input type="range" id="s_p" min="1" max="12" step="0.5" value="4"></div>
+  <div class="row"><button id="v0">reset</button><button id="v1">side (z–y)</button><button id="v2">top (z–x)</button><button id="v3">drift (x–y)</button></div>
+  <div class="small" id="foot"></div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+const DATA = __DATA__;
+const $ = id => document.getElementById(id);
+const dec = (s, T) => { const b = atob(s), u = new Uint8Array(b.length); for (let i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return new T(u.buffer); };
+// larsoft (x,y,z) -> scene (z,y,x): the long detector axis is horizontal
+const toScene = (src, idx) => { const n = idx ? idx.length : src.length / 3, o = new Float32Array(n * 3);
+  for (let k = 0; k < n; k++) { const i = idx ? idx[k] : k; o[3*k] = src[3*i+2]; o[3*k+1] = src[3*i+1]; o[3*k+2] = src[3*i]; } return o; };
+
+const renderer = new THREE.WebGLRenderer({ antialias: true }); renderer.setPixelRatio(devicePixelRatio); $('c').appendChild(renderer.domElement);
+const scene = new THREE.Scene(); scene.background = new THREE.Color(0x101216);
+const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1e6); const controls = new THREE.OrbitControls(camera, renderer.domElement); controls.enableDamping = true;
+function resize() { const w = innerWidth, h = innerHeight; renderer.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix(); } addEventListener('resize', resize); resize();
+
+const COL = { sed: 0x2ec4ff, ide: 0xff4fd8, t3: 0xffe600, t2: 0xff9f1a, o: 0xd0d3d8 };
+const mats = {}; for (const k in COL) mats[k] = new THREE.PointsMaterial({ color: COL[k], size: 3, sizeAttenuation: false });
+mats.o.transparent = true; mats.o.opacity = 0.55;
+const layers = {};
+function setLayer(name, pos) {
+  if (layers[name]) { scene.remove(layers[name]); layers[name].geometry.dispose(); }
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.computeBoundingSphere();
+  const p = new THREE.Points(g, mats[name]); p.visible = $('l_' + name.replace('sed', 'sed').replace('ide', 'ide')).checked; layers[name] = p; scene.add(p);
+}
+let cur = null, box = new THREE.Box3();
+
+function loadEvent(i) {
+  const E = DATA.events[i], P = E.pts; cur = { E, P, sed: dec(E.sed.xyz, Float32Array), ide: dec(E.ide.xyz, Float32Array),
+    xyz: dec(P.xyz, Float32Array), nh: dec(P.nh, Uint8Array), lg: dec(P.long, Uint8Array), dmin: dec(P.dmin, Uint8Array), pd: dec(P.pdist, Uint8Array), bpos: P.ball_pos ? dec(P.ball_pos, Uint8Array) : null, bany: P.ball_any ? dec(P.ball_any, Uint8Array) : null };
+  setLayer('sed', toScene(cur.sed)); setLayer('ide', toScene(cur.ide)); $('n_sed').textContent = E.sed.n; $('n_ide').textContent = E.ide.n;
+  $('sub').textContent = `run ${E.run}  event ${E.ev}  (index ${E.index})  ·  deposits voxelised at ${DATA.vox} cm`;
+  updatePoints(); fit(); buildAxes(); view(0);
+}
+function updatePoints() {
+  const c = cur, N = c.E.pts.n, fv = parseFloat($('f').value), fi = DATA.fracs.indexOf(fv), dl = parseFloat($('d').value), tl = $('t').value === 'none' ? 1e9 : parseFloat($('t').value);
+  const ball = $('lt').value === 'ball' && c.bpos, ri = DATA.ballR.indexOf(parseFloat($('br').value)), bArr = ball ? ($('bp').checked ? c.bpos : c.bany) : null;
+  $('g_ball').style.display = ball ? '' : 'none'; $('g_old').style.display = ball ? 'none' : ''; $('f_lab').textContent = ball ? 'energy fraction f ≥' : 'shared deposit fraction f ≥';
+  const t3 = [], t2 = [], o = [];
+  for (let i = 0; i < N; i++) {
+    const ok = ball ? bArr[ri * N + i] / 250 >= fv - 1e-6 : (c.lg[i] === 0 && c.dmin[fi * N + i] / 100 <= dl + 1e-6 && c.pd[fi * N + i] / 20 <= tl + 1e-6);
+    (ok ? (c.nh[i] === 3 ? t3 : t2) : o).push(i);
+  }
+  setLayer('t3', toScene(c.xyz, t3)); setLayer('t2', toScene(c.xyz, t2)); setLayer('o', toScene(c.xyz, o));
+  $('n_t3').textContent = t3.length; $('n_t2').textContent = t2.length; $('n_o').textContent = o.length;
+  $('foot').textContent = `3-hit points embedded: ${[...c.nh].filter(x => x === 3).length}; 2-hit points are embedded only if true under the loosest label (f 0.01, δ 0.4, or ball f 0.01).`;
+}
+function fit() { box = new THREE.Box3(); for (const k of ['sed', 'ide', 't3', 't2']) { const g = layers[k].geometry; if (g.attributes.position.count) { g.computeBoundingBox(); box.union(g.boundingBox); } } }
+function view(kind) {
+  const c = box.getCenter(new THREE.Vector3()), s = box.getSize(new THREE.Vector3()), r = Math.max(s.x, s.y, s.z, 10) * 1.1, d = r / Math.tan(Math.PI / 8);
+  controls.target.copy(c);
+  const dirs = [new THREE.Vector3(0.5, 0.45, 1), new THREE.Vector3(0, 0, 1), new THREE.Vector3(0, 1, 0.001), new THREE.Vector3(1, 0, 0)];   // scene axes: X=z, Y=y, Z=x
+  camera.position.copy(c).addScaledVector(dirs[kind].normalize(), d); camera.up.set(0, 1, 0); if (kind === 2) camera.up.set(0, 0, -1); camera.lookAt(c); controls.update();
+}
+function sizes() { mats.sed.size = mats.ide.size = parseFloat($('s_d').value) + 1; mats.ide.size = parseFloat($('s_d').value); for (const k of ['t3', 't2', 'o']) mats[k].size = parseFloat($('s_p').value); mats.o.size = parseFloat($('s_p').value) * 0.7; }
+DATA.events.forEach((e, i) => { const o = document.createElement('option'); o.value = i; o.textContent = `index ${e.index} (evt ${e.ev})`; $('ev').appendChild(o); });
+DATA.fracs.forEach(f => { const o = document.createElement('option'); o.textContent = f; if (Math.abs(f - 0.05) < 1e-9) o.selected = true; $('f').appendChild(o); });
+(DATA.ballR || []).forEach(r => { const o = document.createElement('option'); o.textContent = r; if (Math.abs(r - 1) < 1e-9) o.selected = true; $('br').appendChild(o); });
+if (!DATA.ballR || !DATA.ballR.length || !DATA.events[0].pts.ball_pos) { $('lt').value = 'old'; $('lt').querySelector('option[value=ball]').disabled = true; }
+$('title').textContent = DATA.title; document.title = 'Event display – ' + DATA.title;
+$('ev').onchange = () => loadEvent(+$('ev').value);
+['f', 'd', 't', 'lt', 'br', 'bp'].forEach(id => $(id).onchange = updatePoints);
+['sed', 'ide', 't3', 't2', 'o'].forEach(k => $('l_' + k).onchange = () => { layers[k].visible = $('l_' + k).checked; });
+['s_d', 's_p'].forEach(id => $(id).oninput = sizes);
+[0, 1, 2, 3].forEach(k => $('v' + k).onclick = () => view(k));
+// ---- double-click: make the nearest drawn point (visible layers only) the orbit/zoom focal point; C re-centres on the data
+const pivot = new THREE.Points(new THREE.BufferGeometry().setAttribute('position', new THREE.BufferAttribute(new Float32Array(3), 3)), new THREE.PointsMaterial({ color: 0xffffff, size: 12, sizeAttenuation: false, depthTest: false, transparent: true }));
+pivot.visible = false; pivot.renderOrder = 10; scene.add(pivot);
+const hud = document.createElement('div'); hud.style.cssText = 'position:fixed;left:12px;bottom:34px;font:12px system-ui,sans-serif;color:#cfd3da;background:rgba(16,18,22,.75);padding:3px 8px;border-radius:6px;pointer-events:none';
+hud.textContent = 'double-click a point to set the focal point · C = re-centre on data'; document.body.appendChild(hud);
+let tween = null;
+function setFocus(v, text) {
+  const from = controls.target.clone(), t0 = performance.now(); tween = { from, to: v.clone(), t0 };
+  hud.textContent = text;
+}
+function stepTween() {
+  if (!tween) return; const k = Math.min(1, (performance.now() - tween.t0) / 250), e = k * (2 - k);
+  controls.target.copy(tween.from).lerp(tween.to, e); if (k >= 1) tween = null;
+}
+renderer.domElement.addEventListener('dblclick', ev => {
+  const rect = renderer.domElement.getBoundingClientRect(), mx = ev.clientX - rect.left, my = ev.clientY - rect.top, R = 14;
+  camera.updateMatrixWorld(); const M = new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse).elements;
+  let best = null, bd = 1e30;
+  for (const name in layers) {
+    const L = layers[name]; if (!L.visible) continue; const a = L.geometry.attributes.position.array;
+    for (let i = 0; i < a.length; i += 3) {
+      const x = a[i], y = a[i + 1], z = a[i + 2], w = M[3] * x + M[7] * y + M[11] * z + M[15]; if (w <= 0) continue;
+      const sx = (M[0] * x + M[4] * y + M[8] * z + M[12]) / w, sy = (M[1] * x + M[5] * y + M[9] * z + M[13]) / w;
+      const px = (sx * 0.5 + 0.5) * rect.width, py = (1 - (sy * 0.5 + 0.5)) * rect.height, d = Math.hypot(px - mx, py - my);
+      if (d > R) continue;
+      const score = d + w * 1e-4;   // prefer the closest on screen, the nearer one on ties
+      if (score < bd) { bd = score; best = [x, y, z, name]; }
+    }
+  }
+  if (!best) { hud.textContent = 'no visible point within ' + R + ' px of the click'; return; }
+  const v = new THREE.Vector3(best[0], best[1], best[2]); pivot.geometry.attributes.position.array.set([best[0], best[1], best[2]]); pivot.geometry.attributes.position.needsUpdate = true; pivot.geometry.computeBoundingSphere(); pivot.visible = true;
+  const nm = { sed: 'deposit', ide: 'SimChannel', t3: '3-hit point', t2: '2-hit point', o: 'other point' }[best[3]] || best[3];
+  setFocus(v, `focal point: ${nm}  x ${best[2].toFixed(1)}  y ${best[1].toFixed(1)}  z ${best[0].toFixed(1)} cm`);
+});
+addEventListener('keydown', ev => { if (ev.key === 'c' || ev.key === 'C') { if (/INPUT|SELECT|TEXTAREA/.test((ev.target || {}).tagName || '')) return; pivot.visible = false; setFocus(box.getCenter(new THREE.Vector3()), 'focal point: centre of the data'); } });
+// ---- axes: (1) frame with cm ticks at the minimum corner of the data, (2) orientation gizmo in the bottom-right corner
+const AX = [{ n: 'x (drift)', col: '#ff5a5a', dir: [0, 0, 1], si: 2 }, { n: 'y (up)', col: '#4be07a', dir: [0, 1, 0], si: 1 }, { n: 'z (beam)', col: '#4da3ff', dir: [1, 0, 0], si: 0 }];   // si = scene axis index
+function label(text, col, h) {
+  const c = document.createElement('canvas'); c.width = 256; c.height = 64; const g = c.getContext('2d'); g.font = 'bold 36px system-ui, sans-serif'; g.fillStyle = col; g.textAlign = 'center'; g.fillText(text, 128, 44);
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), depthTest: false, transparent: true })); s.scale.set(h * 4, h, 1); return s;
+}
+let axesGroup = null;
+function niceStep(len) { const raw = len / 6, p = Math.pow(10, Math.floor(Math.log10(raw))), m = raw / p; return (m < 1.5 ? 1 : m < 3.5 ? 2 : m < 7.5 ? 5 : 10) * p; }
+function buildAxes() {
+  if (axesGroup) { scene.remove(axesGroup); }
+  axesGroup = new THREE.Group(); const mn = box.min, mx = box.max, sz = box.getSize(new THREE.Vector3()), h = Math.max(sz.x, sz.y, sz.z, 10) * 0.045;
+  for (const a of AX) {
+    const lo = mn.getComponent(a.si), hi = mx.getComponent(a.si), o = mn.clone(), e = mn.clone(); e.setComponent(a.si, hi);
+    axesGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([o, e]), new THREE.LineBasicMaterial({ color: a.col })));
+    const step = niceStep(hi - lo);
+    for (let v = Math.ceil(lo / step) * step; v <= hi + 1e-6; v += step) {
+      const p = mn.clone(); p.setComponent(a.si, v);
+      const tick = label(String(Math.round(v)), a.col, h); const off = new THREE.Vector3(); off.setComponent((a.si + 1) % 3, -h * 1.2); tick.position.copy(p).add(off); axesGroup.add(tick);
+      const q = p.clone(); q.setComponent((a.si + 1) % 3, mn.getComponent((a.si + 1) % 3) - h * 0.5); axesGroup.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([p, q]), new THREE.LineBasicMaterial({ color: a.col })));
+    }
+    const nm = label(a.n + ' [cm]', a.col, h * 1.5); const pe = e.clone(); pe.setComponent((a.si + 1) % 3, mn.getComponent((a.si + 1) % 3) - h * 3.2); nm.position.copy(pe); axesGroup.add(nm);
+  }
+  axesGroup.visible = $('l_ax').checked; scene.add(axesGroup);
+}
+const gScene = new THREE.Scene(), gCam = new THREE.OrthographicCamera(-1.7, 1.7, 1.7, -1.7, 0.1, 20), gAxes = new THREE.Group(); gCam.position.set(0, 0, 6); gScene.add(gAxes);
+for (const a of AX) {
+  const d = new THREE.Vector3(...a.dir); gAxes.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), d]), new THREE.LineBasicMaterial({ color: a.col })));
+  const l = label(a.n.split(' ')[0], a.col, 0.7); l.position.copy(d).multiplyScalar(1.3); gAxes.add(l);
+}
+function drawGizmo() {
+  if (!$('l_ax').checked) return; const s = 160, w = innerWidth, h = innerHeight; gAxes.quaternion.copy(camera.quaternion).invert();
+  renderer.setScissorTest(true); renderer.setViewport(w - s - 10, 10, s, s); renderer.setScissor(w - s - 10, 10, s, s); renderer.clearDepth(); renderer.render(gScene, gCam);
+  renderer.setScissorTest(false); renderer.setViewport(0, 0, w, h);
+}
+$('l_ax').onchange = () => { if (axesGroup) axesGroup.visible = $('l_ax').checked; };
+renderer.autoClear = false;
+sizes(); loadEvent(0);
+(function loop() { requestAnimationFrame(loop); stepTween(); controls.update(); renderer.clear(); renderer.render(scene, camera); drawGizmo(); })();
+</script></body></html>

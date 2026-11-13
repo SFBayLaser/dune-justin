@@ -449,3 +449,220 @@ Fhicl comes from the bundles on GitHub main (identical to the repo fhicl dirs ch
 
 The Fast tool has not proven itself (no speed gain, equal coverage), so the default space point build in the production fcls is now `SpacePointBuilderDUNE` (module: space points only, no clustering/PR products) running the ORIGINAL `SnippetHit3DBuilderDUNE` tool with `MaxHitChiSquare: 10`. Done in `DUNESpineWorkshop2026/fhicl/workflow_reco_dune10kt.fcl` and `DUNEVD/fhicl/workflow_reco_dunevd10kt.fcl` (prolog entry `standard_spacepointbuilderdune_origtool`; dunereco and the tarball are unchanged, `standard_spacepointbuilderdune` in dunereco still defaults to Fast). Both bundles `bundles/fhicl_bundle.tgz`, `fhicl_vd_bundle.tgz` rebuilt locally, differing from HEAD only in that file; NOT pushed (justIN reads them from GitHub main). Checked with `--debug-config` (all four standard/baseline top-level fcls) and a 1-event `sp_hit_dune10kt_1x2x6.fcl` run (rc 0).
 Note: the earlier "testcode" configuration (new module + Fast tool) ran with the tool default `MaxHitChiSquare: 6`, while the baseline fcls use 10; the scan used 10 for both. Any justIN sample made before this change with the testcode configs used chi2 6.
+
+## Baseline tool review and failure funnel (2026-11-11)
+
+Code review of `SnippetHit3DBuilderDUNE` (baseline) vs `SnippetHit3DBuilderDUNEFast`: the physics cuts are identical (1.7 sigma pair gate, 3 sigma triplet window, 0.95 pitch third-wire window); Fast differs in candidate selection (baseline: first passing third hit in wire order wins, a hit pair can be in one triplet only; Fast: all candidates scored, up to MaxTripletsPerPair per pair, hits shared) and Fast never sets MADESPACEPOINT on the input pair (the baseline gate that stops 2-hit points where a third-plane candidate exists is dead there). The chi-square cuts are not binding in the baseline: false 3-hit points have chi2 99% = 6.2 (cut 10), and the mythical cut (10) exceeds what the 1.7 sigma pair gate allows (2.9). Stored chi2 is not a calibrated statistic (pulse RMS as the timing error). 2-hit points are 85% of the baseline's normal points and 1.6% true.
+
+Failure funnel `sp_funnel.py baseline --other new_default --roi --geom --cache truth_ide_cache.pkl` (8 FD events, 67549 normal truth triples at f 0.05, delta 0.2 cm; baseline builds 17.3%): snippet overlap never fails; plane time offsets are zero (median signed dt 0.0 ticks). First failing criterion: pulse-height filter 23.1% (an upper bound on what it costs: filter off, PulseHeightFraction 0, adds only 1.5 points of recall), pair time cut 19.2% (38% of truth triples fail it for at least one pair; truth dt spread is +-0.9 to 1.2 sigma of the pulse widths), third-wire window 11.2% fail for both possible left-out planes and 6.9% for one, selection (built by Fast only) 10.4%, unexplained 18.7% (pass every re-evaluated cut, built by neither). The third-wire window is the same closure quantity cut at different strengths per left-out plane: truth triples inside 0.456 cm: left-out W 88.7%, U or V 66%; the left-out plane is set by the pair counts. Lattice validated: 99.9% of built baseline triples lie inside the window. Caveats: truth triples are redundant (adjacent wires), so these are shares of triples, not coverage; the pulse-height snippet is approximated; geometry from a lattice fitted to the builder's own 3-hit points.
+
+### Where the truth triples die inside the builder (2026-11-11, diagnostics in the Fast tool)
+
+NOTE on the scan harness: since the default reset (2026-11-10) `sp_hit_dune10kt_1x2x6.fcl` and the other `supera_sponly_*` fcls include `workflow_reco_dune10kt.fcl`, so the "new" builder there is now the ORIGINAL tool in the new module, not Fast. To run Fast add `physics.producers.cluster3d: @local::standard_spacepointbuilderdune` to the point fcl. The scan results of 2026-11-09 (hitscan_loose) used Fast.
+
+dunereco (uncommitted, `SnippetHit3DBuilderDUNEFast_tool.cc`): fcl parameters `DiagTripletFile` (list written by `sp_funnel.py --dump-triples`) and `DiagOutFile` log every pair and triplet evaluation that involves a listed truth triple (output unchanged: same point counts as new_default); `NoExclusivity: true` lets a hit pair that is already in a point form further triplets (test switch). Analysis: `sp_funnel_diag.py diag_triples.txt triplet_diag.txt --fast dir --base dir`.
+Deepest stage reached by the 67549 normal truth triples (8 FD events, Fast, chi2 10): built 24.3%; PH filter 10.8%; pair time (coarse 7.9% + 1.7 sigma 17.0%) 24.9%; third-wire window 17.1% (best candidate median 0.61 cm vs 0.456 cm cut); hit pair already matched (exclusivity, also active in Fast across snippet iterations) 21.4%; partner pair 1.2%; chi-square and the rest ~0.
+Switching the exclusivity off (`NoExclusivity: true`, dir `noexcl`): 3-hit points/ev 32904 (new_default 21431, baseline 11767), true 3-hit points/ev 3836 (2053, 1458), true fraction 11.7% (9.6%, 12.4%), recall 45.4% (24.3%, 17.3%), 2-hit points/ev 70171 (73250, 64899), position error unchanged (0.30 cm); CPU unchanged. Not yet checked with Supera voxel efficiency.
+
+### Symmetric third-wire window (2026-11-11)
+Fast tool, new switch `SymmetricThirdWire` (dunereco, uncommitted): the third-wire distance is scaled by lambda_t / max(lambda) (lambda_t = |n_a x n_b| of the two other wire normals; factors U,V,W = 0.616, 0.616, 1 for the FD HD geometry) so that the same closure condition is cut whichever plane is left out; WirePitchScaleFactor still sets the cut. Same 8 FD events, chi2 10, true = f 0.05, delta 0.2 cm, normal hits:
+| point | 3-hit pts/ev | 2-hit pts/ev | true 3h | true 3h/ev | recall |
+|---|---|---|---|---|---|
+| baseline | 11767 | 64899 | 12.4% | 1458 | 17.3% |
+| new_default (Fast) | 21431 | 73250 | 9.6% | 2053 | 24.3% |
+| noexcl | 32904 | 70171 | 11.7% | 3836 | 45.4% |
+| sym | 23870 | 73052 | 8.9% | 2134 | 25.3% |
+| sym_noexcl | 44554 | 67434 | 10.2% | 4563 | 54.0% |
+| sym_noexcl, WirePitchScaleFactor 2.5 | 63898 | 63519 | 8.0% | 5100 | 60.4% |
+The window alone does little while the exclusivity is on (+81 true points); on top of NoExclusivity it adds 727 true points for 11650 more 3-hit points (6% marginal precision); widening to 2.5 pitch adds 537 for 19344. Position error unchanged (0.28 to 0.31 cm). The exclusivity is the efficient change; the window is a volume trade.
+
+## Strict truth label: deposit sharing plus point position (2026-11-11)
+
+The old label (hits share one deposit at f, delta) does not say the built point is at that deposit, and f=0.05 lets a hit match through a 5% contribution.
+`sp_truth_dep.py` now also prints a `STRICT` block: a 3-hit point counts only if its hits share a deposit at (f, delta) AND the point lies within `tol` of the
+centroid of the matched deposits (tol 0.3, 0.5, 1.0 cm). Per event, normal hits, delta 0.2 cm, 8 FD events, chi2 10. Precision = strict-true / all normal 3-hit points;
+recall = share of normal truth triples built as a strict-true point. The same block is in `dep_strict.log` in every variant directory.
+
+| variant | 3-hit pts/ev | f=0.05 old label | f=0.05, tol 0.5: n / prec / recall | f=0.2, tol 0.5: n / prec / recall | f=0.2, tol 0.3: n / prec / recall |
+|---|---|---|---|---|---|
+| baseline | 11767 | 1458 | 1226 / 10.4% / 14.5% | 386 / 3.3% / 28.0% | 280 / 2.4% / 20.4% |
+| Fast default | 21431 | 2053 | 1671 / 7.8% / 19.8% | 478 / 2.2% / 34.7% | 340 / 1.6% / 24.7% |
+| Fast, NoExclusivity | 32904 | 3836 | 3216 / 9.8% / 38.1% | 892 / 2.7% / 64.7% | 668 / 2.0% / 48.5% |
+| Fast, symmetric window | 23870 | 2134 | 1734 / 7.3% / 20.5% | 476 / 2.0% / 34.6% | 332 / 1.4% / 24.1% |
+| Fast, sym + NoExclusivity | 44554 | 4563 | 3525 / 7.9% / 41.7% | 1016 / 2.3% / 73.7% | 754 / 1.7% / 54.8% |
+| Fast, sym + NoExcl, 2.5 pitch | 63898 | 5100 | 3195 / 5.0% / 37.8% | 1093 / 1.7% / 79.4% | 810 / 1.3% / 58.8% |
+
+Findings:
+- Requiring the point within 0.5 cm of the deposits removes 16 to 23% of the old-label true points; within 0.3 cm about half. Many "true" points were hit-consistent but placed several mm off.
+- Raising f from 0.05 to 0.2 cuts the true counts about 3x, so much of the old true count rests on hits where the shared deposit gives 5 to 20% of the charge.
+- Real precision is 2 to 3% at f=0.2, not the 8 to 12% of the old label.
+- The ranking of variants is unchanged: NoExclusivity gives about 1.9x the strict-true points of Fast default at the same precision as the baseline; the symmetric window adds about 10% more;
+  widening to 2.5 pitch lowers strict precision and at f=0.05 even lowers the strict count (3195 vs 3525), so that widening is not worth it.
+- Strict recall at f=0.05 is 15 to 42%, so most truth triples are still not built as an accurate point.
+
+Caveat found with the event display (2026-11-12): the f in this label is applied per 0.2 cm voxel of one particle (`tracks()` in `sp_truth_dep.py`: a deposit counts only if its voxel carries
+at least f of the hit's total energy). When a hit's charge comes from a long stretch of track (track inclined to the wire planes, drift-parallel), no single voxel reaches f, so correctly placed
+points fail the label. Event idx 1 (evt 2), a track at an angle in the drift direction, 243 normal-hit points within 40 cm of one segment: with f=0.2 95% have no qualifying shared deposit, with f=0.05 45%;
+of the rest 19% have a shared deposit within 0.5 cm, 6% at 0.5-1 cm, 18% at 1-2 cm, 11% at 2-5 cm (the best triple of deposits is spread along the track, not wrong particles).
+So the f=0.2 rows above are biased against inclined tracks and should not be used as the headline label. Run the distances with `SP_DMAX=5` (env var, search limit in cm) to see beyond 0.5 cm.
+A particle-level label is needed: hits share a particle at f of the hit energy summed over the whole particle, and the point lies within tol of that particle's deposits in each hit's window.
+
+## Ball-window truth label (2026-11-12)
+
+`sp_truth_dep.py` options: `--dump --ball` (per-point ballF_R*_pos/any columns), `--ball-recall` (site-level recall, `--ball-region EV x0 x1 y0 y1 z0 z1` for one region), `--oracle --ball` (decoy test), `--ball-r`, `--ball-tol`, `--ball-xscale`.
+Label: a point is true if one particle gives each of its hits at least f of the hit's energy inside one ball of radius R (any hit, long hits included) and the point is within 0.5 cm of that particle's deposits in the ball.
+Event displays (`display_*.html`) offer it next to the old single-deposit label.
+
+Leniency (4 events, 1000 old-label truth triples per event, ball only, no position condition): percentage of decoy triples judged TRUE when the W hit of a true triple is replaced by a W hit k wires away (within 15 ticks):
+
+| R cm | f | truth triples | shift 1 | shift 2 | shift 3 | shift 5 | shift 10 | random W |
+|---|---|---|---|---|---|---|---|---|
+| 0.5 | 0.05 | 92.4% | 67.4% | 30.6% | 6.5% | 0.0% | 0.0% | 0.3% |
+| 1 | 0.05 | 95.8% | 84.4% | 67.1% | 43.0% | 2.2% | 0.0% | 0.4% |
+| 2 | 0.05 | 97.7% | 91.9% | 85.5% | 76.9% | 49.0% | 0.0% | 0.8% |
+| 1 | 0.2 | 77.0% | 66.6% | 50.0% | 30.0% | 1.0% | 0.0% | 0.3% |
+| 2 | 0.2 | 89.9% | 83.3% | 76.8% | 67.0% | 38.8% | 0.0% | 0.7% |
+
+(old label, f 0.05, delta 0.2: shift 1 39.9%, shift 2 2.6%, shift 3 0%.) One wire is about 0.48 cm. The ball accepts wrong hits up to about R away; R=2 accepts a hit 2.4 cm off half the time, so use R of 1 cm (or 0.5) and treat R=2 as a loose reference.
+
+Site-level recall (a site = particle x 1 cm cell; covered if a built point has one hit per view in the site's hit sets and lies within 0.5 cm of the particle's deposits; events 0 and 1, baseline, R 1 cm, f 0.05):
+95 to 97% of the sites with hits in all three views are covered by a true 3-hit point (this is not comparable with the triple-level recall of 14 to 42%, which counts every possible hit combination).
+Drift-parallel track of event idx 0 (x 131-254, y 285-330, z 58-113): about half the sites have hits in only two views (mostly V+W; the U hit is missing, my hypothesis is the weak induction signal for a track along the drift); those are covered 80 to 98% by 2-hit points.
+Of its sites with three normal hits, the baseline covers 73% and Fast without exclusivity 92% (f 0.05). The inclined track of event idx 1: 79 of 80 sites have three views and 100% are covered in both.
+
+### Ball label on 8 FD events (2026-11-12)
+
+`sp_truth_dep.py --dump --ball --ball-recall --ball-recall-r 1 --ball-recall-f 0.05 0.2`, output dirs `hitscan_loose/<variant>_b8` (points.npy, ball_recall.txt). Chi2 10, all hits (long hits included), per event.
+True = ball label (R 1 cm, f 0.05, point within 0.5 cm of the particle's deposits in the ball). 3-hit counts here include long-hit points, so they are larger than the normal-hit counts in the older tables.
+
+| variant | 3-hit pts/ev | true 3-hit/ev | precision | 2-hit pts/ev | true 2-hit/ev | 3-view sites covered by a true 3-hit pt (all hits / normal hits) |
+|---|---|---|---|---|---|---|
+| baseline | 25,951 | 3,635 | 14.0% | 111,358 | 1,096 | 97.3% / 95.6% |
+| Fast default | 54,896 | 6,554 | 11.9% | 117,986 | 905 | 97.7% / 95.5% |
+| Fast, NoExclusivity | 71,584 | 10,113 | 14.1% | 113,621 | 348 | 98.9% / 98.2% |
+| Fast, symmetric window + NoExclusivity | 105,637 | 13,635 | 12.9% | 107,040 | 248 | 99.2% / 98.8% |
+
+(f 0.2 gives the same ordering: precision 11.4, 9.2, 11.4, 10.2%.) 2,732 sites per event have hits in all three views (all hits, f 0.05); 183 have two views, 342 one.
+Long hits make up 30 to 39% of the true 3-hit points. Findings: the baseline already covers 97% of the three-view sites, so more points mostly add redundant copies of covered sites (2.8x the true points of the baseline in Fast+NoExclusivity for 1.5 to 4x the points, while coverage rises by 1.6 points).
+Precision is the problem: about 86% of 3-hit points are false under this label in every variant. Fast default has the lowest precision (11.9%); NoExclusivity brings it back to the baseline's. 2-hit points: true ones fall as 3-hit points take over their sites.
+
+### Where the false 3-hit points come from (2026-11-12)
+
+Ball label R 1 cm, f 0.05, point within 0.5 cm; 8 FD events; share of 3-hit points (`c_*` dump columns, `cat_cols()` in sp_truth_dep.py). Baseline / Fast default / NoExclusivity / sym+NoExcl:
+
+| Category | Baseline | Fast default | NoExcl | sym+NoExcl |
+|---|---|---|---|---|
+| True | 14.0% | 11.9% | 14.1% | 12.9% |
+| Same ball, point misplaced (>0.5 cm from deposits) | 8.4% | 6.9% | 7.9% | 7.2% |
+| One common particle, but hits not co-located (no ball with f >= 0.05) | 70.2% | 74.3% | 70.3% | 73.0% |
+| No common particle, two hits share one | 5.2% | 4.9% | 5.4% | 5.0% |
+| No common particle, no pair shares | 1.9% | 1.7% | 1.9% | 1.7% |
+| A hit has no particle (noise) | 0.3% | 0.3% | 0.3% | 0.3% |
+
+- The dominant false class (70-74%) is three hits from the SAME particle that are not at the same place: median distance from the point to the nearest deposit of the common particle 1.7-1.9 cm, 46-49% farther than 2 cm. These are same-track ghosts (long tracks cross the wire planes at different places), not noise or different particles. Cross-particle ghosts are ~7%, noise 0.3%.
+- Long hits are 65-69% of this class (30-39% of the true class), so long hits are over-represented among the false points.
+- Per-particle t0 check: signed x offset (point minus nearest deposit) for true points: mean -0.01 cm, median -0.015, rms 0.12-0.13 cm for all four variants. No systematic offset in this sample (the IDE/deposit positions already carry the hit time).
+- Note for Supera: matching to the nearest 3 mm voxel without checking the hits belong together would count most of the 70% class as true (their points are mostly near some deposit of the particle). Not yet measured.
+
+### Nearest-voxel (Supera-style) label, and what separates the same-particle ghosts (2026-11-12)
+
+Baseline, 8 events (other variants running; this section covers the baseline only). New dump columns `v_d` (distance point -> nearest deposit voxel of any particle), `v_nn` (how many of the point's 3 hits include the nearest voxel's particle), `v_nb` (best such count over voxels within 0.3 cm); `vox_near()` in sp_truth_dep.py. Caveat: the voxel set is the deposits (0.2 cm voxels of SimChannel IDEs) seen by hits of the event, not the full SimEnergyDeposit set, so the number of points with no voxel near them is a lower bound on how far they are from truth; 44% of 3-hit points have no hit-associated voxel within about 1 cm.
+
+| Nearest-voxel label (3-hit points, baseline) | Share of points labelled true | Of those, ball-true |
+|---|---|---|
+| nearest voxel within 0.5 cm, its particle in all 3 hits | 16.8% | 83% |
+| within 1.0 cm, same | 33.2% | 42% |
+| within 1.7 cm, same | 48.4% | 29% |
+| ball label (R 1 cm, f 0.05, 0.5 cm) | 14.0% | 100% |
+
+A nearest-voxel label only works if its distance cut is about 3-5 mm; at 1 cm it calls 2.4x as many points true as the ball label and at 1.7 cm 3.5x, because the same-particle ghosts lie 1-2 cm off the track. The particle of the nearest voxel being in all 3 hits is not enough on its own. All ball-true points pass the 0.5 cm version.
+
+Feature study on baseline 8 events, true vs same-particle ghost (AUC; 0.5 = no separation, <0.5 true points have lower values):
+- Normal-hit points (20,464 true, 50,444 ghost): deg3_max 0.13, deg_min 0.14, deg_max 0.16, chi2 0.21, dpeak 0.32; pulse widths 0.54-0.65, amplitudes 0.44, charges ~0.5.
+- Long-hit points (8,613 true, 95,219 ghost): nothing separates (deg 0.33-0.37, chi2 0.40, amplitude/charge 0.61, others ~0.5).
+- Hit degeneracy (deg3_max: how many other 3-hit points share the hit with the most partners) is the best single feature: true median 10 vs ghost 95. For normal hits, deg3_max <= 10 keeps 32% of the points and 68% of the true ones at precision 46% (from 21.7%). dpeak (peak-time spread of the three hits) <= 3 ticks keeps 25% of points, 52% of true, precision 46%. Together (dpeak <= 3 and deg3_max <= 10): 10% of points, 35% of true, precision 76%.
+- Whether such a cut loses site coverage (many points per site) is not yet tested.
+- Not a chi-square cut: chi2 separates too (0.21) but is off limits; dpeak and degeneracy are not.
+
+### Resolving competing combinations: which metric picks the right one? (2026-11-12)
+
+Baseline, 8 events, ball label. Dump now has `gi0..gi2` (event hit indices of the point's hits; -1 if absent). Scripts (scratchpad): contest.py, sel.py.
+
+- Nearly every false point is a recombination of hits that each belong to a true point: 99.9% of false normal-hit points share >=1 hit with a true point, 87% (all-hit points 90%) have EVERY hit in some true point. So the correct combination exists for the hits; the builder picks wrong partners.
+- Contest = hits that appear in >=2 points, with a true and a false point among them (W view: 6,405 normal-hit contests, mean group size 13.6, random pick right 34%). Lowest value of a metric picks a true point in: dpeak 81% (all-hit points 71%), chi2 83% (72%), amplitude/charge/width spreads and pairwise amplitude or charge ratios 36-41% (random level), |err3_asym| 29% (wrong way round). U view similar (dpeak 77%, chi2 79%). So peak time agreement resolves the contest, pulse height and charge do not.
+- Filter "keep a point if it has the lowest dpeak of at least one of its hits" (normal-hit points): keeps 15.7% of points (11,767 -> 1,850 / event), precision 21.7% -> 65.7%, 47% of true points kept, and 89% of the hits that belong to true points are still in a kept true point. Lowest of its W hit only: 8.4% of points, precision 78%, 69% hit coverage. Best for all 3 hits: 3.8%, precision 86%, 41% hit coverage. All-hit points (long included): best for >=1 hit keeps 7.8%, precision 63%, hit coverage 82%. chi2 or the rank sum gives the same within 1-2 points (chi2 used only as a ranking, not a cut).
+- Not yet: site-level coverage of such a selection, the same in Fast variants, an in-builder version (choose partners by score instead of first-come), long hits (no feature separated them).
+
+### Top-n per hit post-filter, baseline 8 events (2026-11-12)
+
+Keep a point if it is among the n best (lowest dpeak, or lowest chi2 as a ranking only) of at least one of its hits. Ball label; "hits covered" = fraction of hits belonging to a true point that are still in a kept true point (proxy for site recall). Script topn.py (scratchpad).
+
+| Normal-hit points (11,767/ev, precision 21.7%) | n=1 | n=2 | n=3 | n=5 | n=10 |
+|---|---|---|---|---|---|
+| dpeak: points/ev, precision, hits covered | 1,846, 65.7%, 89.3% | 3,128, 51.8%, 94.8% | 4,117, 44.4%, 96.8% | 5,442, 38.0%, 98.0% | 7,598, 30.5%, 99.4% |
+| chi2: points/ev, precision, hits covered | 1,845, 66.7%, 90.2% | 3,128, 52.7%, 95.8% | 4,111, 45.1%, 97.3% | 5,430, 38.7%, 98.5% | 7,595, 31.0%, 99.6% |
+
+All 3-hit points incl. long (25,951/ev, precision 14.0%): chi2 top-3: 4,565/ev, precision 43.7%, hits covered 92.0%; top-5: 6,192/ev, 37.4%, 94.7%; top-10: 9,263/ev, 29.4%, 97.5%.
+dpeak and chi2 rank equally within 1 point; the choice between them is open. Truth metric for grouping hits: IDE-based ball label (SED have no channel/tick link); SED used for position.
+
+Top-n per hit (chi2 ranking), all four variants, 8 events, normal-hit points / all 3-hit points incl. long: points/ev, precision, hits covered.
+
+| Variant | n=1 | n=3 | n=5 |
+|---|---|---|---|
+| Baseline, normal | 1,845, 66.7%, 90.2% | 4,111, 45.1%, 97.3% | 5,430, 38.7%, 98.5% |
+| Fast default, normal | 1,921, 69.5%, 89.8% | 4,770, 49.0%, 96.8% | 6,805, 40.6%, 98.0% |
+| Fast noexcl, normal | 1,894, 75.5%, 90.0% | 4,971, 66.8%, 96.3% | 7,584, 54.7%, 97.7% |
+| Fast sym+noexcl, normal | 1,933, 75.6%, 89.0% | 5,112, 71.3%, 95.8% | 7,878, 61.1%, 97.2% |
+| Baseline, all | 2,007, 63.8%, 82.8% | 4,565, 43.7%, 92.0% | 6,192, 37.4%, 94.7% |
+| Fast default, all | 2,084, 65.9%, 82.2% | 5,221, 47.5%, 91.2% | 7,581, 40.0%, 94.0% |
+| Fast noexcl, all | 2,053, 71.2%, 83.3% | 5,384, 63.9%, 91.3% | 8,274, 53.0%, 94.0% |
+| Fast sym+noexcl, all | 2,089, 71.3%, 82.4% | 5,522, 67.8%, 90.8% | 8,549, 58.6%, 93.3% |
+
+Hit coverage after top-n is the same for all four variants (within ~1.5 points): the larger candidate pools of the Fast variants do not recover more hits, they give better precision for the same number of kept points (n=3 all hits: 44% baseline, 64% noexcl, 68% sym+noexcl). The hit coverage ceiling (82-83% all hits at n=1, 92% at n=3) is set by hits, notably long ones, not by the candidate pool.
+
+### CORRECTION (2026-11-13): hit-key precision bug in the offline per-hit analyses
+
+contest.py, sel.py and topn.py (scratchpad) built the per-event hit key as `ev*1e7 + hit_index` in float32. For events > 0 this loses low bits and merges different hits into one key, so competition per hit was overstated and retention understated in the sections "Resolving competing combinations", "Top-n per hit post-filter" and the all-variant top-n table above. The scripts now use float64 (verified: re-applying top-3 to the in-tool top-3 output keeps 100%; offline prediction for sym+NoExcl all hits top-3 = 8,983 points/ev, in-tool 8,982). Corrected numbers (8 events; chi2 ranking, keep if top-n of >=1 hit; points/ev, precision, hits covered):
+
+| Variant, all 3-hit points | n=1 | n=3 | n=5 |
+|---|---|---|---|
+| Baseline (25,951, 14.0%) | 3,290, 60.6%, 82.9% | 6,974, 38.5%, 92.0% | 9,038, 31.6%, 94.4% |
+| Fast default (54,896, 11.9%) | 3,466, 63.7%, 81.9% | 8,320, 43.7%, 91.2% | 11,686, 35.5%, 93.8% |
+| Fast noexcl (71,584, 14.1%) | 3,415, 70.0%, 82.8% | 8,718, 61.0%, 91.2% | 13,182, 49.1%, 93.8% |
+| Fast sym+noexcl (105,637, 12.9%) | 3,499, 70.2%, 81.8% | 8,983, 65.5%, 90.5% | 13,735, 55.3%, 93.0% |
+
+Normal-hit points only: baseline n=3 6,086/ev, 39.4%, hits covered 97.4%; sym+noexcl n=3 8,187/ev, 68.5%, 95.5%. Keeps true points: baseline n=3 normal 93.8%, all 73.9%; sym+noexcl n=3 62.6% / 43.1%.
+Qualitative conclusions survive: hit coverage is about equal across variants at a given n, bigger candidate pools give higher precision (n=3 all hits: 38.5, 43.7, 61.0, 65.5%). Other corrected values: share of false points whose every hit belongs to some true point 73.5% normal / 77.6% all (not 87 / 90%); >=1 shared hit 99.8%; contests (W view, normal hits): mean group size 8.3, random 34%, lowest chi2 picks a true point 80.5%, dpeak 78.8% (all hits 69.7%, 68.1%); U view chi2 77.7%, dpeak 75.9%; post-filter "best of >=1 hit" by chi2: 25% of normal-hit points, precision 63%, 73% of true points kept, 90% hits covered (all hits: 12.7%, 60.6%, 55%, 83%). The section's statements about 47% true points kept and 15.7% volume are superseded.
+
+### In-tool TopNPerHit (2026-11-13, dunereco uncommitted)
+
+`SnippetHit3DBuilderDUNEFast_tool.cc`: new fcl `TopNPerHit` (0 = off) and `TopNRank` (chi2 | time | score); `applyTopNPerHit()` at the end of `BuildHit3D`: ranks the 3-hit points per 2D hit (key: channel, start, end, peak time of the recob::Hit), keeps a point if it is among the n best of at least one of its three hits; 2-hit and dead-channel points untouched; ids renumbered. Defaults in cluster3dalgorithms_dune.fcl. Runs: `hitscan_loose/<name>` (scratchpad runtop.sh / runtop_all.sh), 8 FD events, MaxHitChiSquare 10, ball label, site recall R 1 cm f 0.05 pos 0.5 cm.
+
+| Config | 3-hit pts/ev | true 3-hit/ev | precision | normal-hit pts/ev, precision | site coverage all / normal |
+|---|---|---|---|---|---|
+| baseline (reference) | 25,951 | 3,635 | 14.0% | 11,767, 21.7% | 97.3% / 95.6% |
+| sym+NoExcl, no TopN | 105,637 | 13,635 | 12.9% | 44,554, 20.1% | 99.2% / 98.8% |
+| sym+NoExcl, top-3 chi2 | 8,982 | 5,882 | 65.5% | 7,184, 74.9% | 88.2% / 91.3% |
+| sym+NoExcl, top-3 time | 9,045 | 5,781 | 63.9% | 7,262, 73.1% | 87.8% / 90.7% |
+| NoExcl, top-3 chi2 | 8,718 | 5,314 | 61.0% | 6,947, 69.5% | 89.3% / 91.6% |
+| sym+NoExcl, top-5 chi2 | 13,735 | 7,602 | 55.3% | 10,876, 63.0% | 90.9% / 93.1% |
+
+2-hit points unchanged (107,040/ev for the symmetric variants), i.e. 12x the 3-hit volume after the filter, with ~1% precision. The in-tool result matches the offline prediction to one point. Top-3 costs ~9-11 points of site coverage vs the unfiltered Fast tool and ~9 vs baseline (all hits), ~4 (normal hits).
+
+### The 2-hit points (2026-11-13)
+
+Baseline / sym+NoExcl(+top-3): 2-hit points are orphan pairs of `saveOrphanPairs` (one hit on the collection plane, chi2 < MaxMythicalChiSquare, <= 16 per wire; no dead-channel pairs in this sample, so no UV pairs), 111,358 / 107,040 per event vs 25,951 / 8,982 3-hit points. Ball label: 0.98% / 0.23% true; long hits involved 42% / 37% (not dominant). Truth category (sym+NoExcl): common particle but not co-located 67%, different particles 31%, misplaced 1.7%, true 0.2%.
+Redundancy with the 3-hit points: 99.8% of the 2-hit points have a hit that is in some 3-hit point (98.6% both hits); only ~200/ev have both hits free of any 3-hit point and those are 52% true (104/ev). 58% of the true 2-hit points (90% in the baseline) use a hit that is also in a 3-hit point.
+New fcl in the Fast tool (dunereco, uncommitted): `DropOrphansSharingTriplet` (remove orphan points with a hit in a kept 3-hit point) and `DropOrphansNeedBothHits` (only when both hits are). Results, sym+NoExcl+top-3 chi2, 8 events (3-hit points unchanged: 8,982/ev, 65.5%, site coverage 88.2% all / 91.3% normal):
+
+| Orphan handling | 2-hit points/ev | true 2-hit/ev | 2-view sites covered by a 2-hit point UW / VW | UVW sites covered by a 2-hit point only |
+|---|---|---|---|---|
+| none | 107,040 | 248 | 58% / 74% | 2.3% |
+| drop if either hit in a 3-hit point | 202 | 104 | 22% / 54% | 0% |
+| drop only if both hits in 3-hit points | 1,502 | 142 | 32% / 63% | 0.1% |
+
+2-view sites are 183/ev of 3,256 sites (5.6%), so "either" costs about 3.5 points of overall site coverage for 99.8% less 2-hit volume, "both" about 2.5 points for 98.6% less. CPU unchanged (45 s for 8 events, with and without).
+
+Refinement tested offline (two3.py, sym+NoExcl+top-3 dump, 8 events): drop an orphan only if the 3-hit point(s) using its hit are "good". Good = mutual best (lowest chi2 for all 3 of its hits) or rank <= 1 / 2 in all hits, or the orphan's chi2 is worse than the best 3-hit chi2 at that hit (x0.5 .. x4). None beats the plain rules on volume versus true points kept: current "both" keeps 1,502 orphans/ev and 57.4% of true ones; "mutual best + both" keeps 92,369/ev and 96.6%; rank<=2 both 51,315/ev, 81.5%; "rank-0 in >=2 hits, either" 15,927/ev, 59.8%; chi2 competition either x4: 3,628/ev, 51%; x1: 7,179/ev, 55%. The orphan chi2 does not tell the real two-view points from the redundant ones, so "both" (DropOrphansNeedBothHits) stays on the frontier. Untested idea: require that the third-plane wire at the pair position has no hit near the pair time (a real two-view site has no third-plane charge).
+
+Third-plane test (2026-11-13): `OrphanNeedsEmptyThirdPlane` (Fast tool, default off) rejects an orphan pair (hit1, hit2) when the other pair map has a hit on the third plane paired with hit1 that lies inside the time window (HitWidthScaleFactor) and wire-distance window (< pitch limit, symmetric scaling if set) that makeHitTriplet uses. The existing orphan code has no such check (only: pair not already matched with each other in a triplet, not MADESPACEPOINT, PH >= 15, a collection-plane hit, chi2 < MaxMythicalChiSquare, <= 16 per wire). Result (sym+NoExcl+top-3, 8 events): alone 107,040 -> 99,526 orphans/ev (-7%), true 2-hit 248 -> 170 (-31%), 2-view sites covered UW/VW 58/74% -> 54/70%; with the "both hits" drop 1,502 -> 1,474, true 142 -> 126, UW/VW 32/63% -> 32/61%. 93% of the orphans have no compatible third-plane hit, so the test removes few of them and removes true ones disproportionately: not useful. Recommended 2-hit setting stays `DropOrphansSharingTriplet: true`, `DropOrphansNeedBothHits: true`.
