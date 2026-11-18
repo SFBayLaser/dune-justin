@@ -1,0 +1,29 @@
+# seg3 + constant top-10 per hit
+# Second pass on the baseline *_reco.root (holds gaushit): rerun ONLY the space point builder (SnippetHit3DBuilderDUNEFast via
+# SpacePointBuilderDUNE) + Supera. Writes larcv.root and a slim art file (sp_art.root: cluster3d products + gaushit).
+# Best configuration so far: MaxHitChiSquare 10 (not tuned), NoExclusivity, SymmetricThirdWire, chi2 ranking, orphan drop,
+# long-hit grouping with 3-tick segments.
+#include "supera_sponly_dune10kt_1x2x6.fcl"
+
+physics.producers.cluster3d: @local::standard_spacepointbuilderdune
+physics.producers.cluster3d.Hit3DBuilderAlg.MaxHitChiSquare: 10.0
+physics.producers.cluster3d.Hit3DBuilderAlg.NoExclusivity: true
+physics.producers.cluster3d.Hit3DBuilderAlg.SymmetricThirdWire: true
+physics.producers.cluster3d.Hit3DBuilderAlg.TopNRank: "chi2"
+physics.producers.cluster3d.Hit3DBuilderAlg.DropOrphansSharingTriplet: true
+physics.producers.cluster3d.Hit3DBuilderAlg.DropOrphansNeedBothHits: true
+physics.producers.cluster3d.Hit3DBuilderAlg.GroupLongHits: true
+physics.producers.cluster3d.Hit3DBuilderAlg.GroupedLongHitRMSFrac: 0.33
+physics.producers.cluster3d.Hit3DBuilderAlg.GroupedLongHitSegmentTicks: 3
+physics.producers.cluster3d.Hit3DBuilderAlg.TopNPerHit: 10
+
+outputs.artout: {
+  module_type: RootOutput
+  fileName: "sp_art.root"
+  compressionLevel: 1
+  dataTier: "reco"
+  streamName: "out1"
+  outputCommands: [ "drop *", "keep *_cluster3d_*_SuperaSP", "keep recob::Hits_gaushit_*_*" ]
+}
+physics.stream1:   [ artout ]
+physics.end_paths: [ outana, stream1 ]

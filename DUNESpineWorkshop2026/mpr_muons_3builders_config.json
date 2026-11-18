@@ -1,0 +1,88 @@
+{
+  "workflow": {
+    "description": "FD HD isotropic muon rain: baseline reco, then seg3 top-10 and seg3 degree-quota Fast builder passes",
+    "monte_carlo": 25
+  },
+
+  "defaults": {
+    "repo": "SFBayLaser/dune-justin",
+    "ref": "main",
+    "lifetime_days": 1,
+    "max_distance": 60,
+    "dunesw_version": "v10_24_00d00",
+    "fhicl_files": "https://raw.githubusercontent.com/SFBayLaser/dune-justin/main/bundles/fhicl_fd_muons_bundle.tgz",
+    "tarfile_dir": "/cvmfs/fifeuser1.opensciencegrid.org/sw/dune/8d1911fb324348c7088ca9a3e644b9dc33d446d8"
+  },
+
+  "stages": [
+    {
+      "id": 1,
+      "jobscript": "MCJobSubmission/gen.jobscript",
+      "wall_seconds": 14400,
+      "rss_mib": 4000,
+      "env": {
+        "NEVENTS": "20",
+        "RUN_BASE": "350000",
+        "JOB_FHICL_FILE": "mpr_muons_gen_1x2x6.fcl"
+      },
+      "output_pattern_next_stage": "*_gen.root"
+    },
+
+    {
+      "id": 2,
+      "jobscript": "MCJobSubmission/g4.jobscript",
+      "wall_seconds": 28800,
+      "rss_mib": 4000,
+      "env": {
+        "JOB_FHICL_FILE": "standard_g4_dune10kt_1x2x6.fcl"
+      },
+      "output_pattern_next_stage": "*_g4.root"
+    },
+
+    {
+      "id": 3,
+      "jobscript": "MCJobSubmission/detsim.jobscript",
+      "wall_seconds": 28800,
+      "rss_mib": 4000,
+      "env": {
+        "JOB_FHICL_FILE": "standard_detsim_dune10kt_1x2x6.fcl"
+      },
+      "output_pattern_next_stage": "*_detsim.root"
+    },
+
+    {
+      "id": 4,
+      "jobscript": "MCJobSubmission/reco_rcds.jobscript",
+      "wall_seconds": 28800,
+      "rss_mib": 4000,
+      "lifetime_days": 14,
+      "env": {
+        "JOB_FHICL_FILE": "standard_mythical_supera_dune10kt_1x2x6.fcl"
+      },
+      "output_pattern_next_stage": "*_reco.root",
+      "output_patterns": [
+        "*_reco_larcv.root"
+      ],
+      "output_rse_expression": "DUNE_US_FNAL_DISK_STAGE"
+    },
+
+    {
+      "id": 5,
+      "jobscript": "MCJobSubmission/variants.jobscript",
+      "wall_seconds": 28800,
+      "rss_mib": 4000,
+      "lifetime_days": 30,
+      "env": {
+        "SLIM_FHICL_FILE": "slim_copy_dune10kt_1x2x6.fcl",
+        "VARIANT_FHICLS": "s3top10:supera_sp_s3_top10_1x2x6.fcl s3dq:supera_sp_s3_dq_1x2x6.fcl"
+      },
+      "output_patterns": [
+        "*_slim.root",
+        "*_s3top10_larcv.root",
+        "*_s3dq_larcv.root",
+        "*_sp.root"
+      ],
+      "output_rse_expression": "DUNE_US_FNAL_DISK_STAGE"
+    }
+  ]
+}

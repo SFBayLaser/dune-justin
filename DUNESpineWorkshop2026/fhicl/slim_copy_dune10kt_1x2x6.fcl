@@ -1,0 +1,25 @@
+# Copy the products needed for the truth-based space point studies and event displays out of the big baseline *_reco.root:
+# SimChannels, MCParticles (largeant), MCTruth, SimEnergyDeposits (largeant, TPC volumes), gaushit and the baseline cluster3d
+# (space points + associations). Drops the optical and other large products.
+#include "services_dune.fcl"
+
+process_name: Slim
+
+source: { module_type: RootInput }
+
+outputs: {
+  out1: {
+    module_type: RootOutput
+    fileName: "slim.root"
+    compressionLevel: 1
+    dataTier: "reco"
+    outputCommands: [ "drop *",
+                      "keep sim::SimChannels_tpcrawdecoder_simpleSC_*",
+                      "keep simb::MCParticles_largeant__*",
+                      "keep simb::MCTruths_*_*_*",
+                      "keep sim::SimEnergyDeposits_largeant_*_*",
+                      "keep recob::Hits_gaushit_*_*",
+                      "keep *_cluster3d_*_*" ]
+  }
+}
+physics: { stream1: [ out1 ]  end_paths: [ stream1 ] }

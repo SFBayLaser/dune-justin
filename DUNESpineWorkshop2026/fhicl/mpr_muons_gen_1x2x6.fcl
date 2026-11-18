@@ -1,0 +1,28 @@
+# Isotropic multi-muon "rain" for the space point angular study (FD HD 1x2x6).
+# The MultiPartRain module is run as the `generator` producer so g4/supera, which read the `generator` label, need no change.
+#   - muons only (mu-/mu+), MomRange in GeV/c (flat in momentum): 0.5 - 1.5
+#   - MultiMin..MultiMax muons per event, vertices uniform in the bounding box of all 24 active TPCs (minus the XRange/YRange/ZRange margins)
+#   - DirectInward false and CosmicDistribution false: directions uniform on the sphere (DirectInward true would restrict each muon to the octant pointing at the box centre)
+#include "mpvmpr_gen_1x2x6.fcl"
+
+physics.simulate: [ rns, generator ]
+physics.producers.generator: @local::MultiPartRain
+
+physics.producers.generator.DebugMode          : 0
+physics.producers.generator.G4Time             : 5000.   # same time settings as the MPV/MPR sample
+physics.producers.generator.G4TimeJitter       : 10000.
+physics.producers.generator.XRange             : [20,20]
+physics.producers.generator.YRange             : [20,20]
+physics.producers.generator.ZRange             : [20,20]
+physics.producers.generator.TPCRange           : [[0,0],[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[0,8],[0,9],[0,10],[0,11],[0,12],
+                                                  [0,13],[0,14],[0,15],[0,16],[0,17],[0,18],[0,19],[0,20],[0,21],[0,22],[0,23]]
+physics.producers.generator.DirectInward       : false
+physics.producers.generator.CosmicDistribution : false
+physics.producers.generator.MultiMin           : 6
+physics.producers.generator.MultiMax           : 10
+physics.producers.generator.ParticleParameter.PDGCode  : [ [-13,13] ]
+physics.producers.generator.ParticleParameter.MinMulti : [ 0 ]
+physics.producers.generator.ParticleParameter.MaxMulti : [ 10 ]
+physics.producers.generator.ParticleParameter.ProbWeight : [ 1 ]
+physics.producers.generator.ParticleParameter.KERange  : [ ]
+physics.producers.generator.ParticleParameter.MomRange : [ [0.5, 1.5] ]

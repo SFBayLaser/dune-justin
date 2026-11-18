@@ -1,0 +1,3 @@
+# As supera_sponly_dune10kt_1x2x6.fcl but forces the SpacePointBuilderDUNE (Fast tool) into the cluster3d module.
+#include "supera_sponly_dune10kt_1x2x6.fcl"
+physics.producers.cluster3d: @local::standard_spacepointbuilderdune

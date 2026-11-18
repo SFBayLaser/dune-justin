@@ -1,0 +1,149 @@
+#!/bin/bash
+#set -euo pipefail
+
+echo "=== VARIANTS job starting ==="
+echo "Host: $(hostname)"
+echo "PWD(cmd): $(/bin/pwd -P || pwd || true)"
+echo "PWD(var): ${PWD:-unset}"
+echo "JUSTIN_PATH=${JUSTIN_PATH:-unset}"
+echo "JUSTIN_INPUT_FILE=${JUSTIN_INPUT_FILE:-unset}"
+
+# ----------------------------------------------------------------------
+# Allocate the input file via justIN (robust)
+# ----------------------------------------------------------------------
+if [[ -z "${JUSTIN_PATH:-}" ]]; then
+  echo "ERROR: JUSTIN_PATH is not set (not running under justIN wrapper?)"
+  exit 2
+fi
+
+alloc="$("$JUSTIN_PATH/justin-get-file")"
+if [[ -z "$alloc" ]]; then
+  echo "No more inputs allocated for this stage; exiting cleanly."
+  exit 0
+fi
+
+did="$(echo "$alloc" | awk '{print $1}')"
+pfn="$(echo "$alloc" | awk '{print $2}')"
+rse="$(echo "$alloc" | awk '{print $3}')"
+echo "Allocated input: did=$did pfn=$pfn rse=$rse"
+
+INPUT_RECO="${pfn:-}"
+if [[ -z "${INPUT_RECO}" ]]; then
+  echo "ERROR: allocator returned empty PFN"
+  exit 3
+fi
+
+echo "baseline reco input file: ${INPUT_RECO}"
+
+# Output value of expected input environment variables
+echo "slim fhicl: ${SLIM_FHICL_FILE:-unset}"
+echo "variant fhicls (tag:fcl ...): ${VARIANT_FHICLS:-unset}"
+
+# Work in the sandbox
+cd $PWD
+
+# ----------------------------------------------------------------------
+# Set up DUNE and packaged test release
+# ----------------------------------------------------------------------
+echo "Sourcing DUNE setup..."
+source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
+
+if [[ -z "${INPUT_TAR_DIR_LOCAL:-}" ]]; then
+    echo "ERROR: INPUT_TAR_DIR_LOCAL is not set"
+    exit 4
+fi
+
+if [[ ! -d "${INPUT_TAR_DIR_LOCAL}" ]]; then
+    echo "ERROR: packaged products directory does not exist:"
+    echo "  ${INPUT_TAR_DIR_LOCAL}"
+    exit 4
+fi
+
+echo "Using packaged products from:"
+echo "  ${INPUT_TAR_DIR_LOCAL}"
+
+# Add the local products folder to PRODUCTS
+export PRODUCTS="${INPUT_TAR_DIR_LOCAL}/localProducts:${PRODUCTS}"
+
+echo "PRODUCTS=${PRODUCTS}"
+
+echo "Available local dunesw products:"
+ups list -aK+ dunesw -z "${INPUT_TAR_DIR_LOCAL}/localProducts" 2>&1 || true
+
+echo "Available local dunereco products:"
+ups list -aK+ dunereco -z "${INPUT_TAR_DIR_LOCAL}/localProducts" 2>&1 || true
+
+echo "Setting up dunesw ${DUNESW_VERSION}..."
+setup dunesw "${DUNESW_VERSION}" -q e26:prof
+
+echo "Active dunesw:"
+ups active | grep -E '^dunesw[[:space:]]' || true
+
+echo "Active dunereco:"
+ups active | grep -E '^dunereco[[:space:]]' || true
+
+echo "DUNESW_DIR=${DUNESW_DIR:-unset}"
+echo "DUNERECO_DIR=${DUNERECO_DIR:-unset}"
+echo "FHICL_FILE_PATH=${FHICL_FILE_PATH:-unset}"
+
+# ----------------------------------------------------------------------
+# Grab the tarball that has our fhicl files we'll need
+# ----------------------------------------------------------------------
+if [ -n "${FCL_TGZ_URL:-}" ]; then
+  curl -L -o fhicl_bundle.tgz "$FCL_TGZ_URL"
+  tar xzf fhicl_bundle.tgz
+
+  export FHICL_FILE_PATH="$PWD/fhicl:${FHICL_FILE_PATH:-.}"
+else
+  echo "ERROR no path to fhicl files"
+  exit 3
+fi
+
+# ----------------------------------------------------------------------
+# Second-pass jobs on the baseline *_reco.root (holds gaushit, SimChannels, MCParticles, SimEnergyDeposits, baseline cluster3d)
+#   1) slim copy of the truth/hit products          -> <base>_slim.root
+#   2) for every tag:fcl in VARIANT_FHICLS: rerun the space point builder + Supera
+#        -> <base>_<tag>_larcv.root and <base>_<tag>_sp.root
+# ----------------------------------------------------------------------
+INBASE="$(basename "${INPUT_RECO}" .root)"
+BASE="${INBASE%_reco}"
+
+run_lar() {
+  local what="$1"; shift
+  echo "Running lar ${what}: $*"
+  lar "$@" -s "${INPUT_RECO}" -n -1
+  local rc=$?
+  if [[ $rc -ne 0 ]]; then echo "ERROR: lar ${what} failed rc=$rc"; exit 5; fi
+}
+
+run_lar slim -c "${SLIM_FHICL_FILE}"
+mv -v slim.root "${BASE}_slim.root"
+
+for tf in ${VARIANT_FHICLS}; do
+  tag="${tf%%:*}"; fcl="${tf#*:}"
+  rm -f larcv.root sp_art.root
+  run_lar "variant ${tag}" -c "${fcl}"
+  mv -v larcv.root  "${BASE}_${tag}_larcv.root"
+  mv -v sp_art.root "${BASE}_${tag}_sp.root"
+done
+
+# ----------------------------------------------------------------------
+# Sanity checks
+# ----------------------------------------------------------------------
+test -f "${BASE}_slim.root" || { echo "ERROR: ${BASE}_slim.root not produced!"; exit 1; }
+for tf in ${VARIANT_FHICLS}; do
+  tag="${tf%%:*}"
+  test -f "${BASE}_${tag}_larcv.root" || { echo "ERROR: ${BASE}_${tag}_larcv.root not produced!"; exit 1; }
+  test -f "${BASE}_${tag}_sp.root"    || { echo "ERROR: ${BASE}_${tag}_sp.root not produced!"; exit 1; }
+done
+
+echo "Sandbox folder contains:"
+ls -lh $PWD
+
+# ----------------------------------------------------------------------
+# Tell justIN we successfully processed the allocated input
+# ----------------------------------------------------------------------
+echo "$did" >> justin-processed-dids.txt
+echo "Wrote processed DID: $did"
+
+echo "=== VARIANTS job completed successfully ==="
