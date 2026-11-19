@@ -1,0 +1,7 @@
+# Same multi-muon rain as mpr_muons_gen_1x2x6.fcl but with G4Time = 0 and no jitter.
+# With the MPV/MPR timing (5 us + 10 us jitter) the reco x of each particle is shifted from its true deposit by v_drift * t, 0 to 1.6 cm per particle (sign by drift volume),
+# which breaks the point-to-truth matching (see SpacePointStudy/RUNS.md, 2026-11-06 and 2026-11-19). t = 0 removes the offset.
+#include "mpr_muons_gen_1x2x6.fcl"
+
+physics.producers.generator.G4Time       : 0.
+physics.producers.generator.G4TimeJitter : 0.
