@@ -1,0 +1,44 @@
+{
+  "workflow": {
+    "description": "TMS MiniProdN5p3 FHC detector-simulation comparison, mode legacy (two stage)",
+    "mql": "files from neardet-lar-tms-sand:MiniProdN5p3_NDComplex_FHC_spill_full_sanddrift"
+  },
+  "defaults": {
+    "repo": "SFBayLaser/dune-justin",
+    "ref": "main",
+    "lifetime_days": 4,
+    "max_distance": 60,
+    "limit_sites": false,
+    "tarfile_dir": "/cvmfs/fifeuser2.opensciencegrid.org/sw/dune/551eaddee5ea50a2cd59f149d5a816692fd24106"
+  },
+  "stages": [
+    {
+      "id": 1,
+      "jobscript": "TMS/tms_detsim_modes.jobscript",
+      "wall_seconds": 28800,
+      "rss_mib": 4000,
+      "lifetime_days": 14,
+      "env": {
+        "DETSIM_MODE": "legacy",
+        "TMS_PRODUCTION_TAG": "DetSim_legacy_v01"
+      },
+      "output_patterns": [
+        "*_Readout.root",
+        "*_convert.log"
+      ],
+      "output_pattern_next_stage": "*_RecoCandidates.root"
+    },
+    {
+      "id": 2,
+      "jobscript": "TMS/tms_validation.jobscript",
+      "wall_seconds": 14400,
+      "rss_mib": 8000,
+      "lifetime_days": 14,
+      "output_patterns": [
+        "*_validation_legacy.root",
+        "*_validation_cluster3d.root",
+        "*_validation.log"
+      ]
+    }
+  ]
+}
