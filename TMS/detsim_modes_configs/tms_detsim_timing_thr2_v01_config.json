@@ -1,0 +1,33 @@
+{
+  "workflow": {
+    "description": "TMS MiniProdN5p3 FHC detector-simulation comparison, mode timing_thr2 (stage 1 only)",
+    "mql": "files from neardet-lar-tms-sand:MiniProdN5p3_NDComplex_FHC_spill_full_sanddrift"
+  },
+  "defaults": {
+    "repo": "SFBayLaser/dune-justin",
+    "ref": "main",
+    "lifetime_days": 4,
+    "max_distance": 60,
+    "limit_sites": false,
+    "tarfile_dir": "/cvmfs/fifeuser2.opensciencegrid.org/sw/dune/551eaddee5ea50a2cd59f149d5a816692fd24106"
+  },
+  "stages": [
+    {
+      "id": 1,
+      "jobscript": "TMS/tms_detsim_modes.jobscript",
+      "wall_seconds": 28800,
+      "rss_mib": 4000,
+      "lifetime_days": 14,
+      "env": {
+        "DETSIM_MODE": "timing",
+        "DETSIM_THRESHOLD": "2.0",
+        "TMS_PRODUCTION_TAG": "DetSim_timing_thr2_v01"
+      },
+      "output_patterns": [
+        "*_RecoCandidates.root",
+        "*_Readout.root",
+        "*_convert.log"
+      ]
+    }
+  ]
+}
